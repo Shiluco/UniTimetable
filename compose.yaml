@@ -8,6 +8,7 @@ services:
     volumes:
       - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
       - /app/node_modules # node_modules をコンテナ内で管理
+      - /app/.yarn
     environment:
       NODE_ENV: development # 環境変数を設定
 
