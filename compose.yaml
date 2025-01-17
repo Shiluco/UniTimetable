@@ -1,0 +1,39 @@
+services:
+  uni-nextjs:
+    build:
+      context: ./frontend # Dockerfile があるディレクトリを指定
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # ホストとコンテナのポートをマッピング
+    volumes:
+      - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
+      - /app/node_modules # node_modules をコンテナ内で管理
+    environment:
+      NODE_ENV: development # 環境変数を設定
+
+  uni-go:
+    build:
+      context: ./backend # Dockerfile があるディレクトリを指定
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # ホストの8080ポートをコンテナの8080ポートにマッピング
+    volumes:
+      - ./backend:/app # ローカルディレクトリをコンテナにマウント
+    command: sh -c "go mod download && go run main.go" # 自動的に変更を反映するコマンド
+    environment:
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb" # PostgreSQL 接続情報
+
+  uni-postgres:
+    image: postgres:15 # PostgreSQL の公式イメージ
+    container_name: uni-postgres
+    ports:
+      - "5432:5432" # ホストの5432ポートをコンテナの5432ポートにマッピング
+    environment:
+      POSTGRES_USER: postgres # デフォルトのユーザー名
+      POSTGRES_PASSWORD: password # デフォルトのパスワード
+      POSTGRES_DB: mydb # デフォルトのデータベース名
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # データを永続化
+
+volumes:
+  postgres_data:
