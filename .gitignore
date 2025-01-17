@@ -11,6 +11,7 @@ yarn-error.log*
 .next/
 out/
 *.log
+.env.development
 *.env.local
 *.env.development.local
 *.env.test.local
