@@ -1,21 +1,20 @@
 # .gitignore for Next.js and Go projects
-*.env
+
 # Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-
 # Next.js
 .next/
 out/
 *.log
-.env.development
 *.env.local
 *.env.development.local
 *.env.test.local
 *.env.production.local
+.env.development
 
 # Go
 bin/
@@ -39,3 +38,4 @@ obj/
 *.temp
 .DS_Store
 Thumbs.db
+*storybook.log

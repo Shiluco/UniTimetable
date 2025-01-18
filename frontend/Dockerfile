@@ -4,23 +4,30 @@ FROM node:22.13.0-alpine
 # 作業ディレクトリを作成
 WORKDIR /app
 
-# package.json と package-lock.json をコピー
-COPY package*.json ./
+# package.json と yarn.lock をコピー
+COPY package.json yarn.lock ./
 
-# npmのバージョンを指定（11.0.0に固定）
-RUN npm install -g npm@11.0.0
 
 # 依存関係をインストール
-RUN npm install
+RUN yarn install
+
+# Storybook の初期化（必要な場合）
+RUN npx sb init
 
 # アプリケーションのコードをコピー
 COPY . .
 
 # Next.js のビルド
-RUN npm run build
+RUN yarn build
 
-# アプリケーションのポートを公開
-EXPOSE 3000
+# Storybook のビルド
+RUN yarn build-storybook
 
-# アプリケーションを起動
-CMD ["npm", "run", "dev"]
+# アプリケーションと Storybook のポートを公開
+EXPOSE 3000 6006
+
+# デフォルトで Next.js を起動
+CMD ["yarn", "dev"]
+
+# Storybook を個別で起動する場合の例
+# docker run -p 6006:6006 イメージ名 yarn storybook

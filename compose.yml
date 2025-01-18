@@ -1,0 +1,41 @@
+services:
+  nextjs:
+    build:
+      context: ./frontend # Dockerfile があるディレクトリ
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Next.js アプリ用
+      - "6006:6006" # Storybook 用
+    volumes:
+      - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
+      - /app/node_modules # node_modules をコンテナ内で管理
+    environment:
+      NODE_ENV: development
+    command: sh -c "yarn install && yarn dev & yarn storybook --ci"
+
+  go:
+    build:
+      context: ./backend # Dockerfile があるディレクトリ
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # API サーバー用
+    volumes:
+      - ./backend:/app # ローカルコードをコンテナにマウント
+    command: sh -c "go mod download && go run main.go"
+    environment:
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb" # PostgreSQL 接続情報
+
+  postgres:
+    image: postgres:15 # PostgreSQL の公式イメージ
+    container_name: uni-postgres
+    ports:
+      - "5432:5432" # PostgreSQL のデフォルトポート
+    environment:
+      POSTGRES_USER: postgres # デフォルトユーザー
+      POSTGRES_PASSWORD: password # デフォルトパスワード
+      POSTGRES_DB: mydb # 初期データベース
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # データ永続化用
+
+volumes:
+  postgres_data:
