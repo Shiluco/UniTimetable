@@ -7,4 +7,4 @@ node v22.13.0
 - storybook
 ### go 
 - gin
-- gorm
+- ent
