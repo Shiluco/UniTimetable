@@ -22,6 +22,9 @@ services:
     volumes:
       - ./backend:/app # ローカルコードをコンテナにマウント
     command: sh -c "go mod download && go run cmd/server/main.go"
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: "postgresql://postgres:password@db:5432/unitimetable?sslmode=disable" # PostgreSQL 接続情報
 
@@ -36,6 +39,13 @@ services:
       POSTGRES_DB: unitimetable # 初期データベース
     volumes:
       - postgres_data:/var/lib/postgresql/data # データ永続化用
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d unitimetable"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   postgres_data:

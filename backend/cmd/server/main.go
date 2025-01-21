@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/Shiluco/UniTimetable/backend/internal/api/handler"
-	"github.com/Shiluco/UniTimetable/backend/internal/api/middleware" 
+	"github.com/Shiluco/UniTimetable/backend/internal/api"
+	"github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
 	"github.com/Shiluco/UniTimetable/backend/config"
 	"github.com/Shiluco/UniTimetable/backend/pkg/logger"
 	"github.com/Shiluco/UniTimetable/backend/ent"
@@ -41,15 +40,16 @@ func main() {
 
 	// ミドルウェアの設定
 	r.Use(middleware.Logger())
-	r.Use(middleware.Auth())
+	// Auth middlewareは現時点では必要ないのでコメントアウト
+	// r.Use(middleware.Auth())
 
 	// APIエンドポイントの設定
-	handler.SetupRoutes(r, client)
+	api.SetupRoutes(r, client)
 
 	// サーバーを起動
-	port := config.Config.Port // 設定ファイルからポート番号を取得
+	port := config.Config.Port
 	if port == "" {
-		port = "8080" // デフォルトポート
+		port = "8080"
 	}
 
 	log.Printf("サーバーを起動します。ポート: %s", port)

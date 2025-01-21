@@ -25,6 +25,6 @@ func SetupRoutes(r *gin.Engine, client *ent.Client) {
 	}
 
 	// その他のエンドポイント
-	r.POST("/login", handler.Login)
-	r.GET("/schedule", handler.GetSchedule)
+	// r.POST("/login", handler.Login)
+	// r.GET("/schedule", handler.GetSchedule)
 }
