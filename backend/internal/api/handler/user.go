@@ -50,8 +50,8 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 // CreateUser 新規ユーザーを作成
 func (h *UserHandler) CreateUser(c *gin.Context) {
     var input struct {
-        Name  string `json:"name"`
-        Email string `json:"email"`
+        Name  string `json:"name" binding:"required"`
+        Email string `json:"email" binding:"required,email"`
     }
 
     if err := c.ShouldBindJSON(&input); err != nil {
@@ -81,8 +81,8 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
     }
 
     var input struct {
-        Name  string `json:"name"`
-        Email string `json:"email"`
+        Name  string `json:"name" binding:"required"`
+        Email string `json:"email" binding:"required,email"`
     }
 
     if err := c.ShouldBindJSON(&input); err != nil {
