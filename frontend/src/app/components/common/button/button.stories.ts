@@ -20,6 +20,6 @@ export const Primary: Story = {
   args: {
     label: "Button",
     onClick: action("Primary button clicked"), // 修正
-    type: "main",
+    type: "normal",
   },
 };
