@@ -7,7 +7,7 @@ interface TextBoxProps {
   className?: string;
 }
 
-export const TextBox = ({ placeholder = "検索ワードを入力", onChange, className = "" }: TextBoxProps) => {
+export const TextBox = ({ placeholder, onChange, className = "" }: TextBoxProps) => {
   return (
     <div className={`container ${className}`}>
       <input type="text" className="input" placeholder={placeholder} onChange={(e) => onChange?.(e.target.value)} />
