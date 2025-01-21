@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/backend/internal/api/handler"
 	"github.com/backend/internal/api/middleware"
-	"github.com/backend/internal/config"
+	"github.com/backend/config"
 	"github.com/backend/pkg/logger"
 )
 
