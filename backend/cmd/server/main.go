@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/backend/internal/api/handler"
-	"github.com/backend/internal/api/middleware"
-	"github.com/backend/config"
-	"github.com/backend/pkg/logger"
+	// "/internal/api/handler"
+	// "/internal/api/middleware"
+	// "/config"
+	// "/pkg/logger"
 )
 
 func main() {

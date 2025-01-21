@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/backend/internal/api/handler"
-	"github.com/backend/internal/api/middleware"
+	// "/internal/api/handler"
+	// "/internal/api/middleware"
 )
 
 func SetupRoutes(r *gin.Engine) {
