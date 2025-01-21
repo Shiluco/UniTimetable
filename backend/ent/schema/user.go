@@ -16,7 +16,8 @@ func (User) Fields() []ent.Field {
     return []ent.Field{
         field.Int("id").
             Positive().
-            Immutable(),
+            Immutable().
+			Unique(),
         field.String("name").
             NotEmpty(),
         field.String("email").
