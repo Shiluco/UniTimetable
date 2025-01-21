@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	// "/internal/api/handler"
-	// "/internal/api/middleware"
+	"github.com/Shiluco/UniTimetable/backend/internal/api/handler"
+	"github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
 )
 
 func SetupRoutes(r *gin.Engine) {

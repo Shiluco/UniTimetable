@@ -1,26 +1,40 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	// "/internal/api/handler"
-	// "/internal/api/middleware"
-	// "/config"
-	// "/pkg/logger"
+	"github.com/Shiluco/UniTimetable/backend/internal/api/handler"
+	"github.com/Shiluco/UniTimetable/backend/internal/api/middleware" 
+	"github.com/Shiluco/UniTimetable/backend/config"
+	"github.com/Shiluco/UniTimetable/backend/pkg/logger"
+	"github.com/Shiluco/UniTimetable/backend/ent"
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	// 設定ファイルを読み込み
-	err := config.LoadConfig()
-	if err != nil {
-		log.Fatalf("error loading config: %v", err)
+	if err := config.LoadConfig(); err != nil {
+		log.Fatalf("設定ファイルの読み込みに失敗しました: %v", err)
 	}
 
 	// ロガーの初期化
 	logger.InitLogger()
+
+	// entクライアントの初期化
+	client, err := ent.Open("postgres", config.Config.DatabaseURL)
+	if err != nil {
+		log.Fatalf("entクライアントの作成に失敗しました: %v", err)
+	}
+	defer client.Close()
+
+	// データベースのマイグレーション実行
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("スキーマの作成に失敗しました: %v", err)
+	}
 
 	// Ginのエンジンを作成
 	r := gin.Default()
@@ -30,15 +44,16 @@ func main() {
 	r.Use(middleware.Auth())
 
 	// APIエンドポイントの設定
-	handler.SetupRoutes(r)
+	handler.SetupRoutes(r, client)
 
 	// サーバーを起動
-	port := os.Getenv("PORT")
+	port := config.Config.Port // 設定ファイルからポート番号を取得
 	if port == "" {
 		port = "8080" // デフォルトポート
 	}
 
+	log.Printf("サーバーを起動します。ポート: %s", port)
 	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
-		log.Fatalf("failed to start server: %v", err)
+		log.Fatalf("サーバーの起動に失敗しました: %v", err)
 	}
 }
