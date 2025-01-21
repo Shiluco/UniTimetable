@@ -1,0 +1,26 @@
+@use 'variables' as var;
+
+.navButton{
+  border: none;
+  background: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 120px;
+  cursor: pointer;
+  position: relative;
+
+  &:hover{
+    &::before{
+      content: '';
+      border-radius: 2px;
+      width: 4px;
+      height: 20px;
+      background-color: #009866;
+      position: absolute;
+      top: 50%;
+      left: -5px;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
