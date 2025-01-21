@@ -3,6 +3,8 @@ package config
 import (
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 var Config *AppConfig
@@ -13,16 +15,17 @@ type AppConfig struct {
 }
 
 func LoadConfig() error {
-	// .envファイルの読み込み
-	err := godotenv.Load()
-	if err != nil {
-		log.Printf("Error loading .env file")
+	// 開発環境の場合のみ.envを読み込む
+	if os.Getenv("GO_ENV") != "production" {
+		if err := godotenv.Load(); err != nil {
+			log.Printf("Warning: .env file not found")
+		}
 	}
 
-	// 設定の読み込み
+	// 環境変数から設定を読み込む
 	Config = &AppConfig{
 		Port:        getEnv("PORT", "8080"),
-		DatabaseURL: getEnv("DATABASE_URL", "postgres://user:password@localhost:5432/mydb?sslmode=disable"),
+		DatabaseURL: getEnv("DATABASE_URL", "postgresql://postgres:password@db:5432/unitimetable?sslmode=disable"),
 	}
 
 	return nil
