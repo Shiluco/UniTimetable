@@ -21,19 +21,19 @@ services:
       - "8080:8080" # API サーバー用
     volumes:
       - ./backend:/app # ローカルコードをコンテナにマウント
-    command: sh -c "go mod download && go run main.go"
+    command: sh -c "go mod download && go run cmd/server/main.go"
     environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb" # PostgreSQL 接続情報
+      DATABASE_URL: "postgresql://postgres:password@db:5432/unitimetable?sslmode=disable" # PostgreSQL 接続情報
 
-  postgres:
+  db:
     image: postgres:15 # PostgreSQL の公式イメージ
-    container_name: uni-postgres
+    container_name: unitimetable-db
     ports:
       - "5432:5432" # PostgreSQL のデフォルトポート
     environment:
       POSTGRES_USER: postgres # デフォルトユーザー
       POSTGRES_PASSWORD: password # デフォルトパスワード
-      POSTGRES_DB: mydb # 初期データベース
+      POSTGRES_DB: unitimetable # 初期データベース
     volumes:
       - postgres_data:/var/lib/postgresql/data # データ永続化用
 
