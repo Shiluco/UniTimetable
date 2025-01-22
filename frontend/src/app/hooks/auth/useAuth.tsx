@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { AuthService } from "@/service/authService"; // AuthService をインポート
 import { LoginResponse } from "@/types/auth";
-import UserContext from "./userInfoContext";
+import UserContext from "../user/userInfoContext";
 
 export const useAuth = () => {
   const { loginService, error } = AuthService();

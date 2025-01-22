@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { UserInfoProvider } from "@/app/hooks/userInfoContext"; // UserProvider をインポート
+import { UserInfoProvider } from "@/app/hooks/user/userInfoContext"; // UserProvider をインポート
 import "./globals.css";
 
 const geistSans = Geist({

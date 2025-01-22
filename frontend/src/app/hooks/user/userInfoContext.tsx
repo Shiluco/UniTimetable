@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useState } from "react";
 import { User } from "@/types/user";
 
@@ -5,23 +7,28 @@ import { User } from "@/types/user";
 type UserInfoContextType = {
   userInfo: User | null; // 初期値は null
   setUserInfo: React.Dispatch<React.SetStateAction<User | null>>;
+  usersInfo: User[] | null; // 初期値は null
+  setUsersInfo: React.Dispatch<React.SetStateAction<User[] | null>>;
 };
 
 // デフォルト値を設定して Context を作成
-const UserContext = createContext<UserInfoContextType>({
+const UserInfoContext = createContext<UserInfoContextType>({
   userInfo: null,
   setUserInfo: () => {}, // 初期値として空の関数
+  usersInfo: null,
+  setUsersInfo: () => {}, // 初期値として空の関数
 });
 
 // Provider の実装
 export const UserInfoProvider = ({ children }: { children: React.ReactNode }) => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [usersInfo, setUsersInfo] = useState<User[] | null>(null);
 
   return (
-    <UserContext.Provider value={{ userInfo, setUserInfo }}>
+    <UserInfoContext.Provider value={{ userInfo, setUserInfo, usersInfo, setUsersInfo }}>
       {children}
-    </UserContext.Provider>
+    </UserInfoContext.Provider>
   );
 };
 
-export default UserContext;
+export default UserInfoContext;

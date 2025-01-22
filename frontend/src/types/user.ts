@@ -6,4 +6,5 @@ export type User = {
   department_id: number;
   major_id: number;
   grade: number;
+  id: number;
 }
