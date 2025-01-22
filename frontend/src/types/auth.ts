@@ -1,20 +1,14 @@
+import { User } from "./user";
+
 export type LoginResponse = {
-  status: string;
-  message: string;
-  error_detail: string;
+  status: string; // レスポンスステータス (例: success, error)
+  message: string; // ユーザーへの通知メッセージ
+  error_detail?: string; // オプショナル: エラーの詳細情報（エラー時のみ）
   data: {
-    accessToken: string;
-    refreshToken: string;
+    accessToken: string; // アクセストークン
+    refreshToken: string; // リフレッシュトークン
     token_type: string; // 例: Bearer
     expires_in: number; // トークンの有効期限（秒）
-    error_detail: string;
-    user: {
-      user_id: number;
-      username: string;
-      email: string;
-      department_id: number;
-      major_id: number;
-      grade: number;
-    };
+    user: User; // ユーザー情報
   };
 };

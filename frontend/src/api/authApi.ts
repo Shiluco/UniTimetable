@@ -11,14 +11,6 @@ export const login = async (
     headers: { "Content-Type": "application/json" },
     authRequired: false,
   });
-
-  // アクセストークンをローカルストレージに保存
-  localStorage.setItem("authToken", response.data.accessToken);
-
   return response;
 };
 
-export const logout = async () => {
-  // ローカルストレージのトークンを削除
-  localStorage.removeItem("authToken");
-};

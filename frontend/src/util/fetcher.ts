@@ -20,8 +20,13 @@ export const Fetcher = async <T>(
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}), // トークンがある場合のみ追加
   };
+  
+
+  console.log("Request URL:", url);
+  console.log("Request Options:", { ...options, headers });
 
   const response = await fetch(url, { ...options, headers });
+
 
   if (response.status === 401) {
     throw new Error("Unauthorized: Please log in.");
