@@ -5,20 +5,23 @@ import (
     "strconv"
 
     "github.com/gin-gonic/gin"
-    "github.com/Shiluco/UniTimetable/backend/ent"
+    "github.com/Shiluco/UniTimetable/backend/internal/domain/model"
+    "github.com/Shiluco/UniTimetable/backend/internal/domain/service"
 )
 
 type UserHandler struct {
-    client *ent.Client
+    service service.UserService
 }
 
-func NewUserHandler(client *ent.Client) *UserHandler {
-    return &UserHandler{client: client}
+func NewUserHandler(service service.UserService) *UserHandler {
+    return &UserHandler{
+        service: service,
+    }
 }
 
 // GetUsers ユーザー一覧を取得
 func (h *UserHandler) GetUsers(c *gin.Context) {
-    users, err := h.client.User.Query().All(c.Request.Context())
+    users, err := h.service.ListUsers(c.Request.Context())
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -34,9 +37,9 @@ func (h *UserHandler) GetUser(c *gin.Context) {
         return
     }
 
-    user, err := h.client.User.Get(c.Request.Context(), id)
+    user, err := h.service.GetUser(c.Request.Context(), id)
     if err != nil {
-        if ent.IsNotFound(err) {
+        if err == model.ErrUserNotFound {
             c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
             return
         }
@@ -49,21 +52,13 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 
 // CreateUser 新規ユーザーを作成
 func (h *UserHandler) CreateUser(c *gin.Context) {
-    var input struct {
-        Name  string `json:"name" binding:"required"`
-        Email string `json:"email" binding:"required,email"`
-    }
-
-    if err := c.ShouldBindJSON(&input); err != nil {
+    var req model.CreateUserRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    user, err := h.client.User.Create().
-        SetName(input.Name).
-        SetEmail(input.Email).
-        Save(c.Request.Context())
-
+    user, err := h.service.CreateUser(c.Request.Context(), req)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -80,23 +75,15 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
         return
     }
 
-    var input struct {
-        Name  string `json:"name" binding:"required"`
-        Email string `json:"email" binding:"required,email"`
-    }
-
-    if err := c.ShouldBindJSON(&input); err != nil {
+    var req model.UpdateUserRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    user, err := h.client.User.UpdateOneID(id).
-        SetName(input.Name).
-        SetEmail(input.Email).
-        Save(c.Request.Context())
-
+    user, err := h.service.UpdateUser(c.Request.Context(), id, req)
     if err != nil {
-        if ent.IsNotFound(err) {
+        if err == model.ErrUserNotFound {
             c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
             return
         }
@@ -115,9 +102,9 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
         return
     }
 
-    err = h.client.User.DeleteOneID(id).Exec(c.Request.Context())
+    err = h.service.DeleteUser(c.Request.Context(), id)
     if err != nil {
-        if ent.IsNotFound(err) {
+        if err == model.ErrUserNotFound {
             c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
             return
         }

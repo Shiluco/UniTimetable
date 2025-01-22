@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gin-gonic/gin"
+	// "github.com/gin-gonic/gin"
 	"github.com/Shiluco/UniTimetable/backend/internal/api"
-	"github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
+	// "github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
 	"github.com/Shiluco/UniTimetable/backend/config"
 	"github.com/Shiluco/UniTimetable/backend/pkg/logger"
 	"github.com/Shiluco/UniTimetable/backend/ent"
@@ -35,16 +35,8 @@ func main() {
 		log.Fatalf("スキーマの作成に失敗しました: %v", err)
 	}
 
-	// Ginのエンジンを作成
-	r := gin.Default()
-
-	// ミドルウェアの設定
-	r.Use(middleware.Logger())
-	// Auth middlewareは現時点では必要ないのでコメントアウト
-	// r.Use(middleware.Auth())
-
 	// APIエンドポイントの設定
-	api.SetupRoutes(r, client)
+	r := api.SetupRoutes(client)
 
 	// サーバーを起動
 	port := config.Config.Port
