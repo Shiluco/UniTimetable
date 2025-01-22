@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useUser } from "@/app/hooks/user/useUser";
 
 const UserManagementPage = () => {
-  const { usersInfo, getUsers, createUser, updateUser, deleteUser } =
+  const { usersInfo, getUsers, createUser, deleteUser } =
     useUser();
 
   useEffect(() => {
