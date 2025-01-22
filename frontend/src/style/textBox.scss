@@ -12,6 +12,7 @@
   border-radius: 10px;
   font-size: 16px;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
@@ -28,6 +29,6 @@
   }
 
   &-reply{
-    height: 5rem;
+    height: 7rem;
   }
 }
