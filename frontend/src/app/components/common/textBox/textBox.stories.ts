@@ -15,6 +15,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    placeholder: "検索ワードを入力",
+    placeholder: "テキストを入力",
+    type: "search",
   },
 };
