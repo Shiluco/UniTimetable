@@ -34,14 +34,14 @@ func SetupRoutes(client *ent.Client) *gin.Engine {
         users := api.Group("/users")
         users.Use(middleware.AuthMiddleware())
         {
-            users.GET("", userHandler.GetUsers)
-            users.GET("/:id", userHandler.GetUser)
-            users.PUT("/:id", userHandler.UpdateUser)
-            users.DELETE("/:id", userHandler.DeleteUser)
-            users.GET("/by-email", userHandler.GetUserByEmail)
-            users.GET("/by-name", userHandler.GetUserByName)
-            users.GET("/search/name", userHandler.SearchUsersByName)
-            users.GET("/search/email", userHandler.SearchUsersByEmail)
+            // コレクション操作
+            users.GET("", userHandler.GetUsers)         // 一覧取得
+            users.GET("/search", userHandler.SearchUsers) // 検索（クエリパラメータで検索タイプを指定）
+
+            // 個別リソース操作
+            users.GET("/:id", userHandler.GetUser)     // 個別取得
+            users.PUT("/:id", userHandler.UpdateUser)  // 更新
+            users.DELETE("/:id", userHandler.DeleteUser) // 削除
         }
     }
 

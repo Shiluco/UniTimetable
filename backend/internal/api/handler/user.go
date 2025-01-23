@@ -186,3 +186,31 @@ func (h *UserHandler) GetUserByEmail(c *gin.Context) {
 
     c.JSON(http.StatusOK, user)
 }
+
+// SearchUsers 統合された検索ハンドラー
+func (h *UserHandler) SearchUsers(c *gin.Context) {
+    searchType := c.Query("type")
+    query := c.Query("q")
+    page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+    pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+
+    var result *model.SearchResponse
+    var err error
+
+    switch searchType {
+    case "email":
+        result, err = h.service.SearchUsersByEmail(c.Request.Context(), query, page, pageSize)
+    case "name":
+        result, err = h.service.SearchUsersByName(c.Request.Context(), query, page, pageSize)
+    default:
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid search type"})
+        return
+    }
+
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, result)
+}
