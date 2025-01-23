@@ -12,7 +12,7 @@ interface UploadButtonProps {
 export const UploadButton = (props: UploadButtonProps) => {
   const { icon, label, className, onClick } = props;
   return (
-    <div className={`container ${className}`} onClick={onClick}>
+    <div className={`uploadContainer ${className}`} onClick={onClick}>
       <Image src={icon} alt="UploadIcon" width={25} height={25} />
       <Text variant="body1" bold={false}>
         {label}
