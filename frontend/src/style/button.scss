@@ -22,7 +22,7 @@
   }
 
   &:disabled {
-    background-color: #6c757d;
+    background-color: var.$common-background-color;
     cursor: not-allowed;
   }
   
