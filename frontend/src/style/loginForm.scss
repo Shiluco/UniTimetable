@@ -1,0 +1,30 @@
+@use 'variables' as var;
+
+.loginForm {
+  width: 100%;
+  padding: 30px;
+  background: var.$common-background-color;
+  height: fit-content;
+  box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.flexWrap{
+  margin: auto;
+  max-width: 90%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.loginForm__button {
+  margin-top: 20px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.w-100 {
+  width: 100%;
+}
