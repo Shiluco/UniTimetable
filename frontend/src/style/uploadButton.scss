@@ -1,0 +1,16 @@
+@use 'variables' as var;
+
+.container {
+  padding: 25px;
+  border-radius: 10px;
+  background-color: var.$common-background-color;
+  display: flex;
+  justify-content: space-around;
+  cursor: pointer;
+  border: 1px solid #000;
+
+  &:hover {
+    border: none;
+    box-shadow: 0 0 0 2px #009866;
+  }
+}
