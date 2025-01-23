@@ -6,8 +6,17 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Department is the predicate function for department builders.
+type Department func(*sql.Selector)
+
+// Major is the predicate function for major builders.
+type Major func(*sql.Selector)
+
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)
+
+// Schedule is the predicate function for schedule builders.
+type Schedule func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

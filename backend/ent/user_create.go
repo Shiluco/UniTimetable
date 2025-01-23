@@ -10,6 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Shiluco/UniTimetable/backend/ent/department"
+	"github.com/Shiluco/UniTimetable/backend/ent/major"
+	"github.com/Shiluco/UniTimetable/backend/ent/post"
+	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
@@ -35,6 +39,62 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 // SetPassword sets the "password" field.
 func (uc *UserCreate) SetPassword(s string) *UserCreate {
 	uc.mutation.SetPassword(s)
+	return uc
+}
+
+// SetDepartmentID sets the "department_id" field.
+func (uc *UserCreate) SetDepartmentID(i int) *UserCreate {
+	uc.mutation.SetDepartmentID(i)
+	return uc
+}
+
+// SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableDepartmentID(i *int) *UserCreate {
+	if i != nil {
+		uc.SetDepartmentID(*i)
+	}
+	return uc
+}
+
+// SetMajorID sets the "major_id" field.
+func (uc *UserCreate) SetMajorID(i int) *UserCreate {
+	uc.mutation.SetMajorID(i)
+	return uc
+}
+
+// SetNillableMajorID sets the "major_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableMajorID(i *int) *UserCreate {
+	if i != nil {
+		uc.SetMajorID(*i)
+	}
+	return uc
+}
+
+// SetComment sets the "comment" field.
+func (uc *UserCreate) SetComment(s string) *UserCreate {
+	uc.mutation.SetComment(s)
+	return uc
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (uc *UserCreate) SetNillableComment(s *string) *UserCreate {
+	if s != nil {
+		uc.SetComment(*s)
+	}
+	return uc
+}
+
+// SetGrade sets the "grade" field.
+func (uc *UserCreate) SetGrade(i int8) *UserCreate {
+	uc.mutation.SetGrade(i)
+	return uc
+}
+
+// SetNillableGrade sets the "grade" field if the given value is not nil.
+func (uc *UserCreate) SetNillableGrade(i *int8) *UserCreate {
+	if i != nil {
+		uc.SetGrade(*i)
+	}
 	return uc
 }
 
@@ -70,6 +130,46 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 func (uc *UserCreate) SetID(i int) *UserCreate {
 	uc.mutation.SetID(i)
 	return uc
+}
+
+// SetDepartment sets the "department" edge to the Department entity.
+func (uc *UserCreate) SetDepartment(d *Department) *UserCreate {
+	return uc.SetDepartmentID(d.ID)
+}
+
+// SetMajor sets the "major" edge to the Major entity.
+func (uc *UserCreate) SetMajor(m *Major) *UserCreate {
+	return uc.SetMajorID(m.ID)
+}
+
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (uc *UserCreate) AddPostIDs(ids ...int) *UserCreate {
+	uc.mutation.AddPostIDs(ids...)
+	return uc
+}
+
+// AddPosts adds the "posts" edges to the Post entity.
+func (uc *UserCreate) AddPosts(p ...*Post) *UserCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddPostIDs(ids...)
+}
+
+// AddScheduleIDs adds the "schedules" edge to the Schedule entity by IDs.
+func (uc *UserCreate) AddScheduleIDs(ids ...int) *UserCreate {
+	uc.mutation.AddScheduleIDs(ids...)
+	return uc
+}
+
+// AddSchedules adds the "schedules" edges to the Schedule entity.
+func (uc *UserCreate) AddSchedules(s ...*Schedule) *UserCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uc.AddScheduleIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -143,16 +243,16 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uc.mutation.Grade(); ok {
+		if err := user.GradeValidator(v); err != nil {
+			return &ValidationError{Name: "grade", err: fmt.Errorf(`ent: validator failed for field "User.grade": %w`, err)}
+		}
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
 	if _, ok := uc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "User.updated_at"`)}
-	}
-	if v, ok := uc.mutation.ID(); ok {
-		if err := user.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
-		}
 	}
 	return nil
 }
@@ -198,6 +298,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
+	if value, ok := uc.mutation.Comment(); ok {
+		_spec.SetField(user.FieldComment, field.TypeString, value)
+		_node.Comment = value
+	}
+	if value, ok := uc.mutation.Grade(); ok {
+		_spec.SetField(user.FieldGrade, field.TypeInt8, value)
+		_node.Grade = value
+	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -205,6 +313,72 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := uc.mutation.DepartmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.DepartmentTable,
+			Columns: []string{user.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.DepartmentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.MajorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.MajorTable,
+			Columns: []string{user.MajorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(major.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.MajorID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.PostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.SchedulesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

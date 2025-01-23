@@ -11,7 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/Shiluco/UniTimetable/backend/ent/department"
+	"github.com/Shiluco/UniTimetable/backend/ent/major"
+	"github.com/Shiluco/UniTimetable/backend/ent/post"
 	"github.com/Shiluco/UniTimetable/backend/ent/predicate"
+	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
@@ -70,15 +74,196 @@ func (uu *UserUpdate) SetNillablePassword(s *string) *UserUpdate {
 	return uu
 }
 
+// SetDepartmentID sets the "department_id" field.
+func (uu *UserUpdate) SetDepartmentID(i int) *UserUpdate {
+	uu.mutation.SetDepartmentID(i)
+	return uu
+}
+
+// SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableDepartmentID(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetDepartmentID(*i)
+	}
+	return uu
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (uu *UserUpdate) ClearDepartmentID() *UserUpdate {
+	uu.mutation.ClearDepartmentID()
+	return uu
+}
+
+// SetMajorID sets the "major_id" field.
+func (uu *UserUpdate) SetMajorID(i int) *UserUpdate {
+	uu.mutation.SetMajorID(i)
+	return uu
+}
+
+// SetNillableMajorID sets the "major_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableMajorID(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetMajorID(*i)
+	}
+	return uu
+}
+
+// ClearMajorID clears the value of the "major_id" field.
+func (uu *UserUpdate) ClearMajorID() *UserUpdate {
+	uu.mutation.ClearMajorID()
+	return uu
+}
+
+// SetComment sets the "comment" field.
+func (uu *UserUpdate) SetComment(s string) *UserUpdate {
+	uu.mutation.SetComment(s)
+	return uu
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableComment(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetComment(*s)
+	}
+	return uu
+}
+
+// ClearComment clears the value of the "comment" field.
+func (uu *UserUpdate) ClearComment() *UserUpdate {
+	uu.mutation.ClearComment()
+	return uu
+}
+
+// SetGrade sets the "grade" field.
+func (uu *UserUpdate) SetGrade(i int8) *UserUpdate {
+	uu.mutation.ResetGrade()
+	uu.mutation.SetGrade(i)
+	return uu
+}
+
+// SetNillableGrade sets the "grade" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableGrade(i *int8) *UserUpdate {
+	if i != nil {
+		uu.SetGrade(*i)
+	}
+	return uu
+}
+
+// AddGrade adds i to the "grade" field.
+func (uu *UserUpdate) AddGrade(i int8) *UserUpdate {
+	uu.mutation.AddGrade(i)
+	return uu
+}
+
+// ClearGrade clears the value of the "grade" field.
+func (uu *UserUpdate) ClearGrade() *UserUpdate {
+	uu.mutation.ClearGrade()
+	return uu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdatedAt(t)
 	return uu
 }
 
+// SetDepartment sets the "department" edge to the Department entity.
+func (uu *UserUpdate) SetDepartment(d *Department) *UserUpdate {
+	return uu.SetDepartmentID(d.ID)
+}
+
+// SetMajor sets the "major" edge to the Major entity.
+func (uu *UserUpdate) SetMajor(m *Major) *UserUpdate {
+	return uu.SetMajorID(m.ID)
+}
+
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (uu *UserUpdate) AddPostIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddPostIDs(ids...)
+	return uu
+}
+
+// AddPosts adds the "posts" edges to the Post entity.
+func (uu *UserUpdate) AddPosts(p ...*Post) *UserUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddPostIDs(ids...)
+}
+
+// AddScheduleIDs adds the "schedules" edge to the Schedule entity by IDs.
+func (uu *UserUpdate) AddScheduleIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddScheduleIDs(ids...)
+	return uu
+}
+
+// AddSchedules adds the "schedules" edges to the Schedule entity.
+func (uu *UserUpdate) AddSchedules(s ...*Schedule) *UserUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.AddScheduleIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearDepartment clears the "department" edge to the Department entity.
+func (uu *UserUpdate) ClearDepartment() *UserUpdate {
+	uu.mutation.ClearDepartment()
+	return uu
+}
+
+// ClearMajor clears the "major" edge to the Major entity.
+func (uu *UserUpdate) ClearMajor() *UserUpdate {
+	uu.mutation.ClearMajor()
+	return uu
+}
+
+// ClearPosts clears all "posts" edges to the Post entity.
+func (uu *UserUpdate) ClearPosts() *UserUpdate {
+	uu.mutation.ClearPosts()
+	return uu
+}
+
+// RemovePostIDs removes the "posts" edge to Post entities by IDs.
+func (uu *UserUpdate) RemovePostIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemovePostIDs(ids...)
+	return uu
+}
+
+// RemovePosts removes "posts" edges to Post entities.
+func (uu *UserUpdate) RemovePosts(p ...*Post) *UserUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemovePostIDs(ids...)
+}
+
+// ClearSchedules clears all "schedules" edges to the Schedule entity.
+func (uu *UserUpdate) ClearSchedules() *UserUpdate {
+	uu.mutation.ClearSchedules()
+	return uu
+}
+
+// RemoveScheduleIDs removes the "schedules" edge to Schedule entities by IDs.
+func (uu *UserUpdate) RemoveScheduleIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveScheduleIDs(ids...)
+	return uu
+}
+
+// RemoveSchedules removes "schedules" edges to Schedule entities.
+func (uu *UserUpdate) RemoveSchedules(s ...*Schedule) *UserUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.RemoveScheduleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -134,6 +319,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Grade(); ok {
+		if err := user.GradeValidator(v); err != nil {
+			return &ValidationError{Name: "grade", err: fmt.Errorf(`ent: validator failed for field "User.grade": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -158,8 +348,171 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.Comment(); ok {
+		_spec.SetField(user.FieldComment, field.TypeString, value)
+	}
+	if uu.mutation.CommentCleared() {
+		_spec.ClearField(user.FieldComment, field.TypeString)
+	}
+	if value, ok := uu.mutation.Grade(); ok {
+		_spec.SetField(user.FieldGrade, field.TypeInt8, value)
+	}
+	if value, ok := uu.mutation.AddedGrade(); ok {
+		_spec.AddField(user.FieldGrade, field.TypeInt8, value)
+	}
+	if uu.mutation.GradeCleared() {
+		_spec.ClearField(user.FieldGrade, field.TypeInt8)
+	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if uu.mutation.DepartmentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.DepartmentTable,
+			Columns: []string{user.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.DepartmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.DepartmentTable,
+			Columns: []string{user.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.MajorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.MajorTable,
+			Columns: []string{user.MajorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(major.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.MajorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.MajorTable,
+			Columns: []string{user.MajorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(major.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedPostsIDs(); len(nodes) > 0 && !uu.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.PostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.SchedulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedSchedulesIDs(); len(nodes) > 0 && !uu.mutation.SchedulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.SchedulesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -223,15 +576,196 @@ func (uuo *UserUpdateOne) SetNillablePassword(s *string) *UserUpdateOne {
 	return uuo
 }
 
+// SetDepartmentID sets the "department_id" field.
+func (uuo *UserUpdateOne) SetDepartmentID(i int) *UserUpdateOne {
+	uuo.mutation.SetDepartmentID(i)
+	return uuo
+}
+
+// SetNillableDepartmentID sets the "department_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableDepartmentID(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetDepartmentID(*i)
+	}
+	return uuo
+}
+
+// ClearDepartmentID clears the value of the "department_id" field.
+func (uuo *UserUpdateOne) ClearDepartmentID() *UserUpdateOne {
+	uuo.mutation.ClearDepartmentID()
+	return uuo
+}
+
+// SetMajorID sets the "major_id" field.
+func (uuo *UserUpdateOne) SetMajorID(i int) *UserUpdateOne {
+	uuo.mutation.SetMajorID(i)
+	return uuo
+}
+
+// SetNillableMajorID sets the "major_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableMajorID(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetMajorID(*i)
+	}
+	return uuo
+}
+
+// ClearMajorID clears the value of the "major_id" field.
+func (uuo *UserUpdateOne) ClearMajorID() *UserUpdateOne {
+	uuo.mutation.ClearMajorID()
+	return uuo
+}
+
+// SetComment sets the "comment" field.
+func (uuo *UserUpdateOne) SetComment(s string) *UserUpdateOne {
+	uuo.mutation.SetComment(s)
+	return uuo
+}
+
+// SetNillableComment sets the "comment" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableComment(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetComment(*s)
+	}
+	return uuo
+}
+
+// ClearComment clears the value of the "comment" field.
+func (uuo *UserUpdateOne) ClearComment() *UserUpdateOne {
+	uuo.mutation.ClearComment()
+	return uuo
+}
+
+// SetGrade sets the "grade" field.
+func (uuo *UserUpdateOne) SetGrade(i int8) *UserUpdateOne {
+	uuo.mutation.ResetGrade()
+	uuo.mutation.SetGrade(i)
+	return uuo
+}
+
+// SetNillableGrade sets the "grade" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableGrade(i *int8) *UserUpdateOne {
+	if i != nil {
+		uuo.SetGrade(*i)
+	}
+	return uuo
+}
+
+// AddGrade adds i to the "grade" field.
+func (uuo *UserUpdateOne) AddGrade(i int8) *UserUpdateOne {
+	uuo.mutation.AddGrade(i)
+	return uuo
+}
+
+// ClearGrade clears the value of the "grade" field.
+func (uuo *UserUpdateOne) ClearGrade() *UserUpdateOne {
+	uuo.mutation.ClearGrade()
+	return uuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetUpdatedAt(t)
 	return uuo
 }
 
+// SetDepartment sets the "department" edge to the Department entity.
+func (uuo *UserUpdateOne) SetDepartment(d *Department) *UserUpdateOne {
+	return uuo.SetDepartmentID(d.ID)
+}
+
+// SetMajor sets the "major" edge to the Major entity.
+func (uuo *UserUpdateOne) SetMajor(m *Major) *UserUpdateOne {
+	return uuo.SetMajorID(m.ID)
+}
+
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (uuo *UserUpdateOne) AddPostIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddPostIDs(ids...)
+	return uuo
+}
+
+// AddPosts adds the "posts" edges to the Post entity.
+func (uuo *UserUpdateOne) AddPosts(p ...*Post) *UserUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddPostIDs(ids...)
+}
+
+// AddScheduleIDs adds the "schedules" edge to the Schedule entity by IDs.
+func (uuo *UserUpdateOne) AddScheduleIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddScheduleIDs(ids...)
+	return uuo
+}
+
+// AddSchedules adds the "schedules" edges to the Schedule entity.
+func (uuo *UserUpdateOne) AddSchedules(s ...*Schedule) *UserUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.AddScheduleIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearDepartment clears the "department" edge to the Department entity.
+func (uuo *UserUpdateOne) ClearDepartment() *UserUpdateOne {
+	uuo.mutation.ClearDepartment()
+	return uuo
+}
+
+// ClearMajor clears the "major" edge to the Major entity.
+func (uuo *UserUpdateOne) ClearMajor() *UserUpdateOne {
+	uuo.mutation.ClearMajor()
+	return uuo
+}
+
+// ClearPosts clears all "posts" edges to the Post entity.
+func (uuo *UserUpdateOne) ClearPosts() *UserUpdateOne {
+	uuo.mutation.ClearPosts()
+	return uuo
+}
+
+// RemovePostIDs removes the "posts" edge to Post entities by IDs.
+func (uuo *UserUpdateOne) RemovePostIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemovePostIDs(ids...)
+	return uuo
+}
+
+// RemovePosts removes "posts" edges to Post entities.
+func (uuo *UserUpdateOne) RemovePosts(p ...*Post) *UserUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemovePostIDs(ids...)
+}
+
+// ClearSchedules clears all "schedules" edges to the Schedule entity.
+func (uuo *UserUpdateOne) ClearSchedules() *UserUpdateOne {
+	uuo.mutation.ClearSchedules()
+	return uuo
+}
+
+// RemoveScheduleIDs removes the "schedules" edge to Schedule entities by IDs.
+func (uuo *UserUpdateOne) RemoveScheduleIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveScheduleIDs(ids...)
+	return uuo
+}
+
+// RemoveSchedules removes "schedules" edges to Schedule entities.
+func (uuo *UserUpdateOne) RemoveSchedules(s ...*Schedule) *UserUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.RemoveScheduleIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -300,6 +834,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Grade(); ok {
+		if err := user.GradeValidator(v); err != nil {
+			return &ValidationError{Name: "grade", err: fmt.Errorf(`ent: validator failed for field "User.grade": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -341,8 +880,171 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
 	}
+	if value, ok := uuo.mutation.Comment(); ok {
+		_spec.SetField(user.FieldComment, field.TypeString, value)
+	}
+	if uuo.mutation.CommentCleared() {
+		_spec.ClearField(user.FieldComment, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Grade(); ok {
+		_spec.SetField(user.FieldGrade, field.TypeInt8, value)
+	}
+	if value, ok := uuo.mutation.AddedGrade(); ok {
+		_spec.AddField(user.FieldGrade, field.TypeInt8, value)
+	}
+	if uuo.mutation.GradeCleared() {
+		_spec.ClearField(user.FieldGrade, field.TypeInt8)
+	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if uuo.mutation.DepartmentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.DepartmentTable,
+			Columns: []string{user.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.DepartmentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.DepartmentTable,
+			Columns: []string{user.DepartmentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(department.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.MajorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.MajorTable,
+			Columns: []string{user.MajorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(major.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.MajorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.MajorTable,
+			Columns: []string{user.MajorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(major.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedPostsIDs(); len(nodes) > 0 && !uuo.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.PostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PostsTable,
+			Columns: []string{user.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.SchedulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedSchedulesIDs(); len(nodes) > 0 && !uuo.mutation.SchedulesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.SchedulesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SchedulesTable,
+			Columns: []string{user.SchedulesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

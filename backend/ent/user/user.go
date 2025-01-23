@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -19,12 +20,56 @@ const (
 	FieldEmail = "email"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
+	// FieldDepartmentID holds the string denoting the department_id field in the database.
+	FieldDepartmentID = "department_id"
+	// FieldMajorID holds the string denoting the major_id field in the database.
+	FieldMajorID = "major_id"
+	// FieldComment holds the string denoting the comment field in the database.
+	FieldComment = "comment"
+	// FieldGrade holds the string denoting the grade field in the database.
+	FieldGrade = "grade"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeDepartment holds the string denoting the department edge name in mutations.
+	EdgeDepartment = "department"
+	// EdgeMajor holds the string denoting the major edge name in mutations.
+	EdgeMajor = "major"
+	// EdgePosts holds the string denoting the posts edge name in mutations.
+	EdgePosts = "posts"
+	// EdgeSchedules holds the string denoting the schedules edge name in mutations.
+	EdgeSchedules = "schedules"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// DepartmentTable is the table that holds the department relation/edge.
+	DepartmentTable = "users"
+	// DepartmentInverseTable is the table name for the Department entity.
+	// It exists in this package in order to avoid circular dependency with the "department" package.
+	DepartmentInverseTable = "departments"
+	// DepartmentColumn is the table column denoting the department relation/edge.
+	DepartmentColumn = "department_id"
+	// MajorTable is the table that holds the major relation/edge.
+	MajorTable = "users"
+	// MajorInverseTable is the table name for the Major entity.
+	// It exists in this package in order to avoid circular dependency with the "major" package.
+	MajorInverseTable = "majors"
+	// MajorColumn is the table column denoting the major relation/edge.
+	MajorColumn = "major_id"
+	// PostsTable is the table that holds the posts relation/edge.
+	PostsTable = "posts"
+	// PostsInverseTable is the table name for the Post entity.
+	// It exists in this package in order to avoid circular dependency with the "post" package.
+	PostsInverseTable = "posts"
+	// PostsColumn is the table column denoting the posts relation/edge.
+	PostsColumn = "user_id"
+	// SchedulesTable is the table that holds the schedules relation/edge.
+	SchedulesTable = "schedules"
+	// SchedulesInverseTable is the table name for the Schedule entity.
+	// It exists in this package in order to avoid circular dependency with the "schedule" package.
+	SchedulesInverseTable = "schedules"
+	// SchedulesColumn is the table column denoting the schedules relation/edge.
+	SchedulesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -33,6 +78,10 @@ var Columns = []string{
 	FieldName,
 	FieldEmail,
 	FieldPassword,
+	FieldDepartmentID,
+	FieldMajorID,
+	FieldComment,
+	FieldGrade,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -54,14 +103,14 @@ var (
 	EmailValidator func(string) error
 	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	PasswordValidator func(string) error
+	// GradeValidator is a validator for the "grade" field. It is called by the builders before save.
+	GradeValidator func(int8) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(int) error
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -87,6 +136,26 @@ func ByPassword(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
+// ByDepartmentID orders the results by the department_id field.
+func ByDepartmentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepartmentID, opts...).ToFunc()
+}
+
+// ByMajorID orders the results by the major_id field.
+func ByMajorID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMajorID, opts...).ToFunc()
+}
+
+// ByComment orders the results by the comment field.
+func ByComment(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldComment, opts...).ToFunc()
+}
+
+// ByGrade orders the results by the grade field.
+func ByGrade(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGrade, opts...).ToFunc()
+}
+
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
@@ -95,4 +164,74 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDepartmentField orders the results by department field.
+func ByDepartmentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDepartmentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByMajorField orders the results by major field.
+func ByMajorField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMajorStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByPostsCount orders the results by posts count.
+func ByPostsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPostsStep(), opts...)
+	}
+}
+
+// ByPosts orders the results by posts terms.
+func ByPosts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPostsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySchedulesCount orders the results by schedules count.
+func BySchedulesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSchedulesStep(), opts...)
+	}
+}
+
+// BySchedules orders the results by schedules terms.
+func BySchedules(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSchedulesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newDepartmentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DepartmentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DepartmentTable, DepartmentColumn),
+	)
+}
+func newMajorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MajorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, MajorTable, MajorColumn),
+	)
+}
+func newPostsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PostsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PostsTable, PostsColumn),
+	)
+}
+func newSchedulesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SchedulesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SchedulesTable, SchedulesColumn),
+	)
 }

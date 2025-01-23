@@ -4,11 +4,15 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
+	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
+	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
 // PostCreate is the builder for creating a Post entity.
@@ -18,6 +22,124 @@ type PostCreate struct {
 	hooks    []Hook
 }
 
+// SetParentPostID sets the "parent_post_id" field.
+func (pc *PostCreate) SetParentPostID(i int) *PostCreate {
+	pc.mutation.SetParentPostID(i)
+	return pc
+}
+
+// SetNillableParentPostID sets the "parent_post_id" field if the given value is not nil.
+func (pc *PostCreate) SetNillableParentPostID(i *int) *PostCreate {
+	if i != nil {
+		pc.SetParentPostID(*i)
+	}
+	return pc
+}
+
+// SetUserID sets the "user_id" field.
+func (pc *PostCreate) SetUserID(i int) *PostCreate {
+	pc.mutation.SetUserID(i)
+	return pc
+}
+
+// SetContent sets the "content" field.
+func (pc *PostCreate) SetContent(s string) *PostCreate {
+	pc.mutation.SetContent(s)
+	return pc
+}
+
+// SetScheduleID sets the "schedule_id" field.
+func (pc *PostCreate) SetScheduleID(i int) *PostCreate {
+	pc.mutation.SetScheduleID(i)
+	return pc
+}
+
+// SetNillableScheduleID sets the "schedule_id" field if the given value is not nil.
+func (pc *PostCreate) SetNillableScheduleID(i *int) *PostCreate {
+	if i != nil {
+		pc.SetScheduleID(*i)
+	}
+	return pc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
+	pc.mutation.SetCreatedAt(t)
+	return pc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pc *PostCreate) SetNillableCreatedAt(t *time.Time) *PostCreate {
+	if t != nil {
+		pc.SetCreatedAt(*t)
+	}
+	return pc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
+	pc.mutation.SetUpdatedAt(t)
+	return pc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PostCreate) SetNillableUpdatedAt(t *time.Time) *PostCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
+	return pc
+}
+
+// SetID sets the "id" field.
+func (pc *PostCreate) SetID(i int) *PostCreate {
+	pc.mutation.SetID(i)
+	return pc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (pc *PostCreate) SetUser(u *User) *PostCreate {
+	return pc.SetUserID(u.ID)
+}
+
+// SetSchedule sets the "schedule" edge to the Schedule entity.
+func (pc *PostCreate) SetSchedule(s *Schedule) *PostCreate {
+	return pc.SetScheduleID(s.ID)
+}
+
+// SetParentID sets the "parent" edge to the Post entity by ID.
+func (pc *PostCreate) SetParentID(id int) *PostCreate {
+	pc.mutation.SetParentID(id)
+	return pc
+}
+
+// SetNillableParentID sets the "parent" edge to the Post entity by ID if the given value is not nil.
+func (pc *PostCreate) SetNillableParentID(id *int) *PostCreate {
+	if id != nil {
+		pc = pc.SetParentID(*id)
+	}
+	return pc
+}
+
+// SetParent sets the "parent" edge to the Post entity.
+func (pc *PostCreate) SetParent(p *Post) *PostCreate {
+	return pc.SetParentID(p.ID)
+}
+
+// AddReplyIDs adds the "replies" edge to the Post entity by IDs.
+func (pc *PostCreate) AddReplyIDs(ids ...int) *PostCreate {
+	pc.mutation.AddReplyIDs(ids...)
+	return pc
+}
+
+// AddReplies adds the "replies" edges to the Post entity.
+func (pc *PostCreate) AddReplies(p ...*Post) *PostCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddReplyIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (pc *PostCreate) Mutation() *PostMutation {
 	return pc.mutation
@@ -25,6 +147,7 @@ func (pc *PostCreate) Mutation() *PostMutation {
 
 // Save creates the Post in the database.
 func (pc *PostCreate) Save(ctx context.Context) (*Post, error) {
+	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -50,8 +173,40 @@ func (pc *PostCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pc *PostCreate) defaults() {
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		v := post.DefaultCreatedAt()
+		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := post.DefaultUpdatedAt()
+		pc.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *PostCreate) check() error {
+	if _, ok := pc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Post.user_id"`)}
+	}
+	if _, ok := pc.mutation.Content(); !ok {
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Post.content"`)}
+	}
+	if v, ok := pc.mutation.Content(); ok {
+		if err := post.ContentValidator(v); err != nil {
+			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Post.content": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Post.created_at"`)}
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Post.updated_at"`)}
+	}
+	if len(pc.mutation.UserIDs()) == 0 {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Post.user"`)}
+	}
 	return nil
 }
 
@@ -66,8 +221,10 @@ func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	pc.mutation.id = &_node.ID
 	pc.mutation.done = true
 	return _node, nil
@@ -78,6 +235,89 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_node = &Post{config: pc.config}
 		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	)
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := pc.mutation.Content(); ok {
+		_spec.SetField(post.FieldContent, field.TypeString, value)
+		_node.Content = value
+	}
+	if value, ok := pc.mutation.CreatedAt(); ok {
+		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := pc.mutation.UpdatedAt(); ok {
+		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if nodes := pc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.UserTable,
+			Columns: []string{post.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.UserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ScheduleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ScheduleTable,
+			Columns: []string{post.ScheduleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ScheduleID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ParentTable,
+			Columns: []string{post.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentPostID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.RepliesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -99,6 +339,7 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PostMutation)
 				if !ok {
@@ -125,7 +366,7 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}

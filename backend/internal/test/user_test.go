@@ -7,7 +7,6 @@ import (
 
     "github.com/stretchr/testify/assert"
     "github.com/Shiluco/UniTimetable/backend/ent"
-    "github.com/Shiluco/UniTimetable/backend/internal/domain/model"
     _ "github.com/mattn/go-sqlite3"
 )
 

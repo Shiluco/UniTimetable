@@ -12,7 +12,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/Shiluco/UniTimetable/backend/ent/department"
+	"github.com/Shiluco/UniTimetable/backend/ent/major"
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
+	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
@@ -74,8 +77,11 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			post.Table: post.ValidColumn,
-			user.Table: user.ValidColumn,
+			department.Table: department.ValidColumn,
+			major.Table:      major.ValidColumn,
+			post.Table:       post.ValidColumn,
+			schedule.Table:   schedule.ValidColumn,
+			user.Table:       user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

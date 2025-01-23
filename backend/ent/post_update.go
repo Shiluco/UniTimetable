@@ -6,12 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
 	"github.com/Shiluco/UniTimetable/backend/ent/predicate"
+	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
+	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
 // PostUpdate is the builder for updating Post entities.
@@ -27,13 +30,171 @@ func (pu *PostUpdate) Where(ps ...predicate.Post) *PostUpdate {
 	return pu
 }
 
+// SetParentPostID sets the "parent_post_id" field.
+func (pu *PostUpdate) SetParentPostID(i int) *PostUpdate {
+	pu.mutation.SetParentPostID(i)
+	return pu
+}
+
+// SetNillableParentPostID sets the "parent_post_id" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableParentPostID(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetParentPostID(*i)
+	}
+	return pu
+}
+
+// ClearParentPostID clears the value of the "parent_post_id" field.
+func (pu *PostUpdate) ClearParentPostID() *PostUpdate {
+	pu.mutation.ClearParentPostID()
+	return pu
+}
+
+// SetUserID sets the "user_id" field.
+func (pu *PostUpdate) SetUserID(i int) *PostUpdate {
+	pu.mutation.SetUserID(i)
+	return pu
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableUserID(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetUserID(*i)
+	}
+	return pu
+}
+
+// SetContent sets the "content" field.
+func (pu *PostUpdate) SetContent(s string) *PostUpdate {
+	pu.mutation.SetContent(s)
+	return pu
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableContent(s *string) *PostUpdate {
+	if s != nil {
+		pu.SetContent(*s)
+	}
+	return pu
+}
+
+// SetScheduleID sets the "schedule_id" field.
+func (pu *PostUpdate) SetScheduleID(i int) *PostUpdate {
+	pu.mutation.SetScheduleID(i)
+	return pu
+}
+
+// SetNillableScheduleID sets the "schedule_id" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableScheduleID(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetScheduleID(*i)
+	}
+	return pu
+}
+
+// ClearScheduleID clears the value of the "schedule_id" field.
+func (pu *PostUpdate) ClearScheduleID() *PostUpdate {
+	pu.mutation.ClearScheduleID()
+	return pu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pu *PostUpdate) SetUpdatedAt(t time.Time) *PostUpdate {
+	pu.mutation.SetUpdatedAt(t)
+	return pu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (pu *PostUpdate) SetUser(u *User) *PostUpdate {
+	return pu.SetUserID(u.ID)
+}
+
+// SetSchedule sets the "schedule" edge to the Schedule entity.
+func (pu *PostUpdate) SetSchedule(s *Schedule) *PostUpdate {
+	return pu.SetScheduleID(s.ID)
+}
+
+// SetParentID sets the "parent" edge to the Post entity by ID.
+func (pu *PostUpdate) SetParentID(id int) *PostUpdate {
+	pu.mutation.SetParentID(id)
+	return pu
+}
+
+// SetNillableParentID sets the "parent" edge to the Post entity by ID if the given value is not nil.
+func (pu *PostUpdate) SetNillableParentID(id *int) *PostUpdate {
+	if id != nil {
+		pu = pu.SetParentID(*id)
+	}
+	return pu
+}
+
+// SetParent sets the "parent" edge to the Post entity.
+func (pu *PostUpdate) SetParent(p *Post) *PostUpdate {
+	return pu.SetParentID(p.ID)
+}
+
+// AddReplyIDs adds the "replies" edge to the Post entity by IDs.
+func (pu *PostUpdate) AddReplyIDs(ids ...int) *PostUpdate {
+	pu.mutation.AddReplyIDs(ids...)
+	return pu
+}
+
+// AddReplies adds the "replies" edges to the Post entity.
+func (pu *PostUpdate) AddReplies(p ...*Post) *PostUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddReplyIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (pu *PostUpdate) Mutation() *PostMutation {
 	return pu.mutation
 }
 
+// ClearUser clears the "user" edge to the User entity.
+func (pu *PostUpdate) ClearUser() *PostUpdate {
+	pu.mutation.ClearUser()
+	return pu
+}
+
+// ClearSchedule clears the "schedule" edge to the Schedule entity.
+func (pu *PostUpdate) ClearSchedule() *PostUpdate {
+	pu.mutation.ClearSchedule()
+	return pu
+}
+
+// ClearParent clears the "parent" edge to the Post entity.
+func (pu *PostUpdate) ClearParent() *PostUpdate {
+	pu.mutation.ClearParent()
+	return pu
+}
+
+// ClearReplies clears all "replies" edges to the Post entity.
+func (pu *PostUpdate) ClearReplies() *PostUpdate {
+	pu.mutation.ClearReplies()
+	return pu
+}
+
+// RemoveReplyIDs removes the "replies" edge to Post entities by IDs.
+func (pu *PostUpdate) RemoveReplyIDs(ids ...int) *PostUpdate {
+	pu.mutation.RemoveReplyIDs(ids...)
+	return pu
+}
+
+// RemoveReplies removes "replies" edges to Post entities.
+func (pu *PostUpdate) RemoveReplies(p ...*Post) *PostUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveReplyIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PostUpdate) Save(ctx context.Context) (int, error) {
+	pu.defaults()
 	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
@@ -59,7 +220,31 @@ func (pu *PostUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pu *PostUpdate) defaults() {
+	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		v := post.UpdateDefaultUpdatedAt()
+		pu.mutation.SetUpdatedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (pu *PostUpdate) check() error {
+	if v, ok := pu.mutation.Content(); ok {
+		if err := post.ContentValidator(v); err != nil {
+			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Post.content": %w`, err)}
+		}
+	}
+	if pu.mutation.UserCleared() && len(pu.mutation.UserIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Post.user"`)
+	}
+	return nil
+}
+
 func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := pu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -67,6 +252,144 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := pu.mutation.Content(); ok {
+		_spec.SetField(post.FieldContent, field.TypeString, value)
+	}
+	if value, ok := pu.mutation.UpdatedAt(); ok {
+		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if pu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.UserTable,
+			Columns: []string{post.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.UserTable,
+			Columns: []string{post.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.ScheduleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ScheduleTable,
+			Columns: []string{post.ScheduleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ScheduleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ScheduleTable,
+			Columns: []string{post.ScheduleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ParentTable,
+			Columns: []string{post.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ParentTable,
+			Columns: []string{post.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.RepliesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedRepliesIDs(); len(nodes) > 0 && !pu.mutation.RepliesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RepliesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -88,9 +411,166 @@ type PostUpdateOne struct {
 	mutation *PostMutation
 }
 
+// SetParentPostID sets the "parent_post_id" field.
+func (puo *PostUpdateOne) SetParentPostID(i int) *PostUpdateOne {
+	puo.mutation.SetParentPostID(i)
+	return puo
+}
+
+// SetNillableParentPostID sets the "parent_post_id" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableParentPostID(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetParentPostID(*i)
+	}
+	return puo
+}
+
+// ClearParentPostID clears the value of the "parent_post_id" field.
+func (puo *PostUpdateOne) ClearParentPostID() *PostUpdateOne {
+	puo.mutation.ClearParentPostID()
+	return puo
+}
+
+// SetUserID sets the "user_id" field.
+func (puo *PostUpdateOne) SetUserID(i int) *PostUpdateOne {
+	puo.mutation.SetUserID(i)
+	return puo
+}
+
+// SetNillableUserID sets the "user_id" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableUserID(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetUserID(*i)
+	}
+	return puo
+}
+
+// SetContent sets the "content" field.
+func (puo *PostUpdateOne) SetContent(s string) *PostUpdateOne {
+	puo.mutation.SetContent(s)
+	return puo
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableContent(s *string) *PostUpdateOne {
+	if s != nil {
+		puo.SetContent(*s)
+	}
+	return puo
+}
+
+// SetScheduleID sets the "schedule_id" field.
+func (puo *PostUpdateOne) SetScheduleID(i int) *PostUpdateOne {
+	puo.mutation.SetScheduleID(i)
+	return puo
+}
+
+// SetNillableScheduleID sets the "schedule_id" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableScheduleID(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetScheduleID(*i)
+	}
+	return puo
+}
+
+// ClearScheduleID clears the value of the "schedule_id" field.
+func (puo *PostUpdateOne) ClearScheduleID() *PostUpdateOne {
+	puo.mutation.ClearScheduleID()
+	return puo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (puo *PostUpdateOne) SetUpdatedAt(t time.Time) *PostUpdateOne {
+	puo.mutation.SetUpdatedAt(t)
+	return puo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (puo *PostUpdateOne) SetUser(u *User) *PostUpdateOne {
+	return puo.SetUserID(u.ID)
+}
+
+// SetSchedule sets the "schedule" edge to the Schedule entity.
+func (puo *PostUpdateOne) SetSchedule(s *Schedule) *PostUpdateOne {
+	return puo.SetScheduleID(s.ID)
+}
+
+// SetParentID sets the "parent" edge to the Post entity by ID.
+func (puo *PostUpdateOne) SetParentID(id int) *PostUpdateOne {
+	puo.mutation.SetParentID(id)
+	return puo
+}
+
+// SetNillableParentID sets the "parent" edge to the Post entity by ID if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableParentID(id *int) *PostUpdateOne {
+	if id != nil {
+		puo = puo.SetParentID(*id)
+	}
+	return puo
+}
+
+// SetParent sets the "parent" edge to the Post entity.
+func (puo *PostUpdateOne) SetParent(p *Post) *PostUpdateOne {
+	return puo.SetParentID(p.ID)
+}
+
+// AddReplyIDs adds the "replies" edge to the Post entity by IDs.
+func (puo *PostUpdateOne) AddReplyIDs(ids ...int) *PostUpdateOne {
+	puo.mutation.AddReplyIDs(ids...)
+	return puo
+}
+
+// AddReplies adds the "replies" edges to the Post entity.
+func (puo *PostUpdateOne) AddReplies(p ...*Post) *PostUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddReplyIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (puo *PostUpdateOne) Mutation() *PostMutation {
 	return puo.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (puo *PostUpdateOne) ClearUser() *PostUpdateOne {
+	puo.mutation.ClearUser()
+	return puo
+}
+
+// ClearSchedule clears the "schedule" edge to the Schedule entity.
+func (puo *PostUpdateOne) ClearSchedule() *PostUpdateOne {
+	puo.mutation.ClearSchedule()
+	return puo
+}
+
+// ClearParent clears the "parent" edge to the Post entity.
+func (puo *PostUpdateOne) ClearParent() *PostUpdateOne {
+	puo.mutation.ClearParent()
+	return puo
+}
+
+// ClearReplies clears all "replies" edges to the Post entity.
+func (puo *PostUpdateOne) ClearReplies() *PostUpdateOne {
+	puo.mutation.ClearReplies()
+	return puo
+}
+
+// RemoveReplyIDs removes the "replies" edge to Post entities by IDs.
+func (puo *PostUpdateOne) RemoveReplyIDs(ids ...int) *PostUpdateOne {
+	puo.mutation.RemoveReplyIDs(ids...)
+	return puo
+}
+
+// RemoveReplies removes "replies" edges to Post entities.
+func (puo *PostUpdateOne) RemoveReplies(p ...*Post) *PostUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveReplyIDs(ids...)
 }
 
 // Where appends a list predicates to the PostUpdate builder.
@@ -108,6 +588,7 @@ func (puo *PostUpdateOne) Select(field string, fields ...string) *PostUpdateOne 
 
 // Save executes the query and returns the updated Post entity.
 func (puo *PostUpdateOne) Save(ctx context.Context) (*Post, error) {
+	puo.defaults()
 	return withHooks(ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
@@ -133,7 +614,31 @@ func (puo *PostUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (puo *PostUpdateOne) defaults() {
+	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		v := post.UpdateDefaultUpdatedAt()
+		puo.mutation.SetUpdatedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (puo *PostUpdateOne) check() error {
+	if v, ok := puo.mutation.Content(); ok {
+		if err := post.ContentValidator(v); err != nil {
+			return &ValidationError{Name: "content", err: fmt.Errorf(`ent: validator failed for field "Post.content": %w`, err)}
+		}
+	}
+	if puo.mutation.UserCleared() && len(puo.mutation.UserIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Post.user"`)
+	}
+	return nil
+}
+
 func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) {
+	if err := puo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
 	id, ok := puo.mutation.ID()
 	if !ok {
@@ -158,6 +663,144 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := puo.mutation.Content(); ok {
+		_spec.SetField(post.FieldContent, field.TypeString, value)
+	}
+	if value, ok := puo.mutation.UpdatedAt(); ok {
+		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if puo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.UserTable,
+			Columns: []string{post.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.UserTable,
+			Columns: []string{post.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ScheduleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ScheduleTable,
+			Columns: []string{post.ScheduleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ScheduleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ScheduleTable,
+			Columns: []string{post.ScheduleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ParentTable,
+			Columns: []string{post.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.ParentTable,
+			Columns: []string{post.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.RepliesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedRepliesIDs(); len(nodes) > 0 && !puo.mutation.RepliesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RepliesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.RepliesTable,
+			Columns: []string{post.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Post{config: puo.config}
 	_spec.Assign = _node.assignValues

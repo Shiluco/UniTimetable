@@ -5,38 +5,64 @@ import (
     "strings"
 
     "github.com/gin-gonic/gin"
-    "github.com/Shiluco/UniTimetable/backend/internal/util"
+    "github.com/Shiluco/UniTimetable/backend/ent"
+    "github.com/Shiluco/UniTimetable/backend/internal/auth"
 )
 
-// AuthMiddleware JWT認証ミドルウェア
-func AuthMiddleware() gin.HandlerFunc {
+const (
+    AuthorizationHeader = "Authorization"
+    BearerSchema       = "Bearer "
+    UserKey            = "user"
+)
+
+// AuthMiddleware 認証ミドルウェア
+func AuthMiddleware(client *ent.Client) gin.HandlerFunc {
     return func(c *gin.Context) {
-        // Authorizationヘッダーを取得
-        authHeader := c.GetHeader("Authorization")
+        // Authorizationヘッダーの取得
+        authHeader := c.GetHeader(AuthorizationHeader)
         if authHeader == "" {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header is required"})
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
             c.Abort()
             return
         }
 
-        // Bearer トークンの形式を確認
-        parts := strings.Split(authHeader, " ")
-        if len(parts) != 2 || parts[0] != "Bearer" {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization header format"})
+        // Bearer スキーマの確認
+        if !strings.HasPrefix(authHeader, BearerSchema) {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization format"})
             c.Abort()
             return
         }
 
-        // トークンを検証
-        claims, err := util.ValidateJWT(parts[1])
+        // トークンの取得
+        tokenString := strings.TrimPrefix(authHeader, BearerSchema)
+
+        // トークンの検証
+        claims, err := auth.ValidateJWT(tokenString)
         if err != nil {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
             c.Abort()
             return
         }
 
-        // ユーザー情報をコンテキストに設定
-        c.Set("username", claims["username"])
+        // ユーザーの取得
+        user, err := client.User.Get(c.Request.Context(), claims.UserID)
+        if err != nil {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+            c.Abort()
+            return
+        }
+
+        // ユーザー情報をコンテキストに保存
+        c.Set(UserKey, user)
         c.Next()
     }
+}
+
+// GetCurrentUser コンテキストから現在のユーザーを取得
+func GetCurrentUser(c *gin.Context) *ent.User {
+    user, exists := c.Get(UserKey)
+    if !exists {
+        return nil
+    }
+    return user.(*ent.User)
 }

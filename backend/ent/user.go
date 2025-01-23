@@ -9,6 +9,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/Shiluco/UniTimetable/backend/ent/department"
+	"github.com/Shiluco/UniTimetable/backend/ent/major"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
@@ -16,18 +18,84 @@ import (
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID int `json:"user_id"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Password holds the value of the "password" field.
 	Password string `json:"-"`
+	// DepartmentID holds the value of the "department_id" field.
+	DepartmentID int `json:"department_id,omitempty"`
+	// MajorID holds the value of the "major_id" field.
+	MajorID int `json:"major_id,omitempty"`
+	// Comment holds the value of the "comment" field.
+	Comment string `json:"comment,omitempty"`
+	// Grade holds the value of the "grade" field.
+	Grade int8 `json:"grade,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges        UserEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Department holds the value of the department edge.
+	Department *Department `json:"department,omitempty"`
+	// Major holds the value of the major edge.
+	Major *Major `json:"major,omitempty"`
+	// Posts holds the value of the posts edge.
+	Posts []*Post `json:"posts,omitempty"`
+	// Schedules holds the value of the schedules edge.
+	Schedules []*Schedule `json:"schedules,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [4]bool
+}
+
+// DepartmentOrErr returns the Department value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) DepartmentOrErr() (*Department, error) {
+	if e.Department != nil {
+		return e.Department, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: department.Label}
+	}
+	return nil, &NotLoadedError{edge: "department"}
+}
+
+// MajorOrErr returns the Major value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) MajorOrErr() (*Major, error) {
+	if e.Major != nil {
+		return e.Major, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: major.Label}
+	}
+	return nil, &NotLoadedError{edge: "major"}
+}
+
+// PostsOrErr returns the Posts value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PostsOrErr() ([]*Post, error) {
+	if e.loadedTypes[2] {
+		return e.Posts, nil
+	}
+	return nil, &NotLoadedError{edge: "posts"}
+}
+
+// SchedulesOrErr returns the Schedules value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SchedulesOrErr() ([]*Schedule, error) {
+	if e.loadedTypes[3] {
+		return e.Schedules, nil
+	}
+	return nil, &NotLoadedError{edge: "schedules"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,9 +103,9 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
+		case user.FieldID, user.FieldDepartmentID, user.FieldMajorID, user.FieldGrade:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName, user.FieldEmail, user.FieldPassword:
+		case user.FieldName, user.FieldEmail, user.FieldPassword, user.FieldComment:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -80,6 +148,30 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Password = value.String
 			}
+		case user.FieldDepartmentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field department_id", values[i])
+			} else if value.Valid {
+				u.DepartmentID = int(value.Int64)
+			}
+		case user.FieldMajorID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field major_id", values[i])
+			} else if value.Valid {
+				u.MajorID = int(value.Int64)
+			}
+		case user.FieldComment:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field comment", values[i])
+			} else if value.Valid {
+				u.Comment = value.String
+			}
+		case user.FieldGrade:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field grade", values[i])
+			} else if value.Valid {
+				u.Grade = int8(value.Int64)
+			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -103,6 +195,26 @@ func (u *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
+}
+
+// QueryDepartment queries the "department" edge of the User entity.
+func (u *User) QueryDepartment() *DepartmentQuery {
+	return NewUserClient(u.config).QueryDepartment(u)
+}
+
+// QueryMajor queries the "major" edge of the User entity.
+func (u *User) QueryMajor() *MajorQuery {
+	return NewUserClient(u.config).QueryMajor(u)
+}
+
+// QueryPosts queries the "posts" edge of the User entity.
+func (u *User) QueryPosts() *PostQuery {
+	return NewUserClient(u.config).QueryPosts(u)
+}
+
+// QuerySchedules queries the "schedules" edge of the User entity.
+func (u *User) QuerySchedules() *ScheduleQuery {
+	return NewUserClient(u.config).QuerySchedules(u)
 }
 
 // Update returns a builder for updating this User.
@@ -135,6 +247,18 @@ func (u *User) String() string {
 	builder.WriteString(u.Email)
 	builder.WriteString(", ")
 	builder.WriteString("password=<sensitive>")
+	builder.WriteString(", ")
+	builder.WriteString("department_id=")
+	builder.WriteString(fmt.Sprintf("%v", u.DepartmentID))
+	builder.WriteString(", ")
+	builder.WriteString("major_id=")
+	builder.WriteString(fmt.Sprintf("%v", u.MajorID))
+	builder.WriteString(", ")
+	builder.WriteString("comment=")
+	builder.WriteString(u.Comment)
+	builder.WriteString(", ")
+	builder.WriteString("grade=")
+	builder.WriteString(fmt.Sprintf("%v", u.Grade))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

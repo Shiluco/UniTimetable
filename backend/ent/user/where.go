@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/Shiluco/UniTimetable/backend/ent/predicate"
 )
 
@@ -67,6 +68,26 @@ func Email(v string) predicate.User {
 // Password applies equality check predicate on the "password" field. It's identical to PasswordEQ.
 func Password(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPassword, v))
+}
+
+// DepartmentID applies equality check predicate on the "department_id" field. It's identical to DepartmentIDEQ.
+func DepartmentID(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldDepartmentID, v))
+}
+
+// MajorID applies equality check predicate on the "major_id" field. It's identical to MajorIDEQ.
+func MajorID(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldMajorID, v))
+}
+
+// Comment applies equality check predicate on the "comment" field. It's identical to CommentEQ.
+func Comment(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldComment, v))
+}
+
+// Grade applies equality check predicate on the "grade" field. It's identical to GradeEQ.
+func Grade(v int8) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldGrade, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -274,6 +295,191 @@ func PasswordContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldPassword, v))
 }
 
+// DepartmentIDEQ applies the EQ predicate on the "department_id" field.
+func DepartmentIDEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldDepartmentID, v))
+}
+
+// DepartmentIDNEQ applies the NEQ predicate on the "department_id" field.
+func DepartmentIDNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldDepartmentID, v))
+}
+
+// DepartmentIDIn applies the In predicate on the "department_id" field.
+func DepartmentIDIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldDepartmentID, vs...))
+}
+
+// DepartmentIDNotIn applies the NotIn predicate on the "department_id" field.
+func DepartmentIDNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldDepartmentID, vs...))
+}
+
+// DepartmentIDIsNil applies the IsNil predicate on the "department_id" field.
+func DepartmentIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldDepartmentID))
+}
+
+// DepartmentIDNotNil applies the NotNil predicate on the "department_id" field.
+func DepartmentIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldDepartmentID))
+}
+
+// MajorIDEQ applies the EQ predicate on the "major_id" field.
+func MajorIDEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldMajorID, v))
+}
+
+// MajorIDNEQ applies the NEQ predicate on the "major_id" field.
+func MajorIDNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldMajorID, v))
+}
+
+// MajorIDIn applies the In predicate on the "major_id" field.
+func MajorIDIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldMajorID, vs...))
+}
+
+// MajorIDNotIn applies the NotIn predicate on the "major_id" field.
+func MajorIDNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldMajorID, vs...))
+}
+
+// MajorIDIsNil applies the IsNil predicate on the "major_id" field.
+func MajorIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldMajorID))
+}
+
+// MajorIDNotNil applies the NotNil predicate on the "major_id" field.
+func MajorIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldMajorID))
+}
+
+// CommentEQ applies the EQ predicate on the "comment" field.
+func CommentEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldComment, v))
+}
+
+// CommentNEQ applies the NEQ predicate on the "comment" field.
+func CommentNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldComment, v))
+}
+
+// CommentIn applies the In predicate on the "comment" field.
+func CommentIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldComment, vs...))
+}
+
+// CommentNotIn applies the NotIn predicate on the "comment" field.
+func CommentNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldComment, vs...))
+}
+
+// CommentGT applies the GT predicate on the "comment" field.
+func CommentGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldComment, v))
+}
+
+// CommentGTE applies the GTE predicate on the "comment" field.
+func CommentGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldComment, v))
+}
+
+// CommentLT applies the LT predicate on the "comment" field.
+func CommentLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldComment, v))
+}
+
+// CommentLTE applies the LTE predicate on the "comment" field.
+func CommentLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldComment, v))
+}
+
+// CommentContains applies the Contains predicate on the "comment" field.
+func CommentContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldComment, v))
+}
+
+// CommentHasPrefix applies the HasPrefix predicate on the "comment" field.
+func CommentHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldComment, v))
+}
+
+// CommentHasSuffix applies the HasSuffix predicate on the "comment" field.
+func CommentHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldComment, v))
+}
+
+// CommentIsNil applies the IsNil predicate on the "comment" field.
+func CommentIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldComment))
+}
+
+// CommentNotNil applies the NotNil predicate on the "comment" field.
+func CommentNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldComment))
+}
+
+// CommentEqualFold applies the EqualFold predicate on the "comment" field.
+func CommentEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldComment, v))
+}
+
+// CommentContainsFold applies the ContainsFold predicate on the "comment" field.
+func CommentContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldComment, v))
+}
+
+// GradeEQ applies the EQ predicate on the "grade" field.
+func GradeEQ(v int8) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldGrade, v))
+}
+
+// GradeNEQ applies the NEQ predicate on the "grade" field.
+func GradeNEQ(v int8) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldGrade, v))
+}
+
+// GradeIn applies the In predicate on the "grade" field.
+func GradeIn(vs ...int8) predicate.User {
+	return predicate.User(sql.FieldIn(FieldGrade, vs...))
+}
+
+// GradeNotIn applies the NotIn predicate on the "grade" field.
+func GradeNotIn(vs ...int8) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldGrade, vs...))
+}
+
+// GradeGT applies the GT predicate on the "grade" field.
+func GradeGT(v int8) predicate.User {
+	return predicate.User(sql.FieldGT(FieldGrade, v))
+}
+
+// GradeGTE applies the GTE predicate on the "grade" field.
+func GradeGTE(v int8) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldGrade, v))
+}
+
+// GradeLT applies the LT predicate on the "grade" field.
+func GradeLT(v int8) predicate.User {
+	return predicate.User(sql.FieldLT(FieldGrade, v))
+}
+
+// GradeLTE applies the LTE predicate on the "grade" field.
+func GradeLTE(v int8) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldGrade, v))
+}
+
+// GradeIsNil applies the IsNil predicate on the "grade" field.
+func GradeIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldGrade))
+}
+
+// GradeNotNil applies the NotNil predicate on the "grade" field.
+func GradeNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldGrade))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -352,6 +558,98 @@ func UpdatedAtLT(v time.Time) predicate.User {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// HasDepartment applies the HasEdge predicate on the "department" edge.
+func HasDepartment() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DepartmentTable, DepartmentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDepartmentWith applies the HasEdge predicate on the "department" edge with a given conditions (other predicates).
+func HasDepartmentWith(preds ...predicate.Department) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newDepartmentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMajor applies the HasEdge predicate on the "major" edge.
+func HasMajor() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, MajorTable, MajorColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMajorWith applies the HasEdge predicate on the "major" edge with a given conditions (other predicates).
+func HasMajorWith(preds ...predicate.Major) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newMajorStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPosts applies the HasEdge predicate on the "posts" edge.
+func HasPosts() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PostsTable, PostsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPostsWith applies the HasEdge predicate on the "posts" edge with a given conditions (other predicates).
+func HasPostsWith(preds ...predicate.Post) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newPostsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSchedules applies the HasEdge predicate on the "schedules" edge.
+func HasSchedules() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SchedulesTable, SchedulesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSchedulesWith applies the HasEdge predicate on the "schedules" edge with a given conditions (other predicates).
+func HasSchedulesWith(preds ...predicate.Schedule) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newSchedulesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.
