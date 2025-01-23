@@ -1,0 +1,23 @@
+@use 'variables' as var;
+
+.commentContainer {
+  padding: 30px;
+  background: var.$common-background-color;
+  height: fit-content;
+  box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.commentBox {
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #000;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.w-100 {
+  width: 100%;
+}

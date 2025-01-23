@@ -1,8 +1,8 @@
 import { Schedule } from "@/types/timetables";
 import "@/style/postItem.scss";
-import { UserInfo } from "../common/userInfo/userInfo";
-import { Timetable } from "../timetable/timetable";
-import { TextWithButton } from "../textWithButton/textWithButton";
+import { UserInfo } from "@/app/components/common/userInfo/userInfo";
+import { Timetable } from "@/app/components/timetable/timetable";
+import { TextWithButton } from "@/app/components/textWithButton/textWithButton";
 
 interface PostItemProps {
   schedules: Schedule[];
