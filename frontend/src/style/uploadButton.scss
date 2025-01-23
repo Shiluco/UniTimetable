@@ -4,8 +4,8 @@
   padding: 25px;
   border-radius: 10px;
   background-color: var.$common-background-color;
+  justify-content: center;
   display: flex;
-  justify-content: space-around;
   cursor: pointer;
   border: 1px solid #000;
 
@@ -13,4 +13,8 @@
     border: none;
     box-shadow: 0 0 0 2px #009866;
   }
+}
+
+.mr-10 {
+  margin-right: 10px;
 }
