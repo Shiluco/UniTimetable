@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 
-import { navButton } from "./navButton";
+import { NavButton } from "./navButton";
 
 const meta = {
-  title: "UniTimetable/navButton",
-  component: navButton,
+  title: "UniTimetable/NavButton",
+  component: NavButton,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-} satisfies Meta<typeof navButton>;
+} satisfies Meta<typeof NavButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -18,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 // Primaryストーリー
 export const Primary: Story = {
   args: {
-    label: "navButton",
+    label: "NavButton",
     icon: "/assets/timeline.svg",
     onClick: action("Primary button clicked"),
   },
