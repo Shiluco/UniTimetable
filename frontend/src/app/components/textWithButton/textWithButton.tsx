@@ -15,7 +15,7 @@ export const TextWithButton = (props: TextWithButtonProps) => {
   return (
     <div className={`container ${className}`}>
       <TextBox placeholder={placeholder} type="reply" onChange={onChange} value={value} />
-      <Button label={label} type="minimal" />
+      <Button label={label} type="minimal" className="container-button" />
     </div>
   );
 };
