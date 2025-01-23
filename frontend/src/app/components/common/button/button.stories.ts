@@ -21,5 +21,6 @@ export const Primary: Story = {
     label: "Button",
     onClick: action("Primary button clicked"), // 修正
     type: "normal",
+    reverse: false,
   },
 };

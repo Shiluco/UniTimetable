@@ -8,7 +8,7 @@ type TextProps = {
   children: React.ReactNode;
 };
 
-export const Text = ({ variant = "body1", bold = false, className = "", children }: TextProps) => {
+export const Text = ({ variant = "body1", bold = false, className, children }: TextProps) => {
   const computedClassName = `${variant} ${bold ? "bold" : ""} ${className}`.trim();
   return <div className={computedClassName}>{children}</div>;
 };

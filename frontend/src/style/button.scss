@@ -25,7 +25,18 @@
     background-color: var.$common-background-color;
     cursor: not-allowed;
   }
-  
+
+  &-reverse {
+    background-color: #ECECEC;
+    color: #000;
+    border: 1px solid #009866;
+
+    &:hover {
+      background-color: #009866;
+      color: var.$common-textinbutton-color;
+    }
+  }
+
   &-normal {
     border-radius: 25px;
     width: 130px;
