@@ -1,6 +1,6 @@
 import { TextBox } from "@/app/components/common/textBox/textBox";
 import "@/style/loginForm.scss";
-import { Button } from "../common/button/button";
+import { Button } from "@/app/components/common/button/button";
 
 export const LoginForm = () => {
   return (
