@@ -7,12 +7,13 @@ interface TextWithButtonProps {
   label: string;
   onChange?: (value: string) => void;
   value?: string;
+  className?: string;
 }
 
 export const TextWithButton = (props: TextWithButtonProps) => {
-  const { placeholder, label, onChange, value } = props;
+  const { placeholder, label, onChange, value, className } = props;
   return (
-    <div className="container">
+    <div className={`container ${className}`}>
       <TextBox placeholder={placeholder} type="reply" onChange={onChange} value={value} />
       <Button label={label} type="minimal" />
     </div>
