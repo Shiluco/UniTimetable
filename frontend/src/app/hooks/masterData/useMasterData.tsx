@@ -17,15 +17,9 @@ export const useMasterData = () => {
       const fetchedDepartments = await fetchDepartments();
       setDepartments(fetchedDepartments);
 
-      // 学部ごとに学科データを取得
-      const allMajors: Major[] = [];
-      for (const department of fetchedDepartments) {
-        const fetchedMajors = await fetchMajors({
-          department_id: department.department_id,
-        });
-        allMajors.push(...fetchedMajors); // 全学科をマージ
-      }
-      setMajors(allMajors);
+      // 学科データを一括で取得
+      const fetchedMajors = await fetchMajors();
+      setMajors(fetchedMajors);
     } catch (err) {
       console.error("Error loading master data:", err);
       setError("データの取得に失敗しました。再度お試しください。");
