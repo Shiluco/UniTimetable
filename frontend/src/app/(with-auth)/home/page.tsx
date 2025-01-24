@@ -1,10 +1,8 @@
 "use client";
 
+import { Layout } from "@/app/components/layout/layout";
 import styles from "./page.module.css";
-import { Logo } from "@/app/components/common/logo/logo";
-import { NavMenu } from "@/app/components/navMenu/navMenu";
 import { PostItem } from "@/app/components/postItem/postItem";
-import { SearchBox } from "@/app/components/searchBox/searchBox";
 
 const sampleSchedules = [
   {
@@ -33,17 +31,8 @@ const sampleSchedules = [
 
 export default function HomePage() {
   return (
-    <div className={styles.gridContainer}>
-      <div className={styles.gridItem}>
-        <Logo className={styles.mb50} />
-        <NavMenu />
-      </div>
-      <div className={`${styles.gridItem} ${styles.scrollable}`}>
-        <PostItem schedules={sampleSchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
-      </div>
-      <div className={styles.gridItem}>
-        <SearchBox departmentOptions={[]} majorOptions={[]} yearOptions={[]} />
-      </div>
-    </div>
+    <Layout>
+      <PostItem schedules={sampleSchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
+    </Layout>
   );
 }

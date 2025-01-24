@@ -2,11 +2,9 @@
 
 import { Comment } from "@/app/components/comment/comment";
 import styles from "./page.module.css";
-import { Logo } from "@/app/components/common/logo/logo";
-import { NavMenu } from "@/app/components/navMenu/navMenu";
 import { PostItem } from "@/app/components/postItem/postItem";
-import { SearchBox } from "@/app/components/searchBox/searchBox";
 import { EditReply } from "@/app/components/editReply/editReply";
+import { Layout } from "@/app/components/layout/layout";
 
 const sampleSchedules = [
   {
@@ -35,19 +33,10 @@ const sampleSchedules = [
 
 export default function ReplyPage() {
   return (
-    <div className={styles.gridContainer}>
-      <div className={styles.gridItem}>
-        <Logo className={styles.mb50} />
-        <NavMenu />
-      </div>
-      <div className={`${styles.gridItem} ${styles.scrollable}`}>
-        <PostItem schedules={sampleSchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
-        <Comment name="Sample Name" department="Sample Department" major="Sample Major" year={2} comment="Sample Comment" className={styles.mb30} />
-        <EditReply name="Sample Name" department="Sample Department" major="Sample Major" year={1} />
-      </div>
-      <div className={styles.gridItem}>
-        <SearchBox departmentOptions={[]} majorOptions={[]} yearOptions={[]} />
-      </div>
-    </div>
+    <Layout>
+      <PostItem schedules={sampleSchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
+      <Comment name="Sample Name" department="Sample Department" major="Sample Major" year={2} comment="Sample Comment" className={styles.mb30} />
+      <EditReply name="Sample Name" department="Sample Department" major="Sample Major" year={1} />
+    </Layout>
   );
 }
