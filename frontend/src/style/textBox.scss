@@ -1,0 +1,36 @@
+@use 'variables' as var;
+
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var.$common-background-color;
+  border: 1px solid #000;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #D1D5DB;
+    box-shadow: 0 0 0 1px #009866;
+  }
+
+  &::placeholder {
+    color: #9CA3AF;
+  }
+
+  &-search{
+    max-width: 42rem;
+  }
+
+  &-reply{
+    height: 7rem;
+  }
+}

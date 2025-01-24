@@ -1,0 +1,49 @@
+@use 'variables' as var;
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var.$common-background-color;
+  border-radius: 9999px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #E0E0E0;
+  }
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  flex-shrink: 0;
+}
+
+.checkmark {
+  width: 16px;
+  height: 16px;
+  color: #000;
+  animation: checkmark-appear 0.2s ease-out;
+}
+
+@keyframes checkmark-appear {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,21 @@
+@use 'variables' as var;
+
+.nav {
+  padding: 30px;
+  background: var.$common-background-color;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.2);
+  width: 150px;
+  height: 200px;
+}
+
+.nav-list {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}

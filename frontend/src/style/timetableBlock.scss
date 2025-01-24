@@ -1,0 +1,20 @@
+.text-block {
+  border-radius: 16px;
+  padding: 8px 16px;
+  height: 50px;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.empty {
+    border: 2px solid #333;
+    background-color: transparent;
+  }
+
+  &.filled {
+    background-color: #00A67E;
+    color: white;
+    border: none;
+  }
+}

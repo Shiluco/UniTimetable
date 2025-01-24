@@ -1,0 +1,20 @@
+@use 'variables' as var;
+
+.uploadContainer {
+  padding: 25px;
+  border-radius: 10px;
+  background-color: var.$common-background-color;
+  justify-content: center;
+  display: flex;
+  cursor: pointer;
+  border: 1px solid #000;
+
+  &:hover {
+    border: none;
+    box-shadow: 0 0 0 2px #009866;
+  }
+}
+
+.mr-10 {
+  margin-right: 10px;
+}

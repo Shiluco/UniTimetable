@@ -1,0 +1,10 @@
+.container {
+    position: relative;
+
+    &-button {
+        position: absolute;
+        right: 5%;
+        bottom: 5%;
+    }
+}
+

@@ -1,0 +1,50 @@
+@use 'variables' as var;
+
+.timetable {
+  padding: 5px;
+  background: var.$common-background-color;
+  border-radius: 20px;
+  border: 1px solid #000;
+
+  .timetable-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timetable-header {
+    display: grid;
+    grid-template-columns: 48px repeat(5, 1fr);
+    gap: 4px;
+    text-align: center;
+    border-bottom: 1px solid #000;
+  }
+
+  .empty-cell {
+    width: 48px;
+  }
+
+  .day-cell {
+    font-weight: bold;
+    padding: 4px;
+  }
+
+  .timetable-row {
+    display: grid;
+    grid-template-columns: 48px repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .period-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .class-cell {
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
