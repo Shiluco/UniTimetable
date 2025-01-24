@@ -1,3 +1,5 @@
+"use client";
+
 import "@/style/button.scss";
 import { Text } from "@/app/components/common/text/text";
 
