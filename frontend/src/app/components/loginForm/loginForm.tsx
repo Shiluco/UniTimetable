@@ -1,3 +1,5 @@
+"use client";
+
 import { TextBox } from "@/app/components/common/textBox/textBox";
 import "@/style/loginForm.scss";
 import { Button } from "@/app/components/common/button/button";
