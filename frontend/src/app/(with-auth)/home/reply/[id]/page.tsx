@@ -33,7 +33,7 @@ const sampleSchedules = [
   },
 ];
 
-export default function HomePage() {
+export default function ReplyPage() {
   return (
     <div className={styles.gridContainer}>
       <div className={styles.gridItem}>

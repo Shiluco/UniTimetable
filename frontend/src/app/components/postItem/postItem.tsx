@@ -19,7 +19,7 @@ interface PostItemProps {
 export const PostItem = ({ schedules, name, department, major, year, className, comment }: PostItemProps) => {
   const id = "someId";
   const handleReply = () => {
-    window.location.href = `/home/post/${id}`;
+    window.location.href = `/home/reply/${id}`;
   };
 
   return (
