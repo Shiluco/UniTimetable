@@ -44,6 +44,7 @@ export const Primary: Story = {
     name: "hogefugapiyo",
     department: "情報",
     major: "情報科",
+    comment: "hogehoge",
     year: 1,
   },
 };
