@@ -74,9 +74,9 @@ func ValidColumn(column string) bool {
 
 var (
 	// DayOfWeekValidator is a validator for the "day_of_week" field. It is called by the builders before save.
-	DayOfWeekValidator func(int8) error
+	DayOfWeekValidator func(int) error
 	// TimeSlotValidator is a validator for the "time_slot" field. It is called by the builders before save.
-	TimeSlotValidator func(int8) error
+	TimeSlotValidator func(int) error
 	// SubjectValidator is a validator for the "subject" field. It is called by the builders before save.
 	SubjectValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

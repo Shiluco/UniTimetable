@@ -21,9 +21,9 @@ type Schedule struct {
 	// UserID holds the value of the "user_id" field.
 	UserID int `json:"user_id,omitempty"`
 	// 曜日（0:日曜日 - 6:土曜日）
-	DayOfWeek int8 `json:"day_of_week,omitempty"`
-	// 時限（1-7）
-	TimeSlot int8 `json:"time_slot,omitempty"`
+	DayOfWeek int `json:"day_of_week,omitempty"`
+	// 時限（1-6）
+	TimeSlot int `json:"time_slot,omitempty"`
 	// Name of the subject.
 	Subject string `json:"subject,omitempty"`
 	// Location or classroom.
@@ -111,13 +111,13 @@ func (s *Schedule) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field day_of_week", values[i])
 			} else if value.Valid {
-				s.DayOfWeek = int8(value.Int64)
+				s.DayOfWeek = int(value.Int64)
 			}
 		case schedule.FieldTimeSlot:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field time_slot", values[i])
 			} else if value.Valid {
-				s.TimeSlot = int8(value.Int64)
+				s.TimeSlot = int(value.Int64)
 			}
 		case schedule.FieldSubject:
 			if value, ok := values[i].(*sql.NullString); !ok {

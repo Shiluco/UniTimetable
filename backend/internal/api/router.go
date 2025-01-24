@@ -61,17 +61,18 @@ func SetupRoutes(client *ent.Client) *gin.Engine {
             // 投稿関連
             posts := authenticated.Group("/posts")
             {
-                posts.GET("/:id", postHandler.GetPost)
-                posts.POST("", postHandler.CreatePost)
-                posts.PUT("/:id", postHandler.UpdatePost)
-                posts.DELETE("/:id", postHandler.DeletePost)
-                posts.GET("/:id/replies", postHandler.GetPostReplies)
+                posts.GET("", postHandler.GetPosts)         // 一覧取得
+                posts.GET("/:id", postHandler.GetPosts)     // 単一投稿取得
+                posts.POST("", postHandler.CreatePost)      // 投稿作成
+                posts.PUT("/:id", postHandler.UpdatePost)   // 投稿更新
+                posts.DELETE("/:id", postHandler.DeletePost) // 投稿削除
             }
 
             // 時間割関連
             schedules := authenticated.Group("/schedules")
             {
                 schedules.GET("/:id", scheduleHandler.GetSchedule)
+                schedules.GET("", scheduleHandler.GetSchedules) // 一覧取得
                 schedules.POST("", scheduleHandler.CreateSchedule)
                 schedules.PUT("/:id", scheduleHandler.UpdateSchedule)
                 schedules.DELETE("/:id", scheduleHandler.DeleteSchedule)

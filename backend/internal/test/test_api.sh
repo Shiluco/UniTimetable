@@ -71,7 +71,7 @@ SCHEDULE_RESPONSE=$(curl -s -X POST "${BASE_URL}/schedules" \
   -H "Authorization: Bearer ${TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "day_of_week": 1,
+    "day_of_week": 0,
     "time_slot": 1,
     "subject": "プログラミング演習",
     "location": "情報処理演習室"
@@ -79,9 +79,9 @@ SCHEDULE_RESPONSE=$(curl -s -X POST "${BASE_URL}/schedules" \
 echo $SCHEDULE_RESPONSE | jq '.'
 
 # 作成した時間割のIDを取得
-SCHEDULE_ID=$(echo $SCHEDULE_RESPONSE | jq -r '.id')
+SCHEDULE_ID=$(echo $SCHEDULE_RESPONSE | jq -r '.schedule_id')
 
-# 投稿作成のテスト
+# 通常の投稿作成のテスト
 echo -e "\n${GREEN}Testing post creation...${NC}"
 POST_RESPONSE=$(curl -s -X POST "${BASE_URL}/posts" \
   -H "Authorization: Bearer ${TOKEN}" \
@@ -93,9 +93,9 @@ POST_RESPONSE=$(curl -s -X POST "${BASE_URL}/posts" \
 echo $POST_RESPONSE | jq '.'
 
 # 作成した投稿のIDを取得
-POST_ID=$(echo $POST_RESPONSE | jq -r '.id')
+POST_ID=$(echo $POST_RESPONSE | jq -r '.post_id')
 
-# 投稿への返信作成のテスト
+# 返信作成のテスト
 echo -e "\n${GREEN}Testing reply creation...${NC}"
 REPLY_RESPONSE=$(curl -s -X POST "${BASE_URL}/posts" \
   -H "Authorization: Bearer ${TOKEN}" \
@@ -106,14 +106,55 @@ REPLY_RESPONSE=$(curl -s -X POST "${BASE_URL}/posts" \
   }")
 echo $REPLY_RESPONSE | jq '.'
 
-# 投稿の取得テスト
-echo -e "\n${GREEN}Testing get post...${NC}"
+# 単一の投稿取得テスト
+echo -e "\n${GREEN}Testing get single post...${NC}"
 curl -s "${BASE_URL}/posts/${POST_ID}" \
   -H "Authorization: Bearer ${TOKEN}" | jq '.'
 
-# 返信の取得テスト
+# JSONレスポンスを処理する関数
+process_response() {
+    local response=$1
+    if echo "$response" | jq -e . >/dev/null 2>&1; then
+        if [[ $(echo "$response" | jq -r 'type') == "object" ]]; then
+            if [[ $(echo "$response" | jq 'has("error")') == "true" ]]; then
+                echo "$response" | jq '.'
+            else
+                echo "$response" | jq '.posts // .'
+            fi
+        else
+            echo "$response" | jq '.'
+        fi
+    else
+        echo "Invalid JSON response: $response"
+    fi
+}
+
+# 返信一覧の取得テスト
 echo -e "\n${GREEN}Testing get replies...${NC}"
-curl -s "${BASE_URL}/posts/${POST_ID}/replies" \
+GET_REPLIES_RESPONSE=$(curl -s "${BASE_URL}/posts?parent_id=${POST_ID}" \
+  -H "Authorization: Bearer ${TOKEN}")
+process_response "$GET_REPLIES_RESPONSE"
+
+# 時間割に関連する投稿一覧の取得テスト
+if [ ! -z "$SCHEDULE_ID" ]; then
+    echo -e "\n${GREEN}Testing get posts by schedule...${NC}"
+    GET_SCHEDULE_POSTS_RESPONSE=$(curl -s "${BASE_URL}/posts?schedule_id=${SCHEDULE_ID}" \
+      -H "Authorization: Bearer ${TOKEN}")
+    process_response "$GET_SCHEDULE_POSTS_RESPONSE"
+fi
+
+# 投稿の更新テスト
+echo -e "\n${GREEN}Testing post update...${NC}"
+curl -s -X PUT "${BASE_URL}/posts/${POST_ID}" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content": "更新されたテスト投稿です"
+  }' | jq '.'
+
+# 投稿の削除テスト
+echo -e "\n${GREEN}Testing post deletion...${NC}"
+curl -s -X DELETE "${BASE_URL}/posts/${POST_ID}" \
   -H "Authorization: Bearer ${TOKEN}" | jq '.'
 
 # テスト結果の表示

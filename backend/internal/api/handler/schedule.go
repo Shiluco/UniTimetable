@@ -48,9 +48,9 @@ func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
 // CreateSchedule 時間割を作成
 func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
     var req struct {
-        DayOfWeek int8   `json:"day_of_week" binding:"required,min=1,max=7"`
-        TimeSlot  int8   `json:"time_slot" binding:"required,min=1,max=7"`
-        Subject   string `json:"subject" binding:"required,max=100"`
+        DayOfWeek int   `json:"day_of_week" binding:"omitempty,min=0,max=6"`
+        TimeSlot  int   `json:"time_slot" binding:"omitempty,min=1,max=7"`
+        Subject   string `json:"subject" binding:"omitempty,max=100"`
         Location  string `json:"location" binding:"omitempty,max=100"`
     }
 
@@ -93,8 +93,8 @@ func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
     }
 
     var req struct {
-        DayOfWeek int8   `json:"day_of_week" binding:"omitempty,min=1,max=7"`
-        TimeSlot  int8   `json:"time_slot" binding:"omitempty,min=1,max=7"`
+        DayOfWeek int   `json:"day_of_week" binding:"omitempty,min=0,max=6"`
+        TimeSlot  int   `json:"time_slot" binding:"omitempty,min=1,max=7"`
         Subject   string `json:"subject" binding:"omitempty,max=100"`
         Location  string `json:"location" binding:"omitempty,max=100"`
     }

@@ -19,13 +19,44 @@ func NewPostHandler(client *ent.Client) *PostHandler {
     return &PostHandler{client: client}
 }
 
-// GetPosts 投稿一覧取得・検索ハンドラー
+// GetPosts 投稿取得ハンドラー（単一投稿または一覧）
 func (h *PostHandler) GetPosts(c *gin.Context) {
     ctx := c.Request.Context()
     
-    // クエリパラメータの取得
-    scheduleID, _ := strconv.Atoi(c.Query("schedule_id"))  // 時間割IDによるフィルタリング
-    userID, _ := strconv.Atoi(c.Query("user_id"))         // ユーザーIDによるフィルタリング
+    // IDパラメータの取得（単一投稿の場合）
+    if id := c.Param("id"); id != "" {
+        postID, err := strconv.Atoi(id)
+        if err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+            return
+        }
+
+        // 単一の投稿を取得
+        post, err := h.client.Post.Query().
+            Where(post.ID(postID)).
+            WithUser().           // 投稿者
+            WithParent().        // 親投稿
+            WithSchedule().      // 関連する時間割
+            WithReplies().       // 返信
+            Only(ctx)
+
+        if err != nil {
+            if ent.IsNotFound(err) {
+                c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+                return
+            }
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+
+        c.JSON(http.StatusOK, post)
+        return
+    }
+
+    // クエリパラメータの取得（一覧の場合）
+    scheduleID, _ := strconv.Atoi(c.Query("schedule_id"))
+    userID, _ := strconv.Atoi(c.Query("user_id"))
+    parentID, _ := strconv.Atoi(c.Query("parent_id"))
     page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
     pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
 
@@ -46,6 +77,13 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
     if userID > 0 {
         postQuery.Where(post.UserIDEQ(userID))
     }
+    if parentID > 0 {
+        // 特定の投稿への返信を取得
+        postQuery.Where(post.ParentPostIDEQ(parentID))
+    } else if parentID == 0 {
+        // 親投稿のみを取得（返信を除外）
+        postQuery.Where(post.ParentPostIDIsNil())
+    }
 
     // 総件数の取得
     total, err := postQuery.Count(ctx)
@@ -54,14 +92,27 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
         return
     }
 
+    // データが存在しない場合は空配列を返す
+    if total == 0 {
+        c.JSON(http.StatusOK, gin.H{
+            "posts":       []interface{}{},
+            "total":      0,
+            "page":       page,
+            "page_size":  pageSize,
+            "total_pages": 0,
+        })
+        return
+    }
+
     // ページネーションとソートの適用
     posts, err := postQuery.
         Limit(pageSize).
         Offset(offset).
-        Order(ent.Desc(post.FieldCreatedAt)). // 新しい投稿順
-        WithUser().                           // ユーザー情報を含める
-        WithSchedule().                       // 時間割情報を含める
-        WithReplies().                        // 返信を含める
+        Order(ent.Desc(post.FieldCreatedAt)).
+        WithUser().
+        WithSchedule().
+        WithParent().
+        WithReplies().
         All(ctx)
 
     if err != nil {
@@ -78,34 +129,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
     })
 }
 
-// GetPost 特定の投稿を取得
-func (h *PostHandler) GetPost(c *gin.Context) {
-    id, err := strconv.Atoi(c.Param("id"))
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
-        return
-    }
-
-    post, err := h.client.Post.Query().
-        Where(post.ID(id)).
-        WithUser().           // 投稿者
-        WithParent().        // 親投稿
-        WithSchedule().      // 関連する時間割
-        Only(c.Request.Context())
-
-    if err != nil {
-        if ent.IsNotFound(err) {
-            c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
-            return
-        }
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, post)
-}
-
-// CreatePost 投稿を作成
+// CreatePost 投稿を作成（通常の投稿または返信）
 func (h *PostHandler) CreatePost(c *gin.Context) {
     var req struct {
         ParentPostID *int   `json:"parent_post_id"`
@@ -246,26 +270,4 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
     }
 
     c.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
-}
-
-// GetPostReplies 投稿への返信を取得
-func (h *PostHandler) GetPostReplies(c *gin.Context) {
-    parentID, err := strconv.Atoi(c.Param("id"))
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
-        return
-    }
-
-    replies, err := h.client.Post.Query().
-        Where(post.ParentPostID(parentID)).
-        WithUser().
-        Order(ent.Asc(post.FieldCreatedAt)).
-        All(c.Request.Context())
-
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, replies)
 }

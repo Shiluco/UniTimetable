@@ -45,14 +45,14 @@ func (su *ScheduleUpdate) SetNillableUserID(i *int) *ScheduleUpdate {
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (su *ScheduleUpdate) SetDayOfWeek(i int8) *ScheduleUpdate {
+func (su *ScheduleUpdate) SetDayOfWeek(i int) *ScheduleUpdate {
 	su.mutation.ResetDayOfWeek()
 	su.mutation.SetDayOfWeek(i)
 	return su
 }
 
 // SetNillableDayOfWeek sets the "day_of_week" field if the given value is not nil.
-func (su *ScheduleUpdate) SetNillableDayOfWeek(i *int8) *ScheduleUpdate {
+func (su *ScheduleUpdate) SetNillableDayOfWeek(i *int) *ScheduleUpdate {
 	if i != nil {
 		su.SetDayOfWeek(*i)
 	}
@@ -60,20 +60,20 @@ func (su *ScheduleUpdate) SetNillableDayOfWeek(i *int8) *ScheduleUpdate {
 }
 
 // AddDayOfWeek adds i to the "day_of_week" field.
-func (su *ScheduleUpdate) AddDayOfWeek(i int8) *ScheduleUpdate {
+func (su *ScheduleUpdate) AddDayOfWeek(i int) *ScheduleUpdate {
 	su.mutation.AddDayOfWeek(i)
 	return su
 }
 
 // SetTimeSlot sets the "time_slot" field.
-func (su *ScheduleUpdate) SetTimeSlot(i int8) *ScheduleUpdate {
+func (su *ScheduleUpdate) SetTimeSlot(i int) *ScheduleUpdate {
 	su.mutation.ResetTimeSlot()
 	su.mutation.SetTimeSlot(i)
 	return su
 }
 
 // SetNillableTimeSlot sets the "time_slot" field if the given value is not nil.
-func (su *ScheduleUpdate) SetNillableTimeSlot(i *int8) *ScheduleUpdate {
+func (su *ScheduleUpdate) SetNillableTimeSlot(i *int) *ScheduleUpdate {
 	if i != nil {
 		su.SetTimeSlot(*i)
 	}
@@ -81,7 +81,7 @@ func (su *ScheduleUpdate) SetNillableTimeSlot(i *int8) *ScheduleUpdate {
 }
 
 // AddTimeSlot adds i to the "time_slot" field.
-func (su *ScheduleUpdate) AddTimeSlot(i int8) *ScheduleUpdate {
+func (su *ScheduleUpdate) AddTimeSlot(i int) *ScheduleUpdate {
 	su.mutation.AddTimeSlot(i)
 	return su
 }
@@ -250,16 +250,16 @@ func (su *ScheduleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := su.mutation.DayOfWeek(); ok {
-		_spec.SetField(schedule.FieldDayOfWeek, field.TypeInt8, value)
+		_spec.SetField(schedule.FieldDayOfWeek, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedDayOfWeek(); ok {
-		_spec.AddField(schedule.FieldDayOfWeek, field.TypeInt8, value)
+		_spec.AddField(schedule.FieldDayOfWeek, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.TimeSlot(); ok {
-		_spec.SetField(schedule.FieldTimeSlot, field.TypeInt8, value)
+		_spec.SetField(schedule.FieldTimeSlot, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.AddedTimeSlot(); ok {
-		_spec.AddField(schedule.FieldTimeSlot, field.TypeInt8, value)
+		_spec.AddField(schedule.FieldTimeSlot, field.TypeInt, value)
 	}
 	if value, ok := su.mutation.Subject(); ok {
 		_spec.SetField(schedule.FieldSubject, field.TypeString, value)
@@ -382,14 +382,14 @@ func (suo *ScheduleUpdateOne) SetNillableUserID(i *int) *ScheduleUpdateOne {
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (suo *ScheduleUpdateOne) SetDayOfWeek(i int8) *ScheduleUpdateOne {
+func (suo *ScheduleUpdateOne) SetDayOfWeek(i int) *ScheduleUpdateOne {
 	suo.mutation.ResetDayOfWeek()
 	suo.mutation.SetDayOfWeek(i)
 	return suo
 }
 
 // SetNillableDayOfWeek sets the "day_of_week" field if the given value is not nil.
-func (suo *ScheduleUpdateOne) SetNillableDayOfWeek(i *int8) *ScheduleUpdateOne {
+func (suo *ScheduleUpdateOne) SetNillableDayOfWeek(i *int) *ScheduleUpdateOne {
 	if i != nil {
 		suo.SetDayOfWeek(*i)
 	}
@@ -397,20 +397,20 @@ func (suo *ScheduleUpdateOne) SetNillableDayOfWeek(i *int8) *ScheduleUpdateOne {
 }
 
 // AddDayOfWeek adds i to the "day_of_week" field.
-func (suo *ScheduleUpdateOne) AddDayOfWeek(i int8) *ScheduleUpdateOne {
+func (suo *ScheduleUpdateOne) AddDayOfWeek(i int) *ScheduleUpdateOne {
 	suo.mutation.AddDayOfWeek(i)
 	return suo
 }
 
 // SetTimeSlot sets the "time_slot" field.
-func (suo *ScheduleUpdateOne) SetTimeSlot(i int8) *ScheduleUpdateOne {
+func (suo *ScheduleUpdateOne) SetTimeSlot(i int) *ScheduleUpdateOne {
 	suo.mutation.ResetTimeSlot()
 	suo.mutation.SetTimeSlot(i)
 	return suo
 }
 
 // SetNillableTimeSlot sets the "time_slot" field if the given value is not nil.
-func (suo *ScheduleUpdateOne) SetNillableTimeSlot(i *int8) *ScheduleUpdateOne {
+func (suo *ScheduleUpdateOne) SetNillableTimeSlot(i *int) *ScheduleUpdateOne {
 	if i != nil {
 		suo.SetTimeSlot(*i)
 	}
@@ -418,7 +418,7 @@ func (suo *ScheduleUpdateOne) SetNillableTimeSlot(i *int8) *ScheduleUpdateOne {
 }
 
 // AddTimeSlot adds i to the "time_slot" field.
-func (suo *ScheduleUpdateOne) AddTimeSlot(i int8) *ScheduleUpdateOne {
+func (suo *ScheduleUpdateOne) AddTimeSlot(i int) *ScheduleUpdateOne {
 	suo.mutation.AddTimeSlot(i)
 	return suo
 }
@@ -617,16 +617,16 @@ func (suo *ScheduleUpdateOne) sqlSave(ctx context.Context) (_node *Schedule, err
 		}
 	}
 	if value, ok := suo.mutation.DayOfWeek(); ok {
-		_spec.SetField(schedule.FieldDayOfWeek, field.TypeInt8, value)
+		_spec.SetField(schedule.FieldDayOfWeek, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedDayOfWeek(); ok {
-		_spec.AddField(schedule.FieldDayOfWeek, field.TypeInt8, value)
+		_spec.AddField(schedule.FieldDayOfWeek, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.TimeSlot(); ok {
-		_spec.SetField(schedule.FieldTimeSlot, field.TypeInt8, value)
+		_spec.SetField(schedule.FieldTimeSlot, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.AddedTimeSlot(); ok {
-		_spec.AddField(schedule.FieldTimeSlot, field.TypeInt8, value)
+		_spec.AddField(schedule.FieldTimeSlot, field.TypeInt, value)
 	}
 	if value, ok := suo.mutation.Subject(); ok {
 		_spec.SetField(schedule.FieldSubject, field.TypeString, value)

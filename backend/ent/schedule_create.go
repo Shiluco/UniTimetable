@@ -29,13 +29,13 @@ func (sc *ScheduleCreate) SetUserID(i int) *ScheduleCreate {
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (sc *ScheduleCreate) SetDayOfWeek(i int8) *ScheduleCreate {
+func (sc *ScheduleCreate) SetDayOfWeek(i int) *ScheduleCreate {
 	sc.mutation.SetDayOfWeek(i)
 	return sc
 }
 
 // SetTimeSlot sets the "time_slot" field.
-func (sc *ScheduleCreate) SetTimeSlot(i int8) *ScheduleCreate {
+func (sc *ScheduleCreate) SetTimeSlot(i int) *ScheduleCreate {
 	sc.mutation.SetTimeSlot(i)
 	return sc
 }
@@ -230,11 +230,11 @@ func (sc *ScheduleCreate) createSpec() (*Schedule, *sqlgraph.CreateSpec) {
 		_spec.ID.Value = id
 	}
 	if value, ok := sc.mutation.DayOfWeek(); ok {
-		_spec.SetField(schedule.FieldDayOfWeek, field.TypeInt8, value)
+		_spec.SetField(schedule.FieldDayOfWeek, field.TypeInt, value)
 		_node.DayOfWeek = value
 	}
 	if value, ok := sc.mutation.TimeSlot(); ok {
-		_spec.SetField(schedule.FieldTimeSlot, field.TypeInt8, value)
+		_spec.SetField(schedule.FieldTimeSlot, field.TypeInt, value)
 		_node.TimeSlot = value
 	}
 	if value, ok := sc.mutation.Subject(); ok {

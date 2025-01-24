@@ -50,13 +50,13 @@ func init() {
 	// scheduleDescDayOfWeek is the schema descriptor for day_of_week field.
 	scheduleDescDayOfWeek := scheduleFields[2].Descriptor()
 	// schedule.DayOfWeekValidator is a validator for the "day_of_week" field. It is called by the builders before save.
-	schedule.DayOfWeekValidator = func() func(int8) error {
+	schedule.DayOfWeekValidator = func() func(int) error {
 		validators := scheduleDescDayOfWeek.Validators
-		fns := [...]func(int8) error{
-			validators[0].(func(int8) error),
-			validators[1].(func(int8) error),
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
 		}
-		return func(day_of_week int8) error {
+		return func(day_of_week int) error {
 			for _, fn := range fns {
 				if err := fn(day_of_week); err != nil {
 					return err
@@ -68,13 +68,13 @@ func init() {
 	// scheduleDescTimeSlot is the schema descriptor for time_slot field.
 	scheduleDescTimeSlot := scheduleFields[3].Descriptor()
 	// schedule.TimeSlotValidator is a validator for the "time_slot" field. It is called by the builders before save.
-	schedule.TimeSlotValidator = func() func(int8) error {
+	schedule.TimeSlotValidator = func() func(int) error {
 		validators := scheduleDescTimeSlot.Validators
-		fns := [...]func(int8) error{
-			validators[0].(func(int8) error),
-			validators[1].(func(int8) error),
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
 		}
-		return func(time_slot int8) error {
+		return func(time_slot int) error {
 			for _, fn := range fns {
 				if err := fn(time_slot); err != nil {
 					return err

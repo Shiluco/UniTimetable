@@ -17,14 +17,14 @@ func (Schedule) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("id").Unique().Immutable().StructTag(`json:"schedule_id"`),
 		field.Int("user_id"),
-		field.Int8("day_of_week").
+		field.Int("day_of_week").
 			Min(0).  // 0: 日曜日
 			Max(6).  // 6: 土曜日
 			Comment("曜日（0:日曜日 - 6:土曜日）"),
-		field.Int8("time_slot").
+		field.Int("time_slot").
 			Min(1).  // 1時限目
-			Max(7).  // 7時限目
-			Comment("時限（1-7）"),
+			Max(6).  // 6時限目
+			Comment("時限（1-6）"),
 		field.String("subject").NotEmpty().Comment("Name of the subject."),
 		field.String("location").Optional().Comment("Location or classroom."),
 		field.Time("created_at").Default(time.Now).Immutable().Comment("Record creation timestamp."),

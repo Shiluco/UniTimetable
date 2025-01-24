@@ -1967,10 +1967,10 @@ type ScheduleMutation struct {
 	op             Op
 	typ            string
 	id             *int
-	day_of_week    *int8
-	addday_of_week *int8
-	time_slot      *int8
-	addtime_slot   *int8
+	day_of_week    *int
+	addday_of_week *int
+	time_slot      *int
+	addtime_slot   *int
 	subject        *string
 	location       *string
 	created_at     *time.Time
@@ -2127,13 +2127,13 @@ func (m *ScheduleMutation) ResetUserID() {
 }
 
 // SetDayOfWeek sets the "day_of_week" field.
-func (m *ScheduleMutation) SetDayOfWeek(i int8) {
+func (m *ScheduleMutation) SetDayOfWeek(i int) {
 	m.day_of_week = &i
 	m.addday_of_week = nil
 }
 
 // DayOfWeek returns the value of the "day_of_week" field in the mutation.
-func (m *ScheduleMutation) DayOfWeek() (r int8, exists bool) {
+func (m *ScheduleMutation) DayOfWeek() (r int, exists bool) {
 	v := m.day_of_week
 	if v == nil {
 		return
@@ -2144,7 +2144,7 @@ func (m *ScheduleMutation) DayOfWeek() (r int8, exists bool) {
 // OldDayOfWeek returns the old "day_of_week" field's value of the Schedule entity.
 // If the Schedule object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScheduleMutation) OldDayOfWeek(ctx context.Context) (v int8, err error) {
+func (m *ScheduleMutation) OldDayOfWeek(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDayOfWeek is only allowed on UpdateOne operations")
 	}
@@ -2159,7 +2159,7 @@ func (m *ScheduleMutation) OldDayOfWeek(ctx context.Context) (v int8, err error)
 }
 
 // AddDayOfWeek adds i to the "day_of_week" field.
-func (m *ScheduleMutation) AddDayOfWeek(i int8) {
+func (m *ScheduleMutation) AddDayOfWeek(i int) {
 	if m.addday_of_week != nil {
 		*m.addday_of_week += i
 	} else {
@@ -2168,7 +2168,7 @@ func (m *ScheduleMutation) AddDayOfWeek(i int8) {
 }
 
 // AddedDayOfWeek returns the value that was added to the "day_of_week" field in this mutation.
-func (m *ScheduleMutation) AddedDayOfWeek() (r int8, exists bool) {
+func (m *ScheduleMutation) AddedDayOfWeek() (r int, exists bool) {
 	v := m.addday_of_week
 	if v == nil {
 		return
@@ -2183,13 +2183,13 @@ func (m *ScheduleMutation) ResetDayOfWeek() {
 }
 
 // SetTimeSlot sets the "time_slot" field.
-func (m *ScheduleMutation) SetTimeSlot(i int8) {
+func (m *ScheduleMutation) SetTimeSlot(i int) {
 	m.time_slot = &i
 	m.addtime_slot = nil
 }
 
 // TimeSlot returns the value of the "time_slot" field in the mutation.
-func (m *ScheduleMutation) TimeSlot() (r int8, exists bool) {
+func (m *ScheduleMutation) TimeSlot() (r int, exists bool) {
 	v := m.time_slot
 	if v == nil {
 		return
@@ -2200,7 +2200,7 @@ func (m *ScheduleMutation) TimeSlot() (r int8, exists bool) {
 // OldTimeSlot returns the old "time_slot" field's value of the Schedule entity.
 // If the Schedule object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ScheduleMutation) OldTimeSlot(ctx context.Context) (v int8, err error) {
+func (m *ScheduleMutation) OldTimeSlot(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTimeSlot is only allowed on UpdateOne operations")
 	}
@@ -2215,7 +2215,7 @@ func (m *ScheduleMutation) OldTimeSlot(ctx context.Context) (v int8, err error) 
 }
 
 // AddTimeSlot adds i to the "time_slot" field.
-func (m *ScheduleMutation) AddTimeSlot(i int8) {
+func (m *ScheduleMutation) AddTimeSlot(i int) {
 	if m.addtime_slot != nil {
 		*m.addtime_slot += i
 	} else {
@@ -2224,7 +2224,7 @@ func (m *ScheduleMutation) AddTimeSlot(i int8) {
 }
 
 // AddedTimeSlot returns the value that was added to the "time_slot" field in this mutation.
-func (m *ScheduleMutation) AddedTimeSlot() (r int8, exists bool) {
+func (m *ScheduleMutation) AddedTimeSlot() (r int, exists bool) {
 	v := m.addtime_slot
 	if v == nil {
 		return
@@ -2594,14 +2594,14 @@ func (m *ScheduleMutation) SetField(name string, value ent.Value) error {
 		m.SetUserID(v)
 		return nil
 	case schedule.FieldDayOfWeek:
-		v, ok := value.(int8)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDayOfWeek(v)
 		return nil
 	case schedule.FieldTimeSlot:
-		v, ok := value.(int8)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2671,14 +2671,14 @@ func (m *ScheduleMutation) AddedField(name string) (ent.Value, bool) {
 func (m *ScheduleMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case schedule.FieldDayOfWeek:
-		v, ok := value.(int8)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDayOfWeek(v)
 		return nil
 	case schedule.FieldTimeSlot:
-		v, ok := value.(int8)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

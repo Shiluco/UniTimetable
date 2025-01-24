@@ -61,12 +61,12 @@ func UserID(v int) predicate.Schedule {
 }
 
 // DayOfWeek applies equality check predicate on the "day_of_week" field. It's identical to DayOfWeekEQ.
-func DayOfWeek(v int8) predicate.Schedule {
+func DayOfWeek(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldEQ(FieldDayOfWeek, v))
 }
 
 // TimeSlot applies equality check predicate on the "time_slot" field. It's identical to TimeSlotEQ.
-func TimeSlot(v int8) predicate.Schedule {
+func TimeSlot(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldEQ(FieldTimeSlot, v))
 }
 
@@ -111,82 +111,82 @@ func UserIDNotIn(vs ...int) predicate.Schedule {
 }
 
 // DayOfWeekEQ applies the EQ predicate on the "day_of_week" field.
-func DayOfWeekEQ(v int8) predicate.Schedule {
+func DayOfWeekEQ(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldEQ(FieldDayOfWeek, v))
 }
 
 // DayOfWeekNEQ applies the NEQ predicate on the "day_of_week" field.
-func DayOfWeekNEQ(v int8) predicate.Schedule {
+func DayOfWeekNEQ(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldNEQ(FieldDayOfWeek, v))
 }
 
 // DayOfWeekIn applies the In predicate on the "day_of_week" field.
-func DayOfWeekIn(vs ...int8) predicate.Schedule {
+func DayOfWeekIn(vs ...int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldIn(FieldDayOfWeek, vs...))
 }
 
 // DayOfWeekNotIn applies the NotIn predicate on the "day_of_week" field.
-func DayOfWeekNotIn(vs ...int8) predicate.Schedule {
+func DayOfWeekNotIn(vs ...int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldNotIn(FieldDayOfWeek, vs...))
 }
 
 // DayOfWeekGT applies the GT predicate on the "day_of_week" field.
-func DayOfWeekGT(v int8) predicate.Schedule {
+func DayOfWeekGT(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldGT(FieldDayOfWeek, v))
 }
 
 // DayOfWeekGTE applies the GTE predicate on the "day_of_week" field.
-func DayOfWeekGTE(v int8) predicate.Schedule {
+func DayOfWeekGTE(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldGTE(FieldDayOfWeek, v))
 }
 
 // DayOfWeekLT applies the LT predicate on the "day_of_week" field.
-func DayOfWeekLT(v int8) predicate.Schedule {
+func DayOfWeekLT(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldLT(FieldDayOfWeek, v))
 }
 
 // DayOfWeekLTE applies the LTE predicate on the "day_of_week" field.
-func DayOfWeekLTE(v int8) predicate.Schedule {
+func DayOfWeekLTE(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldLTE(FieldDayOfWeek, v))
 }
 
 // TimeSlotEQ applies the EQ predicate on the "time_slot" field.
-func TimeSlotEQ(v int8) predicate.Schedule {
+func TimeSlotEQ(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldEQ(FieldTimeSlot, v))
 }
 
 // TimeSlotNEQ applies the NEQ predicate on the "time_slot" field.
-func TimeSlotNEQ(v int8) predicate.Schedule {
+func TimeSlotNEQ(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldNEQ(FieldTimeSlot, v))
 }
 
 // TimeSlotIn applies the In predicate on the "time_slot" field.
-func TimeSlotIn(vs ...int8) predicate.Schedule {
+func TimeSlotIn(vs ...int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldIn(FieldTimeSlot, vs...))
 }
 
 // TimeSlotNotIn applies the NotIn predicate on the "time_slot" field.
-func TimeSlotNotIn(vs ...int8) predicate.Schedule {
+func TimeSlotNotIn(vs ...int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldNotIn(FieldTimeSlot, vs...))
 }
 
 // TimeSlotGT applies the GT predicate on the "time_slot" field.
-func TimeSlotGT(v int8) predicate.Schedule {
+func TimeSlotGT(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldGT(FieldTimeSlot, v))
 }
 
 // TimeSlotGTE applies the GTE predicate on the "time_slot" field.
-func TimeSlotGTE(v int8) predicate.Schedule {
+func TimeSlotGTE(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldGTE(FieldTimeSlot, v))
 }
 
 // TimeSlotLT applies the LT predicate on the "time_slot" field.
-func TimeSlotLT(v int8) predicate.Schedule {
+func TimeSlotLT(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldLT(FieldTimeSlot, v))
 }
 
 // TimeSlotLTE applies the LTE predicate on the "time_slot" field.
-func TimeSlotLTE(v int8) predicate.Schedule {
+func TimeSlotLTE(v int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldLTE(FieldTimeSlot, v))
 }
 

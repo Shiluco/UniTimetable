@@ -78,8 +78,8 @@ var (
 	// SchedulesColumns holds the columns for the "schedules" table.
 	SchedulesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "day_of_week", Type: field.TypeInt8},
-		{Name: "time_slot", Type: field.TypeInt8},
+		{Name: "day_of_week", Type: field.TypeInt},
+		{Name: "time_slot", Type: field.TypeInt},
 		{Name: "subject", Type: field.TypeString},
 		{Name: "location", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
