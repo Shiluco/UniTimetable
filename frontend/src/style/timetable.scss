@@ -13,7 +13,7 @@
 
   .timetable-header {
     display: grid;
-    grid-template-columns: 48px repeat(5, 1fr);
+    grid-template-columns: 20px repeat(5, 1fr);
     gap: 4px;
     text-align: center;
     border-bottom: 1px solid #000;
@@ -30,8 +30,9 @@
 
   .timetable-row {
     display: grid;
-    grid-template-columns: 48px repeat(5, 1fr);
+    grid-template-columns: 20px repeat(5, 1fr);
     gap: 4px;
+    justify-items: center;
   }
 
   .period-cell {
@@ -42,9 +43,12 @@
   }
 
   .class-cell {
-    min-height: 80px;
+    padding: 2px 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    max-width: 80px;
+    max-height: 100px;
   }
 }
