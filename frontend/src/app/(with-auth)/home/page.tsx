@@ -14,7 +14,7 @@ export default function HomePage() {
         <NavMenu />
       </div>
       <div className={`${styles.gridItem} ${styles.scrollable}`}>
-        <PostItem schedules={[]} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} />
+        <PostItem schedules={[]} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
       </div>
       <div className={styles.gridItem}>
         <SearchBox departmentOptions={[]} majorOptions={[]} yearOptions={[]} />
