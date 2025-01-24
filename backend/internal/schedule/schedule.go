@@ -52,20 +52,22 @@ func GetSchedule(htmlPath string) ([]byte, error) {
 				day := weekdays[colIdx]
 				td.Find("li").Each(func(liIdx int, li *goquery.Selection) { // 修正箇所
 					course := make(map[string]string)
-					course["曜日"] = day
-					course["時間"] = timeSlot
-					course["講義名"] = strings.TrimSpace(li.Find("h4").Text())
-					course["担当"] = strings.TrimSpace(li.Find("p").First().Text())
-					course["単位"] = strings.TrimSpace(li.Find("p").Eq(1).Text())
-					course["教室"] = strings.TrimSpace(li.Find("p span").Text())
+					course["weekday"] = day
+					course["time"] = timeSlot
+					course["subject"] = strings.TrimSpace(li.Find("h4").Text())
+					course["charge"] = strings.TrimSpace(li.Find("p").First().Text())
+					course["credit"] = strings.TrimSpace(li.Find("p").Eq(1).Text())
+					course["room"] = strings.TrimSpace(li.Find("p span").Text())
 					schedule = append(schedule, course)
 				})
 			}
 		})
 	})
-
+	schedules := map[string]interface{}{
+		"schedules": schedule,
+	}
 	// JSONに変換
-	jsonData, err := json.MarshalIndent(schedule, "", "  ")
+	jsonData, err := json.MarshalIndent(schedules, "", "  ")
 	if err != nil {
 		return nil, fmt.Errorf("JSONへの変換に失敗しました: %v", err)
 	}
