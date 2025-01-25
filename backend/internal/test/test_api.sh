@@ -71,7 +71,7 @@ SCHEDULE_RESPONSE=$(curl -s -X POST "${BASE_URL}/schedules" \
   -H "Authorization: Bearer ${TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "day_of_week": 0,
+    "day_of_week": 1,
     "time_slot": 1,
     "subject": "プログラミング演習",
     "location": "情報処理演習室"
@@ -162,6 +162,26 @@ echo -e "\n${GREEN}Test Summary:${NC}"
 echo "Passed: ${TESTS_PASSED}"
 echo "Failed: ${TESTS_FAILED}"
 
+# テスト用HTMLファイルのパス
+HTML_FILE="./test.html"
+# ファイルアップロードのテスト
+echo -e "\n${GREEN}Testing file upload...${NC}"
+UPLOAD_RESPONSE=$(curl -s -X POST "${BASE_URL}/files/upload" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -F "file=@${HTML_FILE}")
+
+# レスポンスの表示
+echo "Response:"
+echo $UPLOAD_RESPONSE | jq '.'
+
+# テスト結果の確認
+if echo "$UPLOAD_RESPONSE" | jq -e 'has("message")' >/dev/null; then
+    echo -e "${GREEN}✓ File upload test passed${NC}"
+else
+    echo -e "${RED}✗ File upload test failed${NC}"
+    echo "Error details:"
+    echo $UPLOAD_RESPONSE | jq '.'
+fi
 # 終了コードの設定
 if [ $TESTS_FAILED -eq 0 ]; then
     exit 0

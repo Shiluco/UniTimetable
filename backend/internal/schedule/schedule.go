@@ -1,16 +1,24 @@
 package schedule
 
 import (
-	"encoding/json"
 	"fmt"
 	"bytes"
 	//"os"
 	"strings"
 
+	"encoding/json"
 	"github.com/PuerkitoBio/goquery"
 )
-
-func GetSchedule(content []byte) (byte[], error) {
+var timeSlotMap = map[string]int{
+	"1・2": 1,
+	"3・4": 2,
+	"5・6": 3,
+	"7・8": 4,
+	"9・10": 5,
+	"11・12": 6,
+	"13・14": 7,
+}
+func GetSchedule(content []byte) ([]byte, error) {
 	// HTMLファイルを開く
 	// file, err := os.Open(htmlPath)
 	// if err != nil {
@@ -34,7 +42,7 @@ func GetSchedule(content []byte) (byte[], error) {
 	})
 
 	// 時間割データを格納するスライス
-	var schedule []map[string]string
+	var schedule []map[string]interface{}
 
 	// 行データを解析
 	doc.Find(".schedule-table tbody tr").Each(func(rowIdx int, tr *goquery.Selection) {
@@ -45,19 +53,20 @@ func GetSchedule(content []byte) (byte[], error) {
 
 		// 時間帯（例: "1・2"）を取得
 		timeSlot := strings.TrimSpace(tr.Find("th").First().Text())
-
+		timeSlotInt, ok := timeSlotMap[timeSlot];
+		if !ok {
+			return
+		}
 		// 各曜日列を解析
 		tr.Find("td").Each(func(colIdx int, td *goquery.Selection) {
 			if colIdx < len(weekdays) { // 対応する曜日が存在する場合のみ処理
-				day := weekdays[colIdx]
+				day := colIdx + 1
 				td.Find("li").Each(func(liIdx int, li *goquery.Selection) { // 修正箇所
-					course := make(map[string]string)
-					course["weekday"] = day
-					course["time"] = timeSlot
+					course := make(map[string]interface{})
+					course["day_of_week"] = day
+					course["time_slot"] = timeSlotInt
 					course["subject"] = strings.TrimSpace(li.Find("h4").Text())
-					course["charge"] = strings.TrimSpace(li.Find("p").First().Text())
-					course["credit"] = strings.TrimSpace(li.Find("p").Eq(1).Text())
-					course["room"] = strings.TrimSpace(li.Find("p span").Text())
+					course["location"] = strings.TrimSpace(li.Find("p span").Text())
 					schedule = append(schedule, course)
 				})
 			}

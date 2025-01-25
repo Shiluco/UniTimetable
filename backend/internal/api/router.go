@@ -24,7 +24,7 @@ func SetupRoutes(client *ent.Client) *gin.Engine {
 	departmentHandler := handler.NewDepartmentHandler(client)
 	majorHandler := handler.NewMajorHandler(client)
     userHandler := handler.NewUserHandler(client)
-    //fileHandler := handler.NewFileHandler(client)
+    fileHandler := handler.NewFileHandler(client)
 
     // APIグループ
     api := r.Group("/api")
@@ -78,10 +78,10 @@ func SetupRoutes(client *ent.Client) *gin.Engine {
                 schedules.DELETE("/:id", scheduleHandler.DeleteSchedule)
             }
 
-            // files := authenticated.Group("/files")
-            // {
-            //     files.POST("/upload", fileHandler.UploadFile)
-            // }
+            files := authenticated.Group("/files")
+            {
+                files.POST("/upload", fileHandler.ProcessFile)
+            }
         }
     }
 

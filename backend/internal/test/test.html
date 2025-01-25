@@ -1,0 +1,4457 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13 -->
+<html class="pc" lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="./時間割参照_files/datatables.min.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/modaal.min.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/jquery.datetimepicker.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/toastr.min.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/lcu_dropzone.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/superTables.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/ress.min.css">
+<link rel="stylesheet" type="text/css" href="./時間割参照_files/common.css">
+
+
+    <link rel="stylesheet" type="text/css" href="./時間割参照_files/blue.css">
+
+
+
+<script src="./時間割参照_files/desvg.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery-3.5.1.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery-ui.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/smooth-scroll.polyfills.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery.tablesorter.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery.datetimepicker.full.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery.ui.datepicker-ja.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery.ui.ympicker.js.ダウンロード"></script>
+<script src="./時間割参照_files/datatables.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/modaal.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery.matchHeight-min.js.ダウンロード"></script>
+<script src="./時間割参照_files/ofi.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/inview.js.ダウンロード"></script>
+<script src="./時間割参照_files/jquery.stickybits.min.js.ダウンロード"></script>   
+<script src="./時間割参照_files/stickyfill.js.ダウンロード"></script>
+<script src="./時間割参照_files/tinymce.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/toastr.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/dropzone.min.js.ダウンロード"></script>
+<script src="./時間割参照_files/superTables.js.ダウンロード"></script>
+<script src="./時間割参照_files/common.js.ダウンロード"></script>
+<script src="./時間割参照_files/viewport.js.ダウンロード"></script>
+<script src="./時間割参照_files/fileupload.js.ダウンロード"></script>
+<script src="./時間割参照_files/fileuploadDb.js.ダウンロード"></script>
+<script src="./時間割参照_files/BootstrapMenu.js.ダウンロード"></script>
+
+
+
+<script language="javascript">
+
+    _isExcelSubmit = false;
+
+	$(function() {
+		$(document).on("keypress", "input:not(.allow_submit)", function(event) {
+			return event.which !== 13;
+		});
+		
+		$(document).on('click','.ui-dialog-titlebar-close',function(){
+			isSubmit = false;
+		});
+		
+		
+	    $('.dataist_js').on('click', function () {
+	    	
+	    	let options = $(this).attr('list_data').split(',');
+	    	
+	    	$(this).autocomplete({
+	    			source: options,
+	    			minLength: 0, 
+	    			delay : 1,
+	    			autoFocus: false,
+	    			scroll:true,
+	  	            position:{ my : "right top", at: "right bottom", collision: "flip" }
+	    	});
+	    	$(this).autocomplete("search", "");
+	    });
+	});
+	
+    
+    function submitFormButton($button, requestPath, dialogTitle, dialogMessage) {
+    
+    	var formId = $button.attr('formId');
+    	var loading = $button.attr('loading');
+    	var dialogType = $button.attr('dialogType');
+    	
+        var submitStatus = dbClick();
+        if (!submitStatus) {
+            return false;
+        }
+        
+        saveScrollPosition();
+    	
+    	if (dialogType == undefined || dialogType == '') {
+    		if (loading != 'false') {
+    			showLoading();
+    		}
+    		
+    		_isBeforeUnload = false;
+    		
+    		$('#' + formId).attr('action', requestPath);
+    		$('#' + formId).submit();
+    
+    	} else if (dialogType == 'confirm') {
+    		openConfirmDialog(dialogTitle, dialogMessage, function() {
+    			if (loading) {
+    				showLoading();
+    			}
+    	        _isBeforeUnload = false;
+    			$('#' + formId).attr('action', requestPath);
+    			$('#' + formId).submit();
+    		}, function() {
+    			isSubmit = false;
+    		});
+    
+    	} else if (dialogType == 'message') {
+    		openMessageDialog(dialogTitle, dialogMessage, function() {
+    			if (loading != 'false') {
+    				showLoading();
+    			}
+    	        _isBeforeUnload = false;
+    			$('#' + formId).attr('action', requestPath);
+    			$('#' + formId).submit();
+    		});
+    	}
+    }
+    
+    
+    function submitFormLink(formId, requestPath, keyValue) {
+
+        var submitStatus = dbClick();
+        if (!submitStatus) {
+            return false;
+        }
+    	
+        saveScrollPosition();
+
+    	showLoading();
+    	
+    	$('#' + formId).attr('action', requestPath);
+    	if (keyValue) {
+    		$('#' + formId + '_selectedItem').val(keyValue);
+    	}
+    	$('#' + formId).submit();
+    }
+    
+    
+    function submitFormRadio($button, requestPath) {
+    
+    	var formId = $button.attr('formId');
+    	var loading = $button.attr('loading');
+
+        var submitStatus = dbClick();
+        if (!submitStatus) {
+            return false;
+        }
+
+    	if (loading != 'false') {
+    		showLoading();
+    	}
+    	
+    	_isBeforeUnload = false;
+    	saveScrollPosition();
+    	
+    	$('#' + formId).attr('action', requestPath);
+    	$('#' + formId).submit();
+    }
+    
+    
+    function submitFormSelect($button, requestPath) {
+    
+    	var formId = $button.attr('formId');
+    	var loading = $button.attr('loading');
+    	
+        var submitStatus = dbClick();
+        if (!submitStatus) {
+            return false;
+        }
+
+    	if (loading != 'false') {
+    		showLoading();
+    	}
+    	
+    	_isBeforeUnload = false;
+    	saveScrollPosition();
+    	
+    	$('#' + formId).attr('action', requestPath);
+    	$('#' + formId).submit();
+    }
+    
+    
+     function submitFormButtonForReport($button, requestPath) {
+         
+         var formId = $button.attr('formId');
+         var reportOutputConfirm = $button.attr('reportOutputConfirm');
+         
+         let existsWindowCloseAlertMsgOffFunction = typeof windowCloseAlertMsgOff == 'function';
+        
+         if (arguments.length === 0) {
+             if (_isExcelSubmit) {
+                openConfirmDialog('確認',
+                                  '再度、出力処理を行いますか？',
+                                  function() {
+                                	  _isExcelSubmit = true;
+                                	  if (existsWindowCloseAlertMsgOffFunction) {
+                                          windowCloseAlertMsgOff();
+                                	  }
+                                      $('#' + formId).attr('action', requestPath);
+                                      $('#' + formId).submit();
+                                  },
+                                  function() { return false; });
+                
+             } else {
+                 _isExcelSubmit = true;
+                 if (existsWindowCloseAlertMsgOffFunction) {
+                     windowCloseAlertMsgOff();
+                 }
+                 $('#' + formId).attr('action', requestPath);
+                 $('#' + formId).submit();
+             }
+         } else {
+             var clickKey = arguments[1];
+             if (!!isExcelSubmitMap[clickKey] && (reportOutputConfirm != 'false')) {
+                 openConfirmDialog('確認',
+                                   '再度、出力処理を行いますか？',
+                                   function() {
+                                	   if (existsWindowCloseAlertMsgOffFunction) {
+                                	       windowCloseAlertMsgOff();
+                                	   }
+                                	   $('#' + formId).attr('action', requestPath);
+                                       $('#' + formId).submit();
+                                   },
+                                   function() {});
+             } else {
+                 isExcelSubmitMap[clickKey] = true;
+                 if (existsWindowCloseAlertMsgOffFunction) {
+                     windowCloseAlertMsgOff();
+                 }
+                 $('#' + formId).attr('action', requestPath);
+                 $('#' + formId).submit();
+             }
+         }
+        
+     }
+    
+    
+    function openPopUp(requestPath, windowName) {
+
+    	var submitStatus = dbClick();
+        if (!submitStatus) {
+            return false;
+        }
+    	
+    	var ret = window
+    			.open(
+    					"common/blank.html",
+    					windowName,
+    					"width=1100,height=768,status=yes,scrollbars=yes,toolbar=no,location=yes,menubar=no,resizable=yes");
+    	ret.focus();
+    
+    	$('#PopupForm').attr('action', requestPath);
+    	$('#PopupForm').attr('target', windowName);
+    
+    	$('#PopupForm').submit();
+    }
+    
+    
+    function showSuccessToast(message) {
+    
+    	if (!message) {
+    		return;
+    	}
+    	
+    	
+    	delScrollPosition();
+    	
+    	toastr.options = {
+    		"closeButton" : true,
+    		"debug" : false,
+    		"newestOnTop" : false,
+    		"progressBar" : true,
+    		"positionClass" : "toast-top-center",
+    		"preventDuplicates" : false,
+    		"onclick" : null,
+    		"showDuration" : "300",
+    		"hideDuration" : "1000",
+    		"timeOut" : "5000",
+    		"extendedTimeOut" : "1000",
+    		"showEasing" : "swing",
+    		"hideEasing" : "linear",
+    		"showMethod" : "fadeIn",
+    		"hideMethod" : "fadeOut"
+    	};
+    
+    	toastr['success'](message);
+    }
+
+    
+    function _showErrorToast(message) {
+    
+    	if (!message) {
+    		return;
+    	}
+    	
+    	
+    	delScrollPosition();
+    	
+    	toastr.options = {
+    		"closeButton" : true,
+    		"debug" : false,
+    		"newestOnTop" : false,
+    		"progressBar" : true,
+    		"positionClass" : "toast-top-center",
+    		"preventDuplicates" : false,
+    		"onclick" : null,
+    		"showDuration" : "300",
+    		"hideDuration" : "1000",
+    		"timeOut" : "0",
+    		"extendedTimeOut" : "0",
+    		"showEasing" : "swing",
+    		"hideEasing" : "linear",
+    		"showMethod" : "fadeIn",
+    		"hideMethod" : "fadeOut"
+    	};
+
+    	toastr['error'](message);
+    }
+    
+    
+    function showLoading() {
+    
+    	var div = $('<div id="loadingDialog" />').css("position", "fixed").css("top", "0").css("left",
+    			"0").css("right", "0").css("bottom", "0").css("background",
+    			"rgba(0, 0, 0, 0.1)").css('z-index', '10000');
+    
+    	var msg = "" + "<div class='c-loading'>"
+    			+ "	<div class='c-loading-container'>"
+    			+ "		<div class='c-loading-icon-container'>"
+    			+ "			<div class='c-loading-icon'>" + "			</div>" + "		</div>"
+    			+ "		<div class='c-loading-text'>" + "			<p>LOADING</p>"
+    			+ "		</div>" + "	</div>" + "</div>";
+    
+    	div.append(msg);
+    
+    	$('body').append(div);
+    }
+
+    function closeLoading() {
+        
+    	$('#loadingDialog').remove();
+
+    }
+
+    
+    
+    
+    function exPostPopup(formidx, displayName, actionPath, openParam) {
+    	postPopup(formidx, displayName, actionPath, openParam);
+    }
+    
+    
+    
+    var popupWinList = new Array();
+    var popupOpening = false;
+    function postPopup(formidx, displayName, actionPath, openParam) {
+    	try {
+    		if (!popupOpening) {
+    			var targetWin = popupWinList[displayName];
+    			if (!targetWin || targetWin.closed) {
+    				popupOpening = true;
+    				targetWin = window.open('common/blank.html', displayName, openParam);
+    				popupWinList[displayName] = targetWin;
+    				popupOpening = false;
+    
+    				document.forms[formidx].target = displayName;
+    				document.forms[formidx].method = 'post';
+    				document.forms[formidx].action = actionPath;
+    				_isBeforeUnload = false;
+    				document.forms[formidx].submit();
+    				_isBeforeUnload = true;
+    			} else {
+    				targetWin.focus();
+    			}
+    		}
+    	} catch (e) {
+    		popupWinList = new Array();
+    		popupOpening = false;
+    	}
+    }
+    
+    function coopePostPopup(formidx, displayName, actionPath, openParam) {
+        try {
+            if (!popupOpening) {
+                var targetWin = popupWinList[displayName];
+                if (!targetWin || targetWin.closed) {
+                    popupOpening = true;
+                    targetWin = window.open('common/blank.html', displayName, openParam);
+                    popupWinList[displayName] = targetWin;
+                    popupOpening = false;
+                    document.forms[formidx].target = displayName;
+                    document.forms[formidx].method = 'post';
+                    document.forms[formidx].action = actionPath;
+                    _isBeforeUnload = false;
+                    document.forms[formidx].submit();
+                    _isBeforeUnload = true;
+                }
+                else {
+                	if ('1' == '1') {
+                	    var dialogTitle = "確認";
+                	    var dialogMessage = "編集中のデータは破棄されます。よろしいですか？";
+                	    openConfirmDialog(dialogTitle, dialogMessage, function() {
+                            document.forms[formidx].target = displayName;
+                            document.forms[formidx].method = 'post';
+                            document.forms[formidx].action = actionPath;
+                            _isBeforeUnload = false;
+                            document.forms[formidx].submit();
+                            _isBeforeUnload = true;
+                        });
+                	}
+                	else {
+                		document.forms[formidx].target = displayName;
+                        document.forms[formidx].method = 'post';
+                        document.forms[formidx].action = actionPath;
+                        _isBeforeUnload = false;
+                        document.forms[formidx].submit();
+                        _isBeforeUnload = true;
+                	}
+                }
+            }
+        } catch (e) {
+            popupWinList = new Array();
+            popupOpening = false;
+        }
+    }
+    
+    
+    
+    
+    function exPostSubmit(formidx, actionPath) {
+    	return postSubmit(formidx, actionPath);
+    }
+    
+    
+    function setComboBox($select, itemList) {
+    	 $select.children(":gt(0)").remove();
+    	 for(let item of itemList) {
+    		 $select.append($("<option>").val(item.value).text(item.label))
+    	 }
+    }
+    
+    function openWin(url, windowName, preloginPath) {
+
+        if (preloginPath) {
+            jQuery.ajax({
+                type: 'POST',
+                url: preloginPath,
+                data: '',
+                async: false,
+                success: function (nodata) {},
+                dataType: 'text'
+            });
+        }
+
+        coopePostPopup('home_systemCooperationLink',
+                windowName,
+                url,
+                'location=no, directories=no, resizable=yes, status=no, toolbar=no, menubar=no, width=1000, height=650,left=0, top=0, scrollbars=yes');
+    }
+    
+  
+  function saveScrollPosition() {
+      if ('1' == '1') {
+          sessionStorage.setItem('SC_18001B00_13' + '_scrollPosition', $(window).scrollTop());
+      }
+  }
+
+  
+  function delScrollPosition() {
+	  var positionlength = sessionStorage.length;
+      var n = 0;
+      var scrollCnt = 0;
+      const regex = RegExp('^(?=.*18001B00)(?=.*scrollPosition).*$');
+      while (n < (positionlength - scrollCnt)) {
+    	  var key = sessionStorage.key(n);
+    	  if (regex.test(sessionStorage.key(n))) {
+    		  sessionStorage.removeItem(key);
+    		  scrollCnt++;
+    	  }
+    	  else {
+    		  n++;
+    	  }
+      }
+  }
+  
+  
+  function ClearStorage() {
+	  sessionStorage.clear();
+  }
+
+</script>
+
+<script language="javascript">
+	
+	
+	isSubmit = false;
+	isFileSubmit = false;
+	isCsvSubmit = false;
+	isExcelSubmit = false;
+	isPdfSubmit = false;
+	isChildOpen = false;
+	isCsvSubmitMap = new Array();
+	isExcelSubmitMap = new Array();
+	
+	function dbClick() {
+	    
+	    if (isSubmit) {
+	        return false;
+	    }
+	    isSubmit = true;
+	    return true;
+	}
+	
+	function dbLinkClick(arg) {
+	    if (!isSubmit) {
+	        isSubmit = true;
+	        document.location.href = arg;
+	    }
+	}
+	
+	function dbSubmitClick(arg, form) {
+	  if (!isSubmit) {
+	    isSubmit = true;
+	    form.action = arg;
+	    form.submit();
+	  }
+	}
+	
+	function dbFileClick() {
+	    
+	    if (isFileSubmit) {
+	        
+	        if (confirm('<lc:message key="sc.0000.i2020"/>')) {
+	            return true;
+	        } else {
+	            return false;
+	        }
+	    } else {
+	        isFileSubmit = true;
+	        return true;
+	    }
+	}
+	
+	function dbCsvClick() {
+	    if (arguments.length === 0) {
+	        
+	        if (isCsvSubmit) {
+	            
+	            if (confirm('<lc:message key="sc.0000.i2021"/>')) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        } else {
+	            isCsvSubmit = true;
+	            return true;
+	        }
+	    } else {
+	        
+	        var clickKey = arguments[0];
+	        
+	        if (!!isCsvSubmitMap[clickKey]) {
+	            
+	            if (confirm('<lc:message key="sc.0000.i2021"/>')) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        } else {
+	            isCsvSubmitMap[clickKey] = true;
+	            return true;
+	        }
+	    }
+	}
+	
+	function dbExcelClick() {
+	    if (arguments.length === 0) {
+	        
+	        if (isExcelSubmit) {
+	            
+	            if (confirm('<lc:message key="sc.0000.i2022"/>')) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        } else {
+	            isExcelSubmit = true;
+	            return true;
+	        }
+	    } else {
+	        
+	        var clickKey = arguments[0];
+	        
+	        if (!!isExcelSubmitMap[clickKey]) {
+	            
+	            if (confirm('<lc:message key="sc.0000.i2022"/>')) {
+	                return true;
+	            } else {
+	                return false;
+	            }
+	        } else {
+	            isExcelSubmitMap[clickKey] = true;
+	            return true;
+	        }
+	    }
+	}
+	
+	function dbPrintClick() {
+	    
+	    if (isPdfSubmit) {
+	        alert("現在印刷処理中です。しばらくお待ちください。");
+	        return false;
+	    } else {
+	        isPdfSubmit = true;
+	        return true;
+	    }
+	}
+	
+	function dbChildOpen(url, width, height) {
+	    if (!isChildOpen) {
+	        isChildOpen = true;
+	        childWindow = window.open(url, 'subWindow', 'width=' + width + ',height=' + height + ', scrollbars=yes, resizable=yes, status=yes');
+	        childWindow.focus();
+	    } else {
+	        
+	        if(navigator.userAgent.indexOf('Safari/85') != -1){
+	            
+	            childWindow = window.open(url, 'subWindow', 'width=' + width + ',height=' + height + ', scrollbars=yes, resizable=yes');
+	            childWindow.focus();
+	        
+	        } else {
+	            if (childWindow.closed) {
+	                childWindow = window.open(url, 'subWindow', 'width=' + width + ',height=' + height + ', scrollbars=yes, resizable=yes');
+	                childWindow.focus();
+	            } else {
+	                alert("子ウィンドウが既に開いています。");
+	            }
+	        }
+	    }
+	}
+	
+	function dbDemoChildOpen(url) {
+	    var width = window.innerWidth;
+	    var height = window.innerHeight;
+	    var topLeft = "";
+	
+	    if (typeof width == 'undefined' || typeof height == 'undefined') {
+	        
+	        if (document.getElementById && (document.compatMode=='CSS1Compat')) {
+	            width = document.documentElement.clientWidth;
+	            height = document.documentElement.clientHeight;
+	            var top = document.documentElement.scrollTop;
+	            var left = document.documentElement.scrollLeft;
+	            topLeft = ",top=" + top + ",left=" + left;
+	
+	        
+	        } else if (document.all) {
+	            width = document.body.clientWidth;
+	            height = document.body.clientHeight;
+	            var top = window.screenTop;
+	            var left = window.screenLeft;
+	            topLeft = ",top=" + top + ",left=" + left;
+	        }
+	    }
+	
+	    var option = "width=" + width + ",height=" + height + topLeft
+	        + ",menubar=yes,toolbar=yes,location=yes,status=yes,resizable=yes,scrollbars=yes";
+	
+	    if (!isChildOpen) {
+	        isChildOpen = true;
+	        childWindow = window.open(url, 'subWindow', option);
+	        childWindow.focus();
+	
+	    } else {
+	        
+	        if (navigator.userAgent.indexOf('Safari/85') != -1) {
+	            
+	            childWindow = window.open(url, 'subWindow', option);
+	            childWindow.focus();
+	        
+	        } else {
+	            if (childWindow.closed) {
+	                childWindow = window.open(url, 'subWindow', option);
+	                childWindow.focus();
+	            } else {
+	                alert("子ウィンドウが既に開いています。");
+	            }
+	        }
+	    }
+	}
+
+</script>
+
+
+<script>
+
+
+let isScrollPosition = true;
+
+
+function searchDetailAdvanced() {
+    
+    for (var i = 0; i <= $('.js-search-advanced').length -1; i++) {
+        if (sessionStorage.getItem($($('.js-search-advanced').eq(i).data('content')).closest('form').attr('id') + '_' + 
+        		$($('.js-search-advanced').eq(i).data('content')).attr('id')) == 'is-active') {
+            $('.js-search-advanced').eq(i).toggleClass('is-active');
+            $($('.js-search-advanced').eq(i).data('content')).toggleClass('is-active').show();
+        }
+    }
+    
+    $('.js-search-advanced').on('click', function () {
+        $(this).toggleClass('is-active');
+        $($(this).data('content')).toggleClass('is-active').slideToggle();
+        if ($(this).hasClass('is-active')) {
+            sessionStorage.setItem($($(this).data('content')).closest('form').attr('id') + '_' + $($(this).data('content')).attr('id'), "is-active");
+        }
+        else {
+            sessionStorage.removeItem($($(this).data('content')).closest('form').attr('id') + '_' + $($(this).data('content')).attr('id'));
+        }
+        return false;
+    })
+}
+
+
+function focusInputError() {
+	let $err = $('.input-error');
+	if ($err.length > 0) {
+		let $ele = $err[0];
+		if ($ele != null) {
+			let itype = $ele.type;
+			if (itype != null && itype == "text") {
+				let callet = $ele.value;
+				$ele.value = '';
+				$ele.focus();
+				$ele.value = callet;
+			}
+		}
+	}
+}
+
+
+function errorScroll() {
+	
+	let $crr = $("[class^='c-error']");
+	if ($crr.length > 0) {
+		$("html,body").scrollTop(0);
+		isScrollPosition = false;
+	} else {
+		let $err = $("[class^='parsley-error'],[class^='input-error'],[class*='c-form-error-box']");
+		if ($err.length > 0) {
+			let $ele = $err[0];
+			let $tag = $ele.tagName;
+			let $div = $($ele).parent("div");
+			if ($div.length > 0) {
+				$("html,body").scrollTop($div.offset().top - 200);
+				isScrollPosition = false;
+			} else if ($tag == "SPAN") {
+				$("html,body").scrollTop($($ele).offset().top - 200);
+				isScrollPosition = false;
+			}
+		}	
+	}
+}
+
+
+function selectorEscape(val){
+    return val.replace(/[ !"#$%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/g, '\\$&');
+}
+
+$(document).ready(function() {
+	searchDetailAdvanced();  
+	setScrollPosition();     
+});
+
+$(window).on('load', function() {
+	focusInputError();
+	errorScroll();
+	tinyMce();
+	closeLoading();
+});
+
+
+function tinyMce() {
+	$('.tinymce').each(
+		function() {
+
+			var tinyBase = "/lcu-web/css/";
+			var tiny_css = tinyBase + "tinymce_content.css";
+			if ($('.tinymce' + '.input-error').length > 0) {
+				tiny_css = tinyBase + "tinymce_content_err.css";
+			}
+
+			tinymce.init({
+				selector : "#" + $(this).attr('id'),
+				menubar : false,
+				language : "ja",
+				width : "100%",
+				height : "200px",
+				plugins : "lists preview link",
+				branding : false,
+				force_br_newlines : true,
+				force_p_newlines : false,
+				forced_root_block : '',
+				mode : "none",
+				resize : false,
+				statusbar : false,
+				content_css : tiny_css,
+				contextmenu : false,
+				toolbar : [
+						{
+							name : 'formatting',
+							items : [ 'bold', 'italic', 'underline',
+									'strikethrough' ]
+						},
+						{
+							name : 'alignment',
+							items : [ 'alignleft', 'aligncenter',
+									'alignright', 'alignjustify' ]
+						}, {
+							name : 'fontsize',
+							items : [ 'fontsizeselect' ]
+						}, {
+							name : 'list',
+							items : [ 'bullist', 'numlist' ]
+						}, {
+							name : 'color',
+							items : [ 'forecolor', 'backcolor' ]
+						}, {
+							name : 'remove',
+							items : [ 'removeformat' ]
+						}, {
+							name : 'preview',
+							items : [ 'preview' ]
+						}, {
+							name : 'link',
+							items : [ 'link' ]
+						} ],
+			});
+		});
+}
+
+
+function setScrollPosition() {
+	if (isScrollPosition) {
+	    var scrollPosition = sessionStorage.getItem('SC_18001B00_13' + '_scrollPosition');
+	    if (scrollPosition != null && '' == '' && '' == '') {
+	        $(window).scrollTop(scrollPosition);
+	    }		
+	}
+}
+
+
+function forceScrollTop() {
+    $("html,body").scrollTop(0);
+    isScrollPosition = false;
+}
+
+</script>
+
+
+
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Language" content="ja">
+<meta name="viewport" content="width=device-width,user-scalable=no">
+<link rel="icon" href="https://gakujo.shizuoka.ac.jp/lcu-web/img/common/favicon.svg" type="image/svg+xml">
+
+<title>時間割参照</title>
+
+    <link rel="stylesheet" type="text/css" href="./時間割参照_files/SC_18001B00_13.css">
+
+<script language="javascript">
+    
+    $(document).ready(function() {
+        timerTimeExecute(0, 60, 0);
+        $(function(){
+            
+        });
+    });
+</script></head>
+
+
+
+
+
+<body class="">
+	
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--main-menu-->
+<div class="c-main-menu">
+    <button type="button" class="c-main-menu-btn">
+        <img src="./時間割参照_files/btn_menu01_off.svg" alt="menu">
+    </button>
+    <div class="c-main-menu-overlay"></div>
+    <nav class="c-gnav">
+	        <ul class="c-gnav-items">
+
+            
+            
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                    <li class="c-gnav-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_01002B00_01/init&#39;)" class="c-gnav-link is-home"><div class="main-menu-title">ホーム</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                    <li class="c-gnav-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_17001B00_01/init&#39;)" class="c-gnav-link is-information"><div class="main-menu-title">連絡通知</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+                    
+                    <li class="c-gnav-item c-gnav-dropdown accordion -pc-none">
+                        <a href="javascript:void(0);" class="c-gnav-link is-schedule js-accordion-trigger"><div class="main-menu-title">スケジュール・予約</div></a>
+                        <div class="c-gnav-dropdown-content js-accordion-content">
+                            <div class="js-accordion-height">
+                                <div class="c-gnav-children">
+                                    <ul class="c-gnav-children-items">
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_18001B00_01/initFromHome&#39;)" class="c-gnav-children-link"><div class="main-menu-title">スケジュール</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_18001B00_04/initReservation&#39;)" class="c-gnav-children-link"><div class="main-menu-title">予約申込</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+                
+                </ul></div></div></div></li>
+                
+
+                
+
+                
+                    <li class="c-gnav-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_07002B00_01/initStudent&#39;)" class="c-gnav-link is-study"><div class="main-menu-title">履修登録</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+                    
+                    <li class="c-gnav-item c-gnav-dropdown accordion -pc-none">
+                        <a href="javascript:void(0);" class="c-gnav-link is-take js-accordion-trigger"><div class="main-menu-title">授業・課題</div></a>
+                        <div class="c-gnav-dropdown-content js-accordion-content">
+                            <div class="js-accordion-height">
+                                <div class="c-gnav-children">
+                                    <ul class="c-gnav-children-items">
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_06001B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">シラバス</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_12001B00_01/initFromHome&#39;)" class="c-gnav-children-link"><div class="main-menu-title">授業参考情報</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_14002B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">課題・アンケート提出</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_13002B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">出欠状況確認</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+                
+                </ul></div></div></div></li>
+                
+
+                
+
+                
+                
+
+                
+                    
+                    <li class="c-gnav-item c-gnav-dropdown accordion -pc-none">
+                        <a href="javascript:void(0);" class="c-gnav-link is-portfolio js-accordion-trigger"><div class="main-menu-title">学修ポートフォリオ</div></a>
+                        <div class="c-gnav-dropdown-content js-accordion-content">
+                            <div class="js-accordion-height">
+                                <div class="c-gnav-children">
+                                    <ul class="c-gnav-children-items">
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_15005B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">成績ダッシュボード</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_15003B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">活動記録</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_15004B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">学修成果シート</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_15006B00_03/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">履修カルテ</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+                
+                </ul></div></div></div></li>
+                
+
+                
+
+                
+                
+
+                
+                    
+                    <li class="c-gnav-item c-gnav-dropdown accordion -pc-none">
+                        <a href="javascript:void(0);" class="c-gnav-link is-mypage js-accordion-trigger"><div class="main-menu-title">マイ Info</div></a>
+                        <div class="c-gnav-dropdown-content js-accordion-content">
+                            <div class="js-accordion-height">
+                                <div class="c-gnav-children">
+                                    <ul class="c-gnav-children-items">
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_05002B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">学生情報</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_04001B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">個人システム設定</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_04002B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">マイグループ</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_90001szu_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">授業料免除</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+                
+                </ul></div></div></div></li>
+                
+
+                
+
+                
+                
+
+                
+                    
+                    <li class="c-gnav-item c-gnav-dropdown accordion -pc-none">
+                        <a href="javascript:void(0);" class="c-gnav-link is-campus js-accordion-trigger"><div class="main-menu-title">キャンパス Info</div></a>
+                        <div class="c-gnav-dropdown-content js-accordion-content">
+                            <div class="js-accordion-height">
+                                <div class="c-gnav-children">
+                                    <ul class="c-gnav-children-items">
+                
+
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_19003B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">コミュニケーション掲示板</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_19006B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">各種申請</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_19002B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">学内FAQ</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+                
+
+                
+
+                
+
+                
+
+                
+                
+
+                
+
+                
+                    <li class="c-gnav-children-item"><a href="javascript:void(0);" onclick="javascript:ClearStorage(); javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_19001B00_01/init&#39;)" class="c-gnav-children-link"><div class="main-menu-title">学内共有ファイル</div></a></li>
+                
+                
+
+                
+
+                
+                
+
+            
+
+            
+            </ul></div></div></div></li>
+            
+            
+        </ul>
+    </nav>
+</div>
+
+
+<form id="home_systemCooperationLink" action="https://gakujo.shizuoka.ac.jp/lcu-web/systemCooperationLink/init" method="post"><div>
+<input type="hidden" name="_TRANSACTION_TOKEN" value="SC_18001B00_13~f99aed89ccd1f193b02a98616de1ed15~3e08f7289761ee5961ae88e1e26c0c40">
+<input type="hidden" name="_csrf" value="71bfd6b3-06d5-46d7-9dd9-28a17071fa8f">
+</div></form>
+
+<!--//main-menu END-->
+
+    <div class="c-wrapper" style="padding-bottom: 61.3333px;">
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script language="javascript">
+<!--
+/* ----------------------------------------------------------------------------------------
+ * ヘッダタイマー関連処理 [START]
+ */
+let presetTmpSec = 0;
+let timerSet ;
+
+var lcHeaderTimer_stt;
+var lcHeaderTimer_end;
+
+/* --------------------------------------------
+ * タイマー実行本体 (onload時にtemplate.jspよりcall)
+ * --------------------------------------------
+ */
+function timerTimeExecute(hour_b , min_b , sec_b) {
+	try {
+
+		/* タイマー初期設定 */
+        setTimer(hour_b , min_b , sec_b);
+		
+		/* タイマー開始 */
+		timerStart();
+
+		/* クライアント(ブラウザ)のURLの格納キーの設定 */
+		setClientLocationUrl();
+		
+	} catch (e) {}
+
+	return false;
+	
+}
+
+/* --------------------------------------------
+ * タイマー時間設定（非同期）
+ * --------------------------------------------
+ */
+function timerTimeAjaxExecute(hour_b , min_b , sec_b) {
+    try {
+    	
+    	// 時間のセット
+    	setTimer(hour_b , min_b , sec_b);
+
+        // それぞれを足して秒単位で出力
+        presetTmpSec = h1 + m1 + s1 + 1 ;
+        
+    } catch (e) {}
+
+    return false;
+    
+}
+
+/* ---------------------------------------
+ * タイマー初期設定
+ * ---------------------------------------
+ */
+function setTimer(hour_b , min_b , sec_b) {
+
+    if (min_b >= 60) {
+        hour_b = hour_b + Math.floor(min_b / 60);
+        min_b = min_b % 60;
+    }
+
+    // "00"と表示させるための処理
+    if (hour_b < 10) {
+        hour_b = "0" + hour_b;
+    }
+    if (min_b < 10) {
+        min_b = "0" + min_b;
+    }
+    if (sec_b < 10) {
+        sec_b = "0" + sec_b;
+    }
+    document.getElementById("timerHour").value = hour_b;
+    document.getElementById("timerMin").value  = min_b;
+    document.getElementById("timerSec").value  = sec_b;
+
+    let hour_f = eval(document.getElementById("timerHour").value);
+    let min_f  = eval(document.getElementById("timerMin").value);
+    let sec_f  = eval(document.getElementById("timerSec").value);
+
+    // それぞれを秒に変換
+    let h1 = hour_f * 60 * 60;
+    let m1 = min_f  * 60;
+    let s1 = sec_f;
+
+    // それぞれを足して秒単位で出力
+    let presetTmpSecDefault = h1 + m1 + s1 ;
+
+    // 画面への時間表示
+    document.getElementById("logoutCount").innerHTML = timerDisplay(hour_b, min_b, sec_b);
+
+    // 開始時の時刻を取得
+	let startNow = new Date();
+    let endTimes = new Date();
+	
+	// タイムアウトとなる時刻をセット（秒数加算）
+	endTimes.setSeconds(endTimes.getSeconds() + presetTmpSecDefault);
+
+	lcHeaderTimer_stt = startNow;
+	lcHeaderTimer_end = endTimes;
+
+
+	// -- debug ------------------------------------------
+	/*
+	let sesSttYMD = startNow.getFullYear() 
+	  				+ "" + (startNow.getMonth() + 1) 
+	  				+ "" + startNow.getDate() 
+	  				+ "" + startNow.getHours() 
+	  				+ "" + startNow.getMinutes() 
+	  				+ "" + startNow.getSeconds();
+	
+	let sesEndYMD = endTimes.getFullYear() 
+					+ "" + (endTimes.getMonth() + 1) 
+					+ "" + endTimes.getDate() 
+					+ "" + endTimes.getHours() 
+					+ "" + endTimes.getMinutes() 
+					+ "" + endTimes.getSeconds();
+	
+	console.log("---------------------------------");
+	console.log("開始[" + lcHeaderTimer_stt + "]");
+	console.log("終了[" + lcHeaderTimer_end + "]");
+	console.log("---------------------------------");
+	*/
+	// -- debug ------------------------------------------
+}
+
+/* ---------------------------------------
+ * タイマー開始
+ * ---------------------------------------
+ */
+function timerStart() {
+
+	try {
+		let hour_f = eval(document.getElementById("timerHour").value);
+		let min_f  = eval(document.getElementById("timerMin").value);
+		let sec_f  = eval(document.getElementById("timerSec").value);
+
+		// それぞれを秒に変換
+		let h1 = hour_f * 60 * 60;
+		let m1 = min_f  * 60;
+		let s1 = sec_f;
+
+		// それぞれを足して秒単位で出力
+		presetTmpSec = h1 + m1 + s1 ;		
+		timerSet = setInterval("timerTick()" , 1000);
+
+	} catch (e) {}
+
+}
+
+/* ---------------------------------------
+ * タイマー周期処理
+ * ・1000msec周期で本関数が呼び出される
+ * ---------------------------------------
+ */
+function timerTick() {
+
+	try {
+		//presetTmpSec = presetTmpSec - 1;
+		
+		// 現在時刻とタイムアウト時刻の差を算出（秒単位）
+		let timerNowTime = new Date();
+		let diff = lcHeaderTimer_end.getTime() - timerNowTime.getTime();
+		presetTmpSec = (diff / 1000);
+		
+		// 秒単位の秒数をそれぞれの単位に直す
+		let sec  = Math.floor(presetTmpSec)        % 60;
+		let min  = Math.floor(presetTmpSec / 60)   % 60;
+		let hour = Math.floor(presetTmpSec / 3600) % 24;
+
+		// "00"と表示させるための処理
+		if (hour < 10) {
+		    hour = "0" + hour;
+		}
+		if (min < 10) {
+		    min = "0" + min;
+		}
+		if (sec < 10) {
+		    sec = "0" + sec;
+		}
+
+		document.getElementById("timerHour").value = hour;
+		document.getElementById("timerMin").value  = min;
+		document.getElementById("timerSec").value  = sec;
+
+		var lcTimerdDisp = timerDisplay(hour, min, sec);
+		
+		document.getElementById("logoutCount").innerHTML  = lcTimerdDisp;
+		
+		// -- debug ------------------------------------------
+		/*
+		var sssNow = new Date();
+		var sssYear  = sssNow.getFullYear();
+		var sssMonth = sssNow.getMonth()+1;
+		var sssDate  = sssNow.getDate();
+		var sssHour  = sssNow.getHours();
+		var sssMin   = sssNow.getMinutes();
+		var sssSec   = sssNow.getSeconds();
+		
+		let wwsec  = Math.floor(diffMin)        % 60;
+		let wwmin  = Math.floor(diffMin / 60)   % 60;
+		let wwhour = Math.floor(diffMin / 3600) % 24;
+
+		// "00"と表示させるための処理
+		if (wwhour < 10) {
+		    wwhour = "0" + wwhour;
+		}
+		if (wwmin < 10) {
+		    wwmin = "0" + wwmin;
+		}
+		if (wwsec < 10) {
+		    wwsec = "0" + wwsec;
+		}
+		var supportTime = timerDisplay(wwhour, wwmin, wwsec);
+		
+		var sssNowTime = sssYear + "年" + sssMonth + "月" + sssDate + "日" + sssHour + ":" + sssMin + ":" + sssSec;
+		console.log("headerTime=[" + lcTimerdDisp + "] supportTime[" + supportTime + "] realTime=[" + sssNowTime + "]");
+		*/
+		// -- debug ------------------------------------------
+
+		// タイムアウト発生処理
+		if (presetTmpSec <= 0) {
+
+			document.getElementById("timerHour").value = "00";
+			document.getElementById("timerMin").value  = "00";
+			document.getElementById("timerSec").value  = "00";
+			document.getElementById("logoutCount").innerHTML = "00:00:00";
+			
+			clearInterval(timerSet);
+
+			// ログアウト処理
+            const confirmTitle   = 'タイムアウト';
+            const confirmMessage = 'タイムアウトが発生しましたので、ログイン画面に戻ります。';
+            openConfirmDialog(confirmTitle, confirmMessage, logOut, sessionTimeout);    
+
+		}
+	} catch (e) {}
+}
+
+/* ---------------------------------------
+ * 画面表示用整形処理
+ * ---------------------------------------
+ */
+function timerDisplay(h, m, s) {
+    if (h == "" || h == "0" || h == "00") {
+        h = "";
+    } else {
+        h = h + ":";
+    }
+	if (h == "" && (m == "" || m == "0" || m == "00")) {
+		m = "00" + ":";
+	} else {
+		m = m + ":";
+	}
+	s = s + "";
+    return h + m + s;
+
+}
+/* ----------------------------------------------------------------------------------------
+ * ヘッダタイマー関連処理 [END]
+ */
+
+
+/* ---------------------------------------
+ * ログアウト処理
+ * ---------------------------------------
+ */
+function logoutOK() {
+
+    
+    
+    
+        logOut();
+    
+    
+
+}
+
+/* ---------------------------------------
+ * ログアウトキャンセル ボタン押下時
+ * ---------------------------------------
+ */
+function logoutNG(){
+}
+
+/* ---------------------------------------
+ * ログアウト処理
+ * ---------------------------------------
+ */
+function logOut() {
+	beforeLogoutProcess(function() {
+        postSubmit('emptyForm', 'SC_01003B00_13/lcuLogout');
+	});
+}
+
+/* ---------------------------------------
+ * セッションタイムアウト
+ * ---------------------------------------
+ */
+function sessionTimeout() {
+    
+    $(document).ajaxSend(function(e, xhr, options) {
+        xhr.setRequestHeader("X-CSRF-TOKEN", "71bfd6b3-06d5-46d7-9dd9-28a17071fa8f");
+    });
+
+    $.ajax({
+        url: "/lcu-web/SC_01003B00_13/sessionTimeout",
+        type: "POST",
+        dataType: "json",
+    });
+}
+
+/* ---------------------------------------
+ * ログアウトコールバック関数
+ * ---------------------------------------
+ */
+function lcuLogout() {
+    const confirmTitle   = 'ログアウト';
+    const confirmMessage = 'ログアウトします。よろしいですか？';
+    openConfirmDialog(confirmTitle, confirmMessage, logoutOK, logoutNG);    
+}
+
+/* ---------------------------------------
+ * 各画面に遷移する
+ * ---------------------------------------
+ */
+function postSubmit(formidx, actionPath) {
+	saveScrollPosition();
+    document.forms[formidx].method = "post";
+    document.forms[formidx].action = '/lcu-web/' + actionPath;
+    document.forms[formidx].submit();
+}
+
+/* ---------------------------------------
+ * クライアント(ブラウザ)のURLの格納キーの設定
+ * ---------------------------------------
+ */
+function setClientLocationUrl() {
+
+    let clientLocationUrl = location.protocol + '//' + location.host + '/';
+
+    $(document).ajaxSend(function(e, xhr, options) {
+        xhr.setRequestHeader("X-CSRF-TOKEN", "71bfd6b3-06d5-46d7-9dd9-28a17071fa8f");
+    });
+
+    $.ajax({
+        url: "/lcu-web/SC_01003B00_13/setClientLocationUrl",
+        type: "GET",
+        data:{'val': clientLocationUrl},
+        dataType: "json",
+    });
+
+}
+
+/* ---------------------------------------
+ * ログアウト前処理
+ * ---------------------------------------
+ */
+function beforeLogoutProcess(callBackFunc) {
+
+	$.ajax({
+        url: '/lcu-web/SC_01003B00_13/beforeLogoutProcess',
+        type: 'GET'
+    })
+    .done(function(token) {
+    	$('input[name="_csrf"]').val(token);
+    	callBackFunc();
+    });
+
+}
+
+//-->
+</script>
+
+
+
+
+
+
+<script language="javascript">
+	var $el;
+	var title;
+	var message;
+
+	// 確認ダイアログを開く
+	function openConfirmDialog(title, message, okCallback, cancelCallback) {
+
+		// ダイアログ用の要素を追加
+		$('main').after('<div id = "confirmDialog"></div>')
+
+		// オブジェクト生成
+		var confirmDialog = new ConfirmDialog({
+			el : '#confirmDialog',
+			title : title,
+			message : message
+		});
+
+		// コールバック関数の設定
+		if (okCallback != null) {
+			confirmDialog.okCallback = function() {
+				okCallback();
+				confirmDialog.close();
+			}
+		}
+
+		if (cancelCallback != null) {
+			confirmDialog.cancelCallback = function() {
+				cancelCallback();
+				confirmDialog.close();
+			}
+		}
+
+		confirmDialog.open();
+	}
+
+	// メッセージダイアログを開く
+	function openMessageDialog(title, message, okCallback) {
+
+		// ダイアログ用の要素を追加
+		$('main').after('<div id = "messageDialog"></div>')
+
+		// オブジェクト生成
+		var messageDialog = new MessageDialog({
+			el : '#messageDialog',
+			title : title,
+			message : message
+		});
+
+		// コールバック関数の設定
+		if (okCallback != null) {
+			messageDialog.okCallback = function() {
+				okCallback();
+				messageDialog.close();
+			}
+		}
+
+		messageDialog.open();
+	}
+
+	// 確認ダイアログ
+	var ConfirmDialog = function(props) {
+
+		$el = $(props.el);
+		title = props.title;
+		message = props.message;
+
+		this.open = function() {
+			this.setMessage();
+			this.openDialog();
+		}
+
+		this.close = function() {
+			$el.dialog('close');
+			$('#confirmDialog').remove();
+		}
+
+		this.okCallback = function() {
+			$el.dialog('close');
+			$('#confirmDialog').remove();
+		}
+
+		this.cancelCallback = function() {
+			$el.dialog('close');
+			$('#confirmDialog').remove();
+		}
+
+		this.option = function(title) {
+			return {
+				title : title,
+				modal : true,
+				height : 200,
+				width : 400,
+				resizable : false,
+				draggable : false,
+				buttons : [
+					{
+						text: 'キャンセル',
+	                	class:'dialog-btn-cancel',
+	                	click: this.cancelCallback
+					},
+					{
+						text: 'OK',
+	                	class:'dialog-btn-ok',
+	                	click: this.okCallback
+					}
+				]
+			}
+		}
+
+		this.openDialog = function() {
+			$el.dialog(this.option(title));
+		}
+
+		this.setMessage = function() {
+			$el.html(message);
+		}
+	}
+
+	// メッセージダイアログ
+	var MessageDialog = function(props) {
+
+		$el = $(props.el);
+		title = props.title;
+		message = props.message;
+
+		this.open = function() {
+			this.setMessage();
+			this.openDialog();
+		}
+
+		this.close = function() {
+			$el.dialog('close');
+			$('#messageDialog').remove();
+		}
+
+		this.okCallback = function() {
+			$el.dialog('close');
+			$('#messageDialog').remove();
+		}
+
+		this.option = function(title) {
+			return {
+				title : title,
+				modal : true,
+				height : 200,
+				width : 400,
+				resizable : false,
+				draggable : false,
+				buttons : [
+					{
+						text: 'OK',
+	                	class:'dialog-btn-ok',
+	                	click: this.okCallback
+					}
+				]
+			}
+		}
+
+		this.openDialog = function() {
+			$el.dialog(this.option(title));
+		}
+
+		this.setMessage = function() {
+			$el.html(message);
+		}
+	}
+</script>
+
+
+
+
+<script>
+
+    // ajaxメッセージ表示領域のID属性値
+    var ajaxMessageAreaId = 'ajaxMessageArea';
+    // ajaxメッセージ表示領域のjQueryオブジェクト
+    var $ajaxMessageArea = null;
+
+    $(document).ready(function() {
+        // ajaxメッセージ表示領域のjQueryオブジェクトを保持
+        $ajaxMessageArea = $('#' + ajaxMessageAreaId);
+    });
+
+    /**
+     * json形式のHTTP通信(get)関数をjQueryに追加
+     * url  リクエストを送信する先のURL
+     * data サーバに送信する値
+     * callbackDone Ajax通信が正常終了した時のコールバック関数
+     * callbackFail Ajax通信が異常終了した時のコールバック関数(省略可)
+     */
+    jQuery.ajaxGetJSON = function(url, data, callbackDone, callbackFail) {
+
+        var options = {};
+        options.type = 'GET';
+        options.data = data;
+        options.dataType = 'json';
+
+        return ajaxCommon(url, data, callbackDone, callbackFail, options);
+    };
+
+    /**
+     * json形式のHTTP通信(post)関数をjQueryに追加
+     * url  リクエストを送信する先のURL
+     * data サーバに送信する値
+     * callbackDone Ajax通信が正常終了した時のコールバック関数
+     * callbackFail Ajax通信が異常終了した時のコールバック関数(省略可)
+     */
+    jQuery.ajaxPostJSON = function(url, data, callbackDone, callbackFail) {
+
+        var options = {};
+        options.type = 'POST';
+        options.contentType = 'application/json;charset=utf-8';
+        options.data = data;
+        options.dataType = 'json';
+        // CSRF対策としてHeadersにtokenを付与
+        options.headers = {
+                'X-CSRF-TOKEN':'71bfd6b3-06d5-46d7-9dd9-28a17071fa8f'
+        };
+
+        if ( typeof timerTimeAjaxExecute == "function") {
+        	let timeoutTime = '60';
+        	if (timeoutTime != null && timeoutTime != '') {
+        		timerTimeAjaxExecute(0, timeoutTime, 0);        		
+        	}
+        }
+
+        return ajaxCommon(url, data, callbackDone, callbackFail, options);
+    };
+
+    /**
+     * HTTP通信共通部
+     */
+    function ajaxCommon(url, data, callbackDone, callbackFail, options) {
+
+        if(callbackFail == null){
+            // エラー時コールバック関数未指定の場合はデフォルト使用
+            callbackFail = defaultCallbackFail;
+        }
+        // ajaxメッセージ表示領域をクリア
+        $ajaxMessageArea.empty();
+        // jQueryのajax関数で通信実施
+        $.ajax(url, options).done(addOutputMessagesCallback(callbackDone)).fail(callbackFail);
+        return false;
+    };
+
+    /**
+     * メッセージ出力コールバック関数追加
+     * ※引数で指定したコールバック関数の前にメッセージ出力用関数を呼び出すための定義作成
+     */
+    function addOutputMessagesCallback(callback) {
+        return function(json){
+            if(json.resultMessages != null) {
+                // メッセージが返却されている場合は出力して処理を中断
+                outputResultMessages(json.resultMessages);
+                return;
+            }
+            // 引数のコールバック関数呼び出し
+            callback(json);
+        }
+    }
+
+    /**
+     * メッセージ出力用コールバック関数
+     */
+    function outputResultMessages(resultMessages) {
+        // メッセージが返却されている場合、メッセージ領域に出力
+        $ajaxMessageArea.append('<section class="alert"><ul></ul></section>');
+        // メッセージ領域配下のdivタグにエラータイプに応じたclassを追加
+        $ajaxMessageArea.find('section').addClass(getAlartTyprClass(resultMessages.type));
+        for (var val of resultMessages.list) {
+            // メッセージ領域配下のdiv>ulタグにメッセージ出力
+            $ajaxMessageArea.find('ul').append('<li>' + val.text + '</li>');
+        }
+    };
+
+    /**
+     * エラータイプに応じたメッセージ領域用classを取得
+     */
+    function getAlartTyprClass(type) {
+        if(type === 'ERROR') {
+            return 'section-error';
+        } else if (type === 'WARNING') {
+            return 'section-warning';
+        } else {
+            return 'section-info';
+        }
+    };
+
+    /**
+     * デフォルトのエラー時コールバック関数
+     */
+    function defaultCallbackFail(xhr) {
+        alert('共通のエラー処理です');
+        // チェックエラー
+        // その他エラー：TODO：内容未定
+    };
+    
+    /**
+     * Form→JSON変換
+     */
+    function convertFormToJson($form) {
+        var data = {};
+        $($form.serializeArray()).each(function(i, v) {
+            data[v.name] = v.value;
+        });
+        return JSON.stringify(data);
+    };
+
+    /**
+     * 連動コンボボックス設定
+     *
+     * @param $select selectタグ
+     * @param itemList 選択リスト
+     * @param leavingFirstItemFlag 先頭項目を残すか否か(true:残す/false:残さない)
+     */
+    function setComboBoxForAjaxCommon($select, itemList, leavingFirstItemFlag) {
+    	if (leavingFirstItemFlag) {
+            $select.children(":gt(0)").remove();
+    	} else {
+            $select.children.remove();
+    	}
+        if (itemList != null) {
+            itemList.forEach(item => $select.append($("<option>").val(item.value).text(item.label)));
+        }
+    };
+
+</script>
+
+
+<form id="emptyForm" action="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13" method="post"><div>
+<input type="hidden" name="_TRANSACTION_TOKEN" value="SC_18001B00_13~f99aed89ccd1f193b02a98616de1ed15~3e08f7289761ee5961ae88e1e26c0c40">
+<input type="hidden" name="_csrf" value="71bfd6b3-06d5-46d7-9dd9-28a17071fa8f">
+</div></form>
+
+
+
+
+<!--header-->
+<header class="c-header" style="left: 0px; top: -77px;">
+    <div class="c-header-container">
+        <div class="c-header-left">
+            <h1 class="c-header-sitename">
+                <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_01002B00_00/logoClick&#39;)">
+                    <img src="./時間割参照_files/logo.svg" alt="">
+                </a>
+            </h1>
+        </div>
+        <div class="c-header-right">
+            <div class="c-header-user">
+                <div class="c-header-user-menu">
+                    <a href="javascript:void(0);" onclick="#" class="btn js-userMenu">
+                        <form id="SU_01003B00_13_View" class="h-adr" action="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13" method="post">
+                            <div class="c-form-box">
+                                <div class="c-header-user-menu-img">
+                                    <img src="data:jpg;base64,/9j/4AAQSkZJRgABAQEAZABkAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAMAAwADAREAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBgkBBAUDAv/EAFkQAQABAgMCBQ4JCAgEBQMFAAABAgMEBQYHEQgSITGUExhBUVJVVmFxdIGR0dIVFiI1N5KhsrMUMkJzdYKxwjM0NkNUYnKTFyMkwSdTorTTJWPDJkTh8PH/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/8QAGxEBAQEBAQEBAQAAAAAAAAAAAAEREjECIUH/2gAMAwEAAhEDEQA/ANhDbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//Z">
+                                </div>
+                            </div>
+                        <div>
+<input type="hidden" name="_TRANSACTION_TOKEN" value="SC_18001B00_13~f99aed89ccd1f193b02a98616de1ed15~3e08f7289761ee5961ae88e1e26c0c40">
+<input type="hidden" name="_csrf" value="71bfd6b3-06d5-46d7-9dd9-28a17071fa8f">
+</div></form>
+                        <div class="c-header-user-menu-name">
+                            星野　航太郎
+                        </div>
+                    </a>
+                    
+                        <div class="c-header-user-menu-popup c-box-shadow">
+                            <ul class="c-header-menu-items c-link">
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                        <li class="c-header-menu-item"><a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_05002B00_01/init&#39;)" class="c-header-menu-link">学生情報</a></li>
+                                    
+                                
+                                    
+                                        <li class="c-header-menu-item"><a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_04001B00_01/init&#39;)" class="c-header-menu-link">個人システム設定</a></li>
+                                    
+                                
+                                    
+                                        <li class="c-header-menu-item"><a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_04002B00_01/init&#39;)" class="c-header-menu-link">マイグループ</a></li>
+                                    
+                                
+                                    
+                                        <li class="c-header-menu-item"><a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_90001szu_01/init&#39;)" class="c-header-menu-link">授業料免除</a></li>
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                    
+                                
+                                
+                            </ul>
+                        </div>
+                    
+                    
+                </div>
+                <div class="c-header-user-remain">
+                    タイムアウトまであと
+                    <span id="logoutCount">59:36</span>
+                    <input type="hidden" name="timerHour" id="timerHour" value="00">
+                    <input type="hidden" name="timerMin" id="timerMin" value="59">
+                    <input type="hidden" name="timerSec" id="timerSec" value="36">
+                </div>
+            </div>
+            
+            
+				<div class="c-header-campuslink">
+					<a href="javascript:void(0);" class="c-header-btn-campuslink js-campuslink">
+						<i class="c-icon-campuslink c-color-base" aria-hidden="true"></i>
+					</a>
+					<div class="c-header-campuslink-popup c-box-shadow">
+						<div class="c-header-campuslink-title">
+							<span>関連リンク</span>
+							<a href="javascript:void(0);" class="c-link u-pc-only">
+								<span class="c-link-text"></span>
+							</a>
+						</div>
+						<ul class="c-header-campuslink-items">
+							
+								<li class="c-header-campuslink-item is-urgent" title="">
+									<a href="javascript:void(0);" class="c-header-campuslink-link" style="text-decoration:none;cursor:default">
+										<div class="c-header-campuslink-item-inner">
+											<div class="c-header-campuslink-item-content">
+												<span>表示する関連リンクはありません</span>
+											</div>
+										</div>
+									</a>
+								</li>
+							
+							
+						</ul>
+					</div>
+				</div>
+            
+            
+            <div class="c-header-information">
+                
+				
+					
+				
+                <a href="javascript:void(0);" class="c-header-btn-information js-information">
+                    <i class="c-icon-information c-color-base" aria-hidden="true"></i>
+                    
+                        <span class="c-header-information-badge">630</span>
+                    
+                </a>
+                <div class="c-header-information-popup c-box-shadow">
+                    <div class="c-header-information-title">
+                        <span>お知らせ</span>
+                        <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_17001B00_01/init&#39;)" class="c-link u-pc-only">
+                            <span class="c-link-text">もっとみる</span>
+                            <i class="c-icon-arrow-right c-color-base" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_17001B00_01/init&#39;)" class="c-btn c-btn-line u-sp-only">
+                            <span class="c-btn-link">
+                                <span class="c-btn-text">もっとみる</span>
+                                <i class="c-icon-arrow-right c-color-base" aria-hidden="true"></i>
+                            </span>
+                        </a>
+                    </div>
+
+                    <ul class="c-header-information-items">
+
+                        
+                        
+                        <li class="c-header-information-item is-unread is-urgent">
+                            <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_01003B00_13/importantNoticeLink/260274&#39;)" class="c-header-information-link">
+                                <div class="c-header-information-item-inner">
+                                    <div class="c-header-information-item-header">
+                                        <div class="sender">学内連絡</div>
+                                        <div class="date">2025/01/23 17:45</div>
+                                    </div>
+                                    <div class="c-header-information-item-content">学務情報システムメンテナンスについて【1月27日（月）19時00分～19時30分】</div>
+                                </div>
+                            </a>
+                        </li>
+                        
+                        
+                        <li class="c-header-information-item is-unread is-urgent">
+                            <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_01003B00_13/importantNoticeLink/260336&#39;)" class="c-header-information-link">
+                                <div class="c-header-information-item-inner">
+                                    <div class="c-header-information-item-header">
+                                        <div class="sender">学内連絡</div>
+                                        <div class="date">2025/01/23 17:00</div>
+                                    </div>
+                                    <div class="c-header-information-item-content">あかつき寮・あけぼの寮の4月入寮生の募集について</div>
+                                </div>
+                            </a>
+                        </li>
+                        
+                        
+                        <li class="c-header-information-item is-unread ">
+                            <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_01003B00_13/importantNoticeLink/260254&#39;)" class="c-header-information-link">
+                                <div class="c-header-information-item-inner">
+                                    <div class="c-header-information-item-header">
+                                        <div class="sender">教員連絡</div>
+                                        <div class="date">2025/01/22 16:20</div>
+                                    </div>
+                                    <div class="c-header-information-item-content">緊急連絡です</div>
+                                </div>
+                            </a>
+                        </li>
+                        
+                        
+                        <li class="c-header-information-item is-unread is-urgent">
+                            <a href="javascript:void(0);" onclick="javascript:postSubmit(&#39;emptyForm&#39;, &#39;SC_01003B00_13/importantNoticeLink/260072&#39;)" class="c-header-information-link">
+                                <div class="c-header-information-item-inner">
+                                    <div class="c-header-information-item-header">
+                                        <div class="sender">教員連絡</div>
+                                        <div class="date">2025/01/22 08:00</div>
+                                    </div>
+                                    <div class="c-header-information-item-content">授業アンケート</div>
+                                </div>
+                            </a>
+                        </li>
+                        
+
+                    </ul>
+                </div>
+            </div>
+            <div class="c-header-login">
+                <a href="javascript:void(0);" onclick="javascript:lcuLogout()" class="c-btn c-btn-line">
+                    <span class="c-btn-link">
+                        <span class="c-btn-text">
+                            
+                                
+                                
+                                    ログアウト
+                                
+                            
+                        </span>
+                        <i class="c-icon-logout c-color-base" aria-hidden="true"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+        <img src="./時間割参照_files/spacer.gif">
+    
+
+</header>
+<!--//header END-->
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form id="SC_18001B00_13_Form" action="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13" method="post">
+    <input type="hidden" id="SC_18001B00_13_Form_selectSemesterTermCode" name="selectSemesterTermCode" value="">
+
+    <input type="hidden" id="SC_18001B00_13_Form_schoolYear" name="schoolYear" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_subjectCode" name="subjectCode" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_classCode" name="classCode" value="">
+
+    <input type="hidden" id="SC_18001B00_13_Form_selectedLecture" name="selectedLecture" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_selectedClassCategory" name="selectedClassCategory" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_selectedWeek" name="selectedWeek" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_selectedPeriod" name="selectedPeriod" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_selectedIndex" name="selectedIndex" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_callbackSyllabusReference" name="callbackFunctionNameSyllabusReference" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_callbackClassReference" name="callbackFunctionNameClassReference" value="">
+    <input type="hidden" id="SC_18001B00_13_Form_lotterySelecteIndex" name="lotterySelecteIndex" value="">
+    
+<div>
+<input type="hidden" name="_TRANSACTION_TOKEN" value="SC_18001B00_13~f99aed89ccd1f193b02a98616de1ed15~3e08f7289761ee5961ae88e1e26c0c40">
+<input type="hidden" name="_csrf" value="71bfd6b3-06d5-46d7-9dd9-28a17071fa8f">
+</div></form>
+
+<form id="PU_18001B00_02_PopupForm" action="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13" method="post">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_selectSemesterTermCode" name="selectSemesterTermCode" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_selectedLecture" name="selectedLecture" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_selectedClassCategory" name="selectedClassCategory" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_selectedWeek" name="selectedWeek" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_selectedPeriod" name="selectedPeriod" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_selectedIndex" name="selectedIndex" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_callbackSyllabusReference" name="callbackFunctionNameSyllabusReference" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_callbackClassReference" name="callbackFunctionNameClassReference" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_lotterySelecteIndex" name="lotterySelecteIndex" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_schoolYear" name="schoolYear" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_subjectCode" name="subjectCode" value="">
+    <input type="hidden" id="PU_18001B00_02_PopupForm_classCode" name="classCode" value="">
+<div>
+<input type="hidden" name="_TRANSACTION_TOKEN" value="SC_18001B00_13~f99aed89ccd1f193b02a98616de1ed15~3e08f7289761ee5961ae88e1e26c0c40">
+<input type="hidden" name="_csrf" value="71bfd6b3-06d5-46d7-9dd9-28a17071fa8f">
+</div></form>
+
+<script>
+
+    /**
+     * 学期切替
+     *  semesterTermCode
+     */
+    function change(semesterTermCode) {
+        $('#SC_18001B00_13_Form_selectSemesterTermCode').val(semesterTermCode);
+        return exPostSubmit('SC_18001B00_13_Form', 'SC_18001B00_13/change');
+    }
+
+    /**
+     * ポップアップ画面呼び出し
+     *  selectSemesterTermCode 選択中の学期・時期コード
+     *  selectedLecture　講義種別（1:一般講義、2:時間割外講義、3:集中講義、4:試験時間割）
+     *  selectedClassCategory 講義区分（1:一般講義、2:抽選講義）※試験時間割以外
+     *  selectedWeek 週※一般講義のみ
+     *  selectedPeriod 時限※一般講義のみ
+     *  selectedIndex List番号
+     *  schoolYear 開講年度
+     *  subjectCode 科目コード
+     *  classCode クラスコード
+     */
+    function displayPopup(selectSemesterTermCode, 
+            selectedLecture, selectedClassCategory, selectedWeek, selectedPeriod, selectedIndex, schoolYear, subjectCode, classCode) {
+
+        $('#SC_18001B00_13_Form_schoolYear').val(schoolYear);
+        $('#SC_18001B00_13_Form_subjectCode').val(subjectCode);
+        $('#SC_18001B00_13_Form_classCode').val(classCode);
+
+        $('#SC_18001B00_13_Form_selectSemesterTermCode').val(selectSemesterTermCode);
+        $('#SC_18001B00_13_Form_selectedLecture').val(selectedLecture);
+        $('#SC_18001B00_13_Form_selectedClassCategory').val(selectedClassCategory);
+        $('#SC_18001B00_13_Form_selectedWeek').val(selectedWeek);
+        $('#SC_18001B00_13_Form_selectedPeriod').val(selectedPeriod);
+        $('#SC_18001B00_13_Form_selectedIndex').val(selectedIndex);
+    	 
+    	return exPostSubmit('SC_18001B00_13_Form', 'SC_18001B00_13/displayPopup');
+     }
+
+    /**
+     * ポップアップ画面起動
+     */
+    function openPopupChildScreen_PU_18001B00_02() {
+        // 親画面に戻った際のコールバックファンクション
+        $('#PU_18001B00_02_PopupForm_callbackSyllabusReference').val('PU_18001B00_02_syllabusReferenceCallback');        
+        $('#PU_18001B00_02_PopupForm_callbackClassReference').val('PU_18001B00_02_classReferenceCallback');        
+        
+        // popup window open By post
+        exPostPopup('PU_18001B00_02_PopupForm',
+            'PU_18001B00_02Win',
+            '/lcu-web' + '/PU_18001B00_02/init',
+            'location=yes,directories=no,resizable=yes,status=yes,toolbar=no,menubar=no,width=1400,height=650,left=0,top=0,scrollbars=yes');
+        return false;
+    }
+    
+    /**
+     * コールバック関数(シラバス参照ボタン押下時)
+     */
+    function PU_18001B00_02_syllabusReferenceCallback(schoolYear, subjectCode, classCode) {
+        $('#PU_18001B00_02_PopupForm_schoolYear').val(schoolYear);
+        $('#PU_18001B00_02_PopupForm_subjectCode').val(subjectCode);
+        $('#PU_18001B00_02_PopupForm_classCode').val(classCode);
+        document.forms['PU_18001B00_02_PopupForm'].target="";
+        return exPostSubmit('PU_18001B00_02_PopupForm', 'PU_18001B00_02/syllabusReference');
+    }    
+    
+    /**
+     * コールバック関数(授業参考情報ボタン押下時)
+     */
+    function PU_18001B00_02_classReferenceCallback(schoolYear, subjectCode, classCode) {
+        $('#PU_18001B00_02_PopupForm_schoolYear').val(schoolYear);
+        $('#PU_18001B00_02_PopupForm_subjectCode').val(subjectCode);
+        $('#PU_18001B00_02_PopupForm_classCode').val(classCode);
+        document.forms['PU_18001B00_02_PopupForm'].target="";
+        return exPostSubmit('PU_18001B00_02_PopupForm', 'PU_18001B00_02/classReference');
+    }    
+
+    /**
+     * 個人時間割出力
+     */
+    function outputIndividualTimetable() {
+        return postSubmit("SC_18001B00_13_Form", "SC_18001B00_13/report");
+    }
+
+</script>
+   
+<script>
+    // 初期設定
+    $(window).on('load', 
+        function () {
+            $(".c-week-btn a").on('click',function(){
+                $(this).addClass("is-active");
+                $('.c-week-btn a').not($(this)).removeClass("is-active");
+        });
+        initDisplayWeek();
+        responsiveSchedule();
+    });
+    
+   // 選択中の曜日
+    var selectedWeek = "4";
+    
+    /**
+     * 曜日の選択状態
+     */
+    function initDisplayWeek() {
+        // 全件未選択
+        for (let i = 1; i < 8; i++) {
+            let weekButton = document.querySelector('#weekButton' + i);
+            weekButton.classList.remove('is-active');
+        }
+        // 選択中の曜日のみ選択
+        let weekButton = document.querySelector('#weekButton' + selectedWeek);
+        weekButton.classList.add('is-active');
+    };
+    
+    /**
+     * 曜日の選択処理
+     */
+    function changeDisplayWeek(selectWeek) {
+        selectedWeek = selectWeek;
+        
+        // 全件非表示
+        for (let i = 1; i < 8; i++) {
+            let allWeeks = document.querySelectorAll('#week' + i);
+            allWeeks.forEach(function(thisWeek) {
+                thisWeek.style.display='none';
+            });
+        }                           
+        
+        // 選択曜日のみ表示
+        let allWeeks = document.querySelectorAll('#week' + selectWeek);
+        allWeeks.forEach(function(thisWeek) {
+            thisWeek.style.display='';
+        });
+    };    
+    
+    /**
+     * レスポンシブ対応
+     */
+    function responsiveSchedule(){
+        if (window.matchMedia('(max-width: 560px)').matches) {
+            //スマホ処理
+            // 全件非表示
+            for (let i = 1; i < 8; i++) {
+                let allWeeks = document.querySelectorAll('#week' + i);
+                allWeeks.forEach(function(thisWeek) {
+                    thisWeek.style.display='none';
+                });
+            }                           
+            
+            // 選択曜日のみ表示
+            let allWeeks = document.querySelectorAll('#week' + selectedWeek);
+            allWeeks.forEach(function(thisWeek) {
+                thisWeek.style.display='';
+            });
+            
+            // テーブルの曜日ヘッダー行を非表示
+            let weeksRow = document.querySelector('#weeksRow');
+            weeksRow.style.display='none';
+            
+        } else if (window.matchMedia('(min-width:561px)').matches) {
+            //PC処理
+            // 全件表示
+            for (let i = 1; i < 8; i++) {
+                let allWeeks = document.querySelectorAll('#week' + i);
+                allWeeks.forEach(function(thisWeek) {
+                    thisWeek.style.display='';
+                });
+            }
+            
+            // テーブルの曜日ヘッダー行を表示
+            let weeksRow = document.querySelector('#weeksRow');
+            weeksRow.style.display='';
+            
+        }
+    };
+
+    //ロードとリサイズの両方で同じ処理を付与する
+    window.onresize = responsiveSchedule;    
+    
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--contents-->
+<main class="c-container">
+    <!--contents-->
+    <div class="c-contents">
+        
+        
+        
+        
+        <div class="c-breadcrumbs">
+        <div class="c-heading-h1-container">
+            <div class="c-heading-contents -between">
+                <h2 class="c-heading-h1">時間割参照</h2>
+            </div>
+        </div>
+        
+
+        <section class="stady-sec02">
+            <div class="stady-sec02-header">
+                <div class="stady-sec02-header-in">
+                    
+                    <div class="left">
+                        
+                        <p class="year">
+                            2024年度
+                        </p>
+                        <p class="c-half-btn">
+                            
+                                
+                                    
+                                    
+                                        <a href="javascript:change(1)">前期</a>
+                                    
+                                
+                            
+                                
+                                    
+                                        <a href="javascript:change(2)" class="is-active">後期</a>
+                                    
+                                    
+                                
+                            
+                        </p>
+                    </div>
+                    
+                    <div class="right">
+                        
+                        <a href="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13#lecture1" class="c-link">
+                            <i class="c-icon-arrow-bottom c-color-base" aria-hidden="true"></i>
+                            <span class="c-link-text">一般・抽選講義</span>
+                        </a>
+                        
+                        <a href="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13#lecture2" class="c-link">
+                            <i class="c-icon-arrow-bottom c-color-base" aria-hidden="true"></i>
+                            <span class="c-link-text">時間割外講義</span>
+                        </a>
+                        
+                        <a href="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13#lecture3" class="c-link">
+                            <i class="c-icon-arrow-bottom c-color-base" aria-hidden="true"></i>
+                            <span class="c-link-text">集中講義</span>
+                        </a>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            <div class="stady-sec02-contents" id="lecture1">
+                
+                <div class="ttl-area">
+                    <div class="left">
+                        <h3>一般・抽選講義</h3>
+                    </div>
+                    <div class="right">
+                        <ul>
+                            <li>凡例：</li>
+                            <li class="compulsory">必修科目</li>
+                            <li class="lottery">抽選科目</li>
+                            <li class="confirm">確定済</li>
+                        </ul>
+                    </div>
+                </div>
+
+                
+                <p class="c-week-btn u-sp-only">                
+                    
+                       
+                    
+                       
+                            <a id="weekButton1" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;1&#39;)">月</a>
+                        
+                    
+                       
+                            <a id="weekButton2" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;2&#39;)">火</a>
+                        
+                    
+                       
+                            <a id="weekButton3" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;3&#39;)">水</a>
+                        
+                    
+                       
+                            <a id="weekButton4" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;4&#39;)" class="is-active">木</a>
+                        
+                    
+                       
+                            <a id="weekButton5" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;5&#39;)">金</a>
+                        
+                    
+                       
+                            <a id="weekButton6" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;6&#39;)">土</a>
+                        
+                    
+                       
+                            <a id="weekButton7" href="javascript:void(0)" onclick="changeDisplayWeek(&#39;7&#39;)">日</a>
+                        
+                    
+                </p>
+
+                <table class="schedule-table">
+                    <tbody>
+                        
+                            
+                                
+                                
+                                    <tr class="week" id="weeksRow">
+                                        
+                                            <th id="week0"></th>
+                                        
+                                            <th id="week1">月</th>
+                                        
+                                            <th id="week2">火</th>
+                                        
+                                            <th id="week3">水</th>
+                                        
+                                            <th id="week4">木</th>
+                                        
+                                            <th id="week5">金</th>
+                                        
+                                            <th id="week6">土</th>
+                                        
+                                            <th id="week7">日</th>
+                                        
+                                    </tr>
+                                
+                                
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>1・2</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn compulsory confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;2&#39;,&#39;1&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77451110&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>人工知能概論</h4>
+                                                                    
+                                                                    <p>佐治　斉　他</p>
+                                                                    
+                                                                    <p>2.0単位 IN012161030</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 情１３</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn compulsory confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;3&#39;,&#39;1&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77451070&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>計算機アーキテクチャⅠ</h4>
+                                                                    
+                                                                    <p>大森　隆行</p>
+                                                                    
+                                                                    <p>2.0単位 IN012160040</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 情１３</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm confirm lottery" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;4&#39;,&#39;1&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;16024103&#39;, &#39;P6&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>総合英語ⅠＣ</h4>
+                                                                    
+                                                                    <p>パトリシアピニエイロ</p>
+                                                                    
+                                                                    <p>2.0単位 LA011270010</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 工２－２２</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                        <p class="confirm-icon">
+                                                                            確定
+                                                                        </p>
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>3・4</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;2&#39;,&#39;2&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77605250&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>美術とメディア</h4>
+                                                                    
+                                                                    <p>杉山　知太郎　他</p>
+                                                                    
+                                                                    <p>2.0単位  </p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 情２４</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm confirm lottery" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;3&#39;,&#39;2&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;16023115&#39;, &#39;P3&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>中級英語Ｂ</h4>
+                                                                    
+                                                                    <p>天野　可奈子</p>
+                                                                    
+                                                                    <p>2.0単位 LA011270010</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 工５－２２</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                        <p class="confirm-icon">
+                                                                            確定
+                                                                        </p>
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;4&#39;,&#39;2&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77403030&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>データベースシステム論</h4>
+                                                                    
+                                                                    <p>山本　泰生</p>
+                                                                    
+                                                                    <p>2.0単位 IN002160080</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟３１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;5&#39;,&#39;2&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;16041002&#39;, &#39;L0&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>スポーツⅡ</h4>
+                                                                    
+                                                                    <p>河合　学　他</p>
+                                                                    
+                                                                    <p>1.0単位 LA011370010</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） その他</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>5・6</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;1&#39;,&#39;3&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77403040&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>ディジタル信号処理</h4>
+                                                                    
+                                                                    <p>木谷　友哉　他</p>
+                                                                    
+                                                                    <p>2.0単位 IN012160050</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 情１３</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77453060&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>応用プログラミングB</h4>
+                                                                    
+                                                                    <p>新谷　誠　他</p>
+                                                                    
+                                                                    <p>1.0単位 IN012260100</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;1&#39;, &#39;2024&#39;, &#39;77453070&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>応用プログラミングC</h4>
+                                                                    
+                                                                    <p>小暮　悟　他</p>
+                                                                    
+                                                                    <p>1.0単位 IN012260100</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;3&#39;,&#39;3&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;16042002&#39;, &#39;L1&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>健康体育実技Ⅱ</h4>
+                                                                    
+                                                                    <p>瀧本　厚子　他</p>
+                                                                    
+                                                                    <p>1.0単位 LA011370010</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） その他</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm confirm lottery" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;5&#39;,&#39;3&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;16110018&#39;, &#39;P1&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>心理と行動Ｂ</h4>
+                                                                    
+                                                                    <p>大本　義正　他</p>
+                                                                    
+                                                                    <p>2.0単位 LA011170060</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 工８－２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                        <p class="confirm-icon">
+                                                                            確定
+                                                                        </p>
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>7・8</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;2&#39;,&#39;4&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77453060&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>応用プログラミングB</h4>
+                                                                    
+                                                                    <p>新谷　誠　他</p>
+                                                                    
+                                                                    <p>1.0単位 IN012260100</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;2&#39;,&#39;4&#39;,&#39;1&#39;, &#39;2024&#39;, &#39;77453070&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>応用プログラミングC</h4>
+                                                                    
+                                                                    <p>小暮　悟　他</p>
+                                                                    
+                                                                    <p>1.0単位 IN012260100</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;3&#39;,&#39;4&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77453090&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>コンパイラ</h4>
+                                                                    
+                                                                    <p>桐山　伸也</p>
+                                                                    
+                                                                    <p>2.0単位 IN012160050</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>9・10</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;1&#39;,&#39;5&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77453080&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>計算理論</h4>
+                                                                    
+                                                                    <p>木谷　友哉</p>
+                                                                    
+                                                                    <p>1.0単位 IN012160100</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 情１３</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                            <ul>
+                                                                <li class="select-btn confirm" onclick="javascript:displayPopup(&#39;2&#39;, &#39;1&#39;,&#39;1&#39;,&#39;5&#39;,&#39;5&#39;,&#39;0&#39;, &#39;2024&#39;, &#39;77405290&#39;, &#39;61&#39;)" style="cursor:pointer">
+                                                                    
+                                                                    <h4>社会モデル</h4>
+                                                                    
+                                                                    <p>高口　鉄平</p>
+                                                                    
+                                                                    <p>2.0単位 IN002107040</p>
+                                                                    
+                                                                    
+                                                                      <p><span>（共通） 共通講義棟２１</span></p>
+                                                                    
+                                                                    
+                                                                    
+                                                                </li>
+                                                            </ul>
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>11・12</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                            
+                                
+                                
+                                
+                                
+                                    <tr>
+                                        
+                                            
+                                                
+                                                
+                                                    <th>13・14</th>
+                                                
+                                                
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week1">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week2">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week3">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week4">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week5">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week6">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                            
+                                                
+                                                
+                                                
+                                                
+                                                    <td id="week7">
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        
+                                                    </td>
+                                                
+                                            
+                                        
+                                    </tr>
+                                
+                            
+                        
+                    </tbody>
+                </table>
+                
+
+                
+                <div class="stady-lecture-area">
+                    
+                    <div class="left" id="lecture2">
+                        
+                        <div class="lecture-ttl-area">
+                            <h3>時間割外講義</h3>
+                        </div>
+                        
+                        <ul class="stady-lecture-list-items">
+                            
+                            
+                                
+                                    <li class="stady-lecture-list-item-nodata">対象の科目はありません</li>
+                                
+                            
+                        
+                            
+                            
+                            
+                            
+                            
+                            
+                        </ul>
+                    </div>
+                    
+
+                    
+                    
+                    <div class="right" id="lecture3">
+                        
+                        <div class="lecture-ttl-area">
+                            <h3>集中講義</h3>
+                        </div>
+                        
+                        <ul class="stady-lecture-list-items">
+                            
+                            
+                                
+                                    <li class="stady-lecture-list-item-nodata">対象の科目はありません</li>
+                                
+                            
+                        
+                            
+                            
+                            
+                            
+                            
+                            
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+        
+    </div>
+    <!--//container END-->
+    
+</div></main>
+<!--//contents END-->
+
+<!--c-page-top-->
+<div class="c-page-top" style="position: fixed; bottom: 71.3333px;">
+    <button type="button" class="c-page-top-link"><i class="c-icon-page-top c-color-base" aria-hidden="true"></i></button>
+</div>
+<!--//c-page-top END-->
+
+<!--c-page-back-->
+<div class="c-page-back" style="bottom: 71.3333px; position: fixed;"><a href="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13#" class="c-page-back-link" onclick="submitFormLink(&#39;SC_18001B00_13_Form&#39;, &#39;/lcu-web/SC_18001B00_13/back&#39;);return false;"><i class="c-icon-page-back" aria-hidden="true"></i></a>
+</div>
+
+
+<!--//c-page-back END-->
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+<div class="c-page-top" style="position: fixed; bottom: 71.3333px;">
+  <button type="button" class="c-page-top-link hideInPrint"><i class="c-icon-page-top c-color-base" aria-hidden="true"></i></button>
+</div>
+<div class="hideInPrint">
+	<footer class="c-footer" style="left: 0px;">
+	  <div class="c-footer-fixed">
+	    <div class="c-footer-inner -between">
+	      
+	      
+	        
+
+
+
+
+
+
+
+
+
+
+
+<div class="side-left">
+
+
+</div>
+<div class="side-right">
+  
+  <button type="button" onclick="submitFormButton($(this), &#39;/lcu-web/SC_18001B00_13/testTimeTable&#39;, &#39;&#39;, &#39;&#39;);return false;" formid="BaseForm" class="c-btn c-btn-submit01"><span class="c-btn-link"><span class="c-btn-text ">試験時間割</span></span></button>
+
+
+  <button type="button" onclick="outputIndividualTimetable();return false;" formid="SC_18001B00_13_Form" class="c-btn c-btn-submit01"><span class="c-btn-link"><span class="c-btn-text c-icon-pdf">個人時間割出力</span></span></button>
+
+
+  
+  
+  <button type="button" onclick="submitFormButton($(this), &#39;/lcu-web/SC_18001B00_13/gradesDashboard&#39;, &#39;&#39;, &#39;&#39;);return false;" formid="BaseForm" class="c-btn c-btn-submit01"><span class="c-btn-link"><span class="c-btn-text ">成績ダッシュボード</span></span></button>
+
+  
+
+  
+  
+
+  <button type="button" onclick="submitFormButton($(this), &#39;/lcu-web/SC_18001B00_13/studentInfoDetail&#39;, &#39;&#39;, &#39;&#39;);return false;" formid="BaseForm" class="c-btn c-btn-submit01"><span class="c-btn-link"><span class="c-btn-text ">学生情報詳細</span></span></button>
+
+  
+
+  
+
+  
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  <span class="u-pc-only">
+    <button type="button" onclick="submitFormButton($(this), &#39;/lcu-web/SC_18001B00_13/gredeInformation&#39;, &#39;&#39;, &#39;&#39;);return false;" formid="BaseForm" class="c-btn c-btn-submit01"><span class="c-btn-link"><span class="c-btn-text ">成績情報詳細</span><i class="c-icon-arrow-right c-color-base" aria-hidden="true"></i></span></button>
+
+  </span>
+  
+</div>
+
+	      
+	    </div>
+	  </div>
+	</footer>
+</div>
+    </div>
+	
+	
+    <form id="BaseForm" action="https://gakujo.shizuoka.ac.jp/lcu-web/SC_18001B00_13" method="post">
+    <div>
+<input type="hidden" name="_TRANSACTION_TOKEN" value="SC_18001B00_13~f99aed89ccd1f193b02a98616de1ed15~3e08f7289761ee5961ae88e1e26c0c40">
+<input type="hidden" name="_csrf" value="71bfd6b3-06d5-46d7-9dd9-28a17071fa8f">
+</div></form>
+
+</body></html>
