@@ -1,5 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { PostItem } from "./postItem";
+"use client";
+
+import { Layout } from "@/app/components/layout/layout";
+import styles from "./page.module.css";
+import { PostItem } from "@/app/components/postItem/postItem";
 
 const sampleSchedules = [
   {
@@ -26,25 +29,10 @@ const sampleSchedules = [
   },
 ];
 
-const meta = {
-  title: "UniTimetable/PostItem",
-  component: PostItem,
-  parameters: {
-    layout: "centered",
-  },
-  tags: ["autodocs"],
-} satisfies Meta<typeof PostItem>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Primary: Story = {
-  args: {
-    schedules: sampleSchedules,
-    name: "hogefugapiyo",
-    department: "情報",
-    major: "情報科",
-    comment: "hogehoge",
-    year: 1,
-  },
-};
+export default function HomePage() {
+  return (
+    <Layout>
+      <PostItem schedules={sampleSchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
+    </Layout>
+  );
+}

@@ -1,4 +1,4 @@
-// timetable.tsx
+"use client";
 import React from "react";
 import { TimetableBlock } from "@/app/components/common/timetableBlock/timetableBlock";
 import { TimetableProps } from "@/types/timetables";

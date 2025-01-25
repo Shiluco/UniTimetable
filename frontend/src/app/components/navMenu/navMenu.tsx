@@ -7,10 +7,10 @@ interface NavMenuProps {
 
 export const NavMenu = ({ className }: NavMenuProps) => {
   const navItems = [
-    { label: "タイムライン", icon: "/assets/timeline.svg" },
-    { label: "プロフィール", icon: "/assets/profile.svg" },
-    { label: "投稿する", icon: "/assets/post.svg" },
-    { label: "検索", icon: "/assets/search.svg" },
+    { label: "タイムライン", icon: "/assets/timeline.svg", href: "/home" },
+    { label: "プロフィール", icon: "/assets/profile.svg", href: "/user/[id]" },
+    { label: "投稿する", icon: "/assets/post.svg", href: "/post" },
+    { label: "検索", icon: "/assets/search.svg", href: "/search" },
   ];
 
   return (
@@ -18,7 +18,7 @@ export const NavMenu = ({ className }: NavMenuProps) => {
       <ul className="nav-list">
         {navItems.map((item, index) => (
           <li key={index} className="nav-item">
-            <NavButton icon={item.icon} label={item.label} />
+            <NavButton icon={item.icon} label={item.label} onClick={() => (window.location.href = item.href)} />
           </li>
         ))}
       </ul>

@@ -1,3 +1,5 @@
+"use client";
+
 import "@/style/navButton.scss";
 import { Text } from "@/app/components/common/text/text";
 import Image from "next/image";
