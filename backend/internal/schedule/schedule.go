@@ -3,23 +3,23 @@ package schedule
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
+	"bytes"
+	//"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-func GetSchedule(htmlPath string) ([]byte, error) {
+func GetSchedule(content []byte) (byte[], error) {
 	// HTMLファイルを開く
-	file, err := os.Open(htmlPath)
-	if err != nil {
-		return nil, fmt.Errorf("ファイルを開けません: %v", err)
-	}
-	defer file.Close()
+	// file, err := os.Open(htmlPath)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("ファイルを開けません: %v", err)
+	// }
+	// defer file.Close()
 
 	// goqueryでHTMLを解析
-	doc, err := goquery.NewDocumentFromReader(file)
+	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(content))
 	if err != nil {
 		return nil, fmt.Errorf("HTMLを解析できません: %v", err)
 	}
