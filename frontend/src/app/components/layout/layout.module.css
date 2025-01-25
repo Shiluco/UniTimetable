@@ -13,6 +13,7 @@
 
 .gridItem:last-child {
   width: 70%;
+  position: relative;
 }
 
 .scrollable {
@@ -22,6 +23,15 @@
   overflow: auto;
 }
 
+.logoutButton {
+  position: absolute;
+  right: 0;
+}
+
 .mb50 {
   margin-bottom: 50px;
+}
+
+.mt70 {
+  margin-top: 70px;
 }
