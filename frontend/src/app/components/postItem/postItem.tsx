@@ -17,7 +17,7 @@ interface PostItemProps {
 }
 
 export const PostItem = ({ schedules, name, department, major, year, className, comment }: PostItemProps) => {
-  const id = "someId";
+  const id = "someId"; //TODO: ここのIDは要修正
   const handleReply = () => {
     window.location.href = `/home/reply/${id}`;
   };
