@@ -12,7 +12,9 @@ export const useAuth = () => {
   const handleLogin = async (email: string, password: string) => {
     setIsLoading(true); // ローディング状態を開始
     const response = await loginService(email, password); // AuthService の handleLogin を呼び出し
-    localStorage.setItem("authToken", response.data.accessToken); // ローカルストレージにトークンを保存（例としてトークン）
+    localStorage.setItem("accessToken", response.data.accessToken);
+    localStorage.setItem("refreshToken", response.data.refreshToken);
+    localStorage.setItem("user", JSON.stringify(response.data.user));
     setIsLoading(false); // ローディング状態を終了
     setLoginResponse(response); // ログインレスポンスをセット
     setUserInfo(response.data.user); // ユーザー情報をセット
