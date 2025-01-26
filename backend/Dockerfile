@@ -1,4 +1,4 @@
-ROM golang:latest AS builder
+FROM golang:latest AS builder
 
 # 2. 作業ディレクトリを設定
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # 5. アプリケーションをビルド
-RUN CGO_ENABLED=0 GOOS=linux go build -o main . 
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
 # 6. 軽量なAlpine Linuxイメージをベースイメージとして指定
 FROM alpine:latest
