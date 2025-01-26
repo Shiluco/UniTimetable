@@ -12,3 +12,12 @@ export type LoginResponse = {
     user: User; // ユーザー情報
   };
 };
+
+export type RegisterResponse = {
+  status: string; // レスポンスステータス (例: success, error)
+  message: string; // ユーザーへの通知メッセージ
+  error_detail?: string; // オプショナル: エラーの詳細情報（エラー時のみ）
+  data: {
+    user: User; // ユーザー情報
+  };
+};

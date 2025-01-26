@@ -33,16 +33,12 @@ services:
     environment:
       POSTGRES_USER: postgres # デフォルトユーザー
       POSTGRES_PASSWORD: password # デフォルトパスワード
-      POSTGRES_DB: unitimetable # 初期データベース
-    volumes:
-      - postgres_data:/var/lib/postgresql/data # データ永続化用
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      POSTGRES_DB: unitimetable # 
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d unitimetable" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
 
 volumes:
   postgres_data:

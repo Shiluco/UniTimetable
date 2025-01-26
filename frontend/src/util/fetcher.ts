@@ -1,9 +1,8 @@
 export const Fetcher = async <T>(
   endpoint: string, // エンドポイント
-  options: RequestInit & { authRequired?: boolean } = { authRequired: true }
+  options: RequestInit & { authRequired?: boolean } = { method: "GET", authRequired: true }
 ): Promise<T> => {
-  const baseURL = process.env.NEXT_PUBLIC_API_URL; // 環境変数からベースURLを取得
-
+  const baseURL = "http://localhost:8080/api/"; // 環境変数からベースURLを取得
   if (!baseURL) {
     throw new Error("Base URL is not defined. Check your environment variables.");
   }
