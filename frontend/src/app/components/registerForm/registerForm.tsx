@@ -4,6 +4,7 @@ import { SelectBox } from "@/app/components/common/selectBox/selectBox";
 import { TextBox } from "@/app/components/common/textBox/textBox";
 import { Option } from "@/types/selectBox";
 import { useState } from "react";
+import { useAuthService } from "@/service/useAuthService";
 interface RegisterFormProps {
   departmentOptions: Option[];
   majorOptions: Option[];
@@ -12,13 +13,17 @@ interface RegisterFormProps {
 }
 
 export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, className }: RegisterFormProps) => {
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const { registerService } = useAuthService();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       setEmailError("有効なメールアドレスを入力してください");
       return false;
@@ -31,6 +36,15 @@ export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, cla
 
     setEmailError("");
     return true;
+  };
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (!value) {
+      setNameError("名前を入力してください");
+    } else {
+      setNameError("");
+    }
   };
 
   const handleEmailChange = (value: string) => {
@@ -52,6 +66,11 @@ export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, cla
   };
 
   const handleSubmit = () => {
+    if (!name) {
+      setNameError("名前を入力してください");
+      return;
+    }
+
     if (!email) {
       setEmailError("メールアドレスを入力してください");
       return;
@@ -66,7 +85,7 @@ export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, cla
       return;
     }
 
-    console.log("Valid email:", email);
+    registerService(name, email, password);
   };
 
   return (
@@ -74,7 +93,8 @@ export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, cla
       <SelectBox className="w-100 mb-10" options={departmentOptions} placeholder="学部" />
       <SelectBox className="w-100 mb-10" options={majorOptions} placeholder="学科" />
       <SelectBox className="w-100 mb-10" options={yearOptions} placeholder="学年" />
-      <TextBox placeholder="ニックネーム" className="w-100 mb-10" type="search" />
+      <TextBox placeholder="ニックネーム" className="w-100 mb-10" type="search" onChange={handleNameChange} />
+      {nameError && <div className="registerFormError">{nameError}</div>}
       <TextBox placeholder="静大メアド" type="search" className="mb-10" value={email} onChange={handleEmailChange} />
       {emailError && <div className="registerFormError">{emailError}</div>}
       <TextBox placeholder="パスワード" type="password" className="mb-20" value={password} onChange={handlePasswordChange} />
