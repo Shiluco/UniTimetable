@@ -20,6 +20,7 @@ WORKDIR /app
 
 # 7. builder stageで生成したGoのバイナリファイルをApline Linuxのイメージにコピー
 COPY --from=builder /app/main /app/main
+COPY --from=builder /app/internal/univData/univ.json /app/univ.json
 
 # 8. 必要なポートを公開
 EXPOSE 8080

@@ -1,4 +1,4 @@
-package dataJoin
+package univData
 
 import (
     "context"
@@ -8,8 +8,8 @@ import (
     "os"
 
     "github.com/Shiluco/UniTimetable/backend/ent"
-    "github.com/Shiluco/UniTimetable/backend/ent/department"
-    "github.com/Shiluco/UniTimetable/backend/ent/major"
+    // "github.com/Shiluco/UniTimetable/backend/ent/department"
+    // "github.com/Shiluco/UniTimetable/backend/ent/major"
 )
 
 // Department は学部の情報を表す構造体です。
@@ -32,9 +32,8 @@ type University struct {
 }
 
 // SaveUniversityData は JSON データをデータベースに保存する関数です。
-func SaveUniversityData(ctx context.Context, client *ent.Client, jsonFilePath string) error {
-    // JSON ファイルの読み込み
-	jsonFilePath = "backend/internal/univ_data/univ.json"
+func SaveUniversityData(ctx context.Context, client *ent.Client) error {
+	jsonFilePath := "./univ.json"
     jsonFile, err := os.Open(jsonFilePath)
     if err != nil {
         return fmt.Errorf("failed to open JSON file: %w", err)
