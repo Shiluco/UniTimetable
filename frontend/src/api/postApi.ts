@@ -1,7 +1,7 @@
 import { Fetcher } from "@/util/fetcher";
 import { PostResponse, PostsResponse } from "@/types/post";
 
-const url = "/posts";
+const url = "/post";
 // 投稿の作成
 export const createPostApi = async (
   user_id: number,
