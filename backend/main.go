@@ -43,8 +43,12 @@ func main() {
         log.Fatalf("failed to save university data: %v", err)
     }
 
-    log.Printf("データベースに保存しました。")
+    log.Printf("testの学部学科をデータベースに保存しました。")
 
+	if err := univData.SaveUserData(ctx, client); err != nil {
+		log.Fatalf("failed to save user data: %v", err)
+	}
+	log.Printf("testのユーザーをデータベースに保存しました。")
 	r := api.SetupRoutes(client)
 	port := "8080"
 	log.Printf("サーバー起動 ポート: %s", port)

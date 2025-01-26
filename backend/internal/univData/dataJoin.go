@@ -31,6 +31,20 @@ type University struct {
     Departments []Department `json:"departments"`
 }
 
+type UserData struct {
+    Users []User `json:"users"`
+}
+
+type User struct {
+    UserID int `json:"user_id"`
+    DepartmentID int `json:"department_id"`
+    MajorID int `json:"major_id"`
+    Grade int8 `json:"grade"`
+    UserName string `json:"user_name"`
+    UserEmail string `json:"user_email"`
+    UserPassword string `json:"user_password"`
+}
+
 // SaveUniversityData は JSON データをデータベースに保存する関数です。
 func SaveUniversityData(ctx context.Context, client *ent.Client) error {
 	jsonFilePath := "./univ.json"
@@ -73,4 +87,39 @@ func SaveUniversityData(ctx context.Context, client *ent.Client) error {
     }
 
     return nil
+}
+
+func SaveUserData(ctx context.Context, client *ent.Client) error {
+	jsonFilePath := "./user.json"
+    jsonFile, err := os.Open(jsonFilePath)
+    if err != nil {
+        return fmt.Errorf("failed to open JSON file: %w", err)
+    }
+    defer jsonFile.Close()
+
+    byteValue, err := ioutil.ReadAll(jsonFile)
+    if err != nil {
+        return fmt.Errorf("failed to read JSON file: %w", err)
+    }
+
+    var userData UserData
+    if err := json.Unmarshal(byteValue, &userData); err != nil {
+        return fmt.Errorf("failed to unmarshal JSON: %w", err)
+    }
+
+    for _, user := range userData.Users {
+        _, err := client.User.Create().
+            SetID(user.UserID).
+            SetDepartmentID(user.DepartmentID).
+            SetMajorID(user.MajorID).
+            SetGrade(user.Grade).
+            SetName(user.UserName).
+            SetEmail(user.UserEmail).
+            SetPassword(user.UserPassword).
+            Save(ctx)
+        if err != nil {
+            return fmt.Errorf("failed to create user: %w", err)
+        }
+    }
+    return nil 
 }
