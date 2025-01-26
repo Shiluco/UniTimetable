@@ -30,8 +30,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// EdgePosts holds the string denoting the posts edge name in mutations.
-	EdgePosts = "posts"
+	// EdgePost holds the string denoting the post edge name in mutations.
+	EdgePost = "post"
 	// Table holds the table name of the schedule in the database.
 	Table = "schedules"
 	// UserTable is the table that holds the user relation/edge.
@@ -41,13 +41,11 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// PostsTable is the table that holds the posts relation/edge.
-	PostsTable = "posts"
-	// PostsInverseTable is the table name for the Post entity.
+	// PostTable is the table that holds the post relation/edge. The primary key declared below.
+	PostTable = "post_schedules"
+	// PostInverseTable is the table name for the Post entity.
 	// It exists in this package in order to avoid circular dependency with the "post" package.
-	PostsInverseTable = "posts"
-	// PostsColumn is the table column denoting the posts relation/edge.
-	PostsColumn = "schedule_id"
+	PostInverseTable = "posts"
 )
 
 // Columns holds all SQL columns for schedule fields.
@@ -61,6 +59,12 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
+
+var (
+	// PostPrimaryKey and PostColumn2 are the table columns denoting the
+	// primary key for the post relation (M2M).
+	PostPrimaryKey = []string{"post_id", "schedule_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -137,17 +141,17 @@ func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByPostsCount orders the results by posts count.
-func ByPostsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByPostCount orders the results by post count.
+func ByPostCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newPostsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newPostStep(), opts...)
 	}
 }
 
-// ByPosts orders the results by posts terms.
-func ByPosts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByPost orders the results by post terms.
+func ByPost(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPostsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newPostStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newUserStep() *sqlgraph.Step {
@@ -157,10 +161,10 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
-func newPostsStep() *sqlgraph.Step {
+func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(PostsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, PostsTable, PostsColumn),
+		sqlgraph.To(PostInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PostTable, PostPrimaryKey...),
 	)
 }

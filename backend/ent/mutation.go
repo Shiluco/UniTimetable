@@ -1074,25 +1074,28 @@ func (m *MajorMutation) ResetEdge(name string) error {
 // PostMutation represents an operation that mutates the Post nodes in the graph.
 type PostMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	content         *string
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	user            *int
-	cleareduser     bool
-	schedule        *int
-	clearedschedule bool
-	parent          *int
-	clearedparent   bool
-	replies         map[int]struct{}
-	removedreplies  map[int]struct{}
-	clearedreplies  bool
-	done            bool
-	oldValue        func(context.Context) (*Post, error)
-	predicates      []predicate.Post
+	op                 Op
+	typ                string
+	id                 *int
+	content            *string
+	schedule_ids       *[]int
+	appendschedule_ids []int
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	user               *int
+	cleareduser        bool
+	schedules          map[int]struct{}
+	removedschedules   map[int]struct{}
+	clearedschedules   bool
+	parent             *int
+	clearedparent      bool
+	replies            map[int]struct{}
+	removedreplies     map[int]struct{}
+	clearedreplies     bool
+	done               bool
+	oldValue           func(context.Context) (*Post, error)
+	predicates         []predicate.Post
 }
 
 var _ ent.Mutation = (*PostMutation)(nil)
@@ -1320,53 +1323,69 @@ func (m *PostMutation) ResetContent() {
 	m.content = nil
 }
 
-// SetScheduleID sets the "schedule_id" field.
-func (m *PostMutation) SetScheduleID(i int) {
-	m.schedule = &i
+// SetScheduleIds sets the "schedule_ids" field.
+func (m *PostMutation) SetScheduleIds(i []int) {
+	m.schedule_ids = &i
+	m.appendschedule_ids = nil
 }
 
-// ScheduleID returns the value of the "schedule_id" field in the mutation.
-func (m *PostMutation) ScheduleID() (r int, exists bool) {
-	v := m.schedule
+// ScheduleIds returns the value of the "schedule_ids" field in the mutation.
+func (m *PostMutation) ScheduleIds() (r []int, exists bool) {
+	v := m.schedule_ids
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldScheduleID returns the old "schedule_id" field's value of the Post entity.
+// OldScheduleIds returns the old "schedule_ids" field's value of the Post entity.
 // If the Post object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldScheduleID(ctx context.Context) (v int, err error) {
+func (m *PostMutation) OldScheduleIds(ctx context.Context) (v []int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldScheduleID is only allowed on UpdateOne operations")
+		return v, errors.New("OldScheduleIds is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldScheduleID requires an ID field in the mutation")
+		return v, errors.New("OldScheduleIds requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldScheduleID: %w", err)
+		return v, fmt.Errorf("querying old value for OldScheduleIds: %w", err)
 	}
-	return oldValue.ScheduleID, nil
+	return oldValue.ScheduleIds, nil
 }
 
-// ClearScheduleID clears the value of the "schedule_id" field.
-func (m *PostMutation) ClearScheduleID() {
-	m.schedule = nil
-	m.clearedFields[post.FieldScheduleID] = struct{}{}
+// AppendScheduleIds adds i to the "schedule_ids" field.
+func (m *PostMutation) AppendScheduleIds(i []int) {
+	m.appendschedule_ids = append(m.appendschedule_ids, i...)
 }
 
-// ScheduleIDCleared returns if the "schedule_id" field was cleared in this mutation.
-func (m *PostMutation) ScheduleIDCleared() bool {
-	_, ok := m.clearedFields[post.FieldScheduleID]
+// AppendedScheduleIds returns the list of values that were appended to the "schedule_ids" field in this mutation.
+func (m *PostMutation) AppendedScheduleIds() ([]int, bool) {
+	if len(m.appendschedule_ids) == 0 {
+		return nil, false
+	}
+	return m.appendschedule_ids, true
+}
+
+// ClearScheduleIds clears the value of the "schedule_ids" field.
+func (m *PostMutation) ClearScheduleIds() {
+	m.schedule_ids = nil
+	m.appendschedule_ids = nil
+	m.clearedFields[post.FieldScheduleIds] = struct{}{}
+}
+
+// ScheduleIdsCleared returns if the "schedule_ids" field was cleared in this mutation.
+func (m *PostMutation) ScheduleIdsCleared() bool {
+	_, ok := m.clearedFields[post.FieldScheduleIds]
 	return ok
 }
 
-// ResetScheduleID resets all changes to the "schedule_id" field.
-func (m *PostMutation) ResetScheduleID() {
-	m.schedule = nil
-	delete(m.clearedFields, post.FieldScheduleID)
+// ResetScheduleIds resets all changes to the "schedule_ids" field.
+func (m *PostMutation) ResetScheduleIds() {
+	m.schedule_ids = nil
+	m.appendschedule_ids = nil
+	delete(m.clearedFields, post.FieldScheduleIds)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1468,31 +1487,58 @@ func (m *PostMutation) ResetUser() {
 	m.cleareduser = false
 }
 
-// ClearSchedule clears the "schedule" edge to the Schedule entity.
-func (m *PostMutation) ClearSchedule() {
-	m.clearedschedule = true
-	m.clearedFields[post.FieldScheduleID] = struct{}{}
+// AddScheduleIDs adds the "schedules" edge to the Schedule entity by ids.
+func (m *PostMutation) AddScheduleIDs(ids ...int) {
+	if m.schedules == nil {
+		m.schedules = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.schedules[ids[i]] = struct{}{}
+	}
 }
 
-// ScheduleCleared reports if the "schedule" edge to the Schedule entity was cleared.
-func (m *PostMutation) ScheduleCleared() bool {
-	return m.ScheduleIDCleared() || m.clearedschedule
+// ClearSchedules clears the "schedules" edge to the Schedule entity.
+func (m *PostMutation) ClearSchedules() {
+	m.clearedschedules = true
 }
 
-// ScheduleIDs returns the "schedule" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ScheduleID instead. It exists only for internal usage by the builders.
-func (m *PostMutation) ScheduleIDs() (ids []int) {
-	if id := m.schedule; id != nil {
-		ids = append(ids, *id)
+// SchedulesCleared reports if the "schedules" edge to the Schedule entity was cleared.
+func (m *PostMutation) SchedulesCleared() bool {
+	return m.clearedschedules
+}
+
+// RemoveScheduleIDs removes the "schedules" edge to the Schedule entity by IDs.
+func (m *PostMutation) RemoveScheduleIDs(ids ...int) {
+	if m.removedschedules == nil {
+		m.removedschedules = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.schedules, ids[i])
+		m.removedschedules[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSchedules returns the removed IDs of the "schedules" edge to the Schedule entity.
+func (m *PostMutation) RemovedSchedulesIDs() (ids []int) {
+	for id := range m.removedschedules {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetSchedule resets all changes to the "schedule" edge.
-func (m *PostMutation) ResetSchedule() {
-	m.schedule = nil
-	m.clearedschedule = false
+// SchedulesIDs returns the "schedules" edge IDs in the mutation.
+func (m *PostMutation) SchedulesIDs() (ids []int) {
+	for id := range m.schedules {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSchedules resets all changes to the "schedules" edge.
+func (m *PostMutation) ResetSchedules() {
+	m.schedules = nil
+	m.clearedschedules = false
+	m.removedschedules = nil
 }
 
 // SetParentID sets the "parent" edge to the Post entity by id.
@@ -1633,8 +1679,8 @@ func (m *PostMutation) Fields() []string {
 	if m.content != nil {
 		fields = append(fields, post.FieldContent)
 	}
-	if m.schedule != nil {
-		fields = append(fields, post.FieldScheduleID)
+	if m.schedule_ids != nil {
+		fields = append(fields, post.FieldScheduleIds)
 	}
 	if m.created_at != nil {
 		fields = append(fields, post.FieldCreatedAt)
@@ -1656,8 +1702,8 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.UserID()
 	case post.FieldContent:
 		return m.Content()
-	case post.FieldScheduleID:
-		return m.ScheduleID()
+	case post.FieldScheduleIds:
+		return m.ScheduleIds()
 	case post.FieldCreatedAt:
 		return m.CreatedAt()
 	case post.FieldUpdatedAt:
@@ -1677,8 +1723,8 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUserID(ctx)
 	case post.FieldContent:
 		return m.OldContent(ctx)
-	case post.FieldScheduleID:
-		return m.OldScheduleID(ctx)
+	case post.FieldScheduleIds:
+		return m.OldScheduleIds(ctx)
 	case post.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case post.FieldUpdatedAt:
@@ -1713,12 +1759,12 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContent(v)
 		return nil
-	case post.FieldScheduleID:
-		v, ok := value.(int)
+	case post.FieldScheduleIds:
+		v, ok := value.([]int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetScheduleID(v)
+		m.SetScheduleIds(v)
 		return nil
 	case post.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1770,8 +1816,8 @@ func (m *PostMutation) ClearedFields() []string {
 	if m.FieldCleared(post.FieldParentPostID) {
 		fields = append(fields, post.FieldParentPostID)
 	}
-	if m.FieldCleared(post.FieldScheduleID) {
-		fields = append(fields, post.FieldScheduleID)
+	if m.FieldCleared(post.FieldScheduleIds) {
+		fields = append(fields, post.FieldScheduleIds)
 	}
 	return fields
 }
@@ -1790,8 +1836,8 @@ func (m *PostMutation) ClearField(name string) error {
 	case post.FieldParentPostID:
 		m.ClearParentPostID()
 		return nil
-	case post.FieldScheduleID:
-		m.ClearScheduleID()
+	case post.FieldScheduleIds:
+		m.ClearScheduleIds()
 		return nil
 	}
 	return fmt.Errorf("unknown Post nullable field %s", name)
@@ -1810,8 +1856,8 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldContent:
 		m.ResetContent()
 		return nil
-	case post.FieldScheduleID:
-		m.ResetScheduleID()
+	case post.FieldScheduleIds:
+		m.ResetScheduleIds()
 		return nil
 	case post.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -1829,8 +1875,8 @@ func (m *PostMutation) AddedEdges() []string {
 	if m.user != nil {
 		edges = append(edges, post.EdgeUser)
 	}
-	if m.schedule != nil {
-		edges = append(edges, post.EdgeSchedule)
+	if m.schedules != nil {
+		edges = append(edges, post.EdgeSchedules)
 	}
 	if m.parent != nil {
 		edges = append(edges, post.EdgeParent)
@@ -1849,10 +1895,12 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
-	case post.EdgeSchedule:
-		if id := m.schedule; id != nil {
-			return []ent.Value{*id}
+	case post.EdgeSchedules:
+		ids := make([]ent.Value, 0, len(m.schedules))
+		for id := range m.schedules {
+			ids = append(ids, id)
 		}
+		return ids
 	case post.EdgeParent:
 		if id := m.parent; id != nil {
 			return []ent.Value{*id}
@@ -1870,6 +1918,9 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 4)
+	if m.removedschedules != nil {
+		edges = append(edges, post.EdgeSchedules)
+	}
 	if m.removedreplies != nil {
 		edges = append(edges, post.EdgeReplies)
 	}
@@ -1880,6 +1931,12 @@ func (m *PostMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case post.EdgeSchedules:
+		ids := make([]ent.Value, 0, len(m.removedschedules))
+		for id := range m.removedschedules {
+			ids = append(ids, id)
+		}
+		return ids
 	case post.EdgeReplies:
 		ids := make([]ent.Value, 0, len(m.removedreplies))
 		for id := range m.removedreplies {
@@ -1896,8 +1953,8 @@ func (m *PostMutation) ClearedEdges() []string {
 	if m.cleareduser {
 		edges = append(edges, post.EdgeUser)
 	}
-	if m.clearedschedule {
-		edges = append(edges, post.EdgeSchedule)
+	if m.clearedschedules {
+		edges = append(edges, post.EdgeSchedules)
 	}
 	if m.clearedparent {
 		edges = append(edges, post.EdgeParent)
@@ -1914,8 +1971,8 @@ func (m *PostMutation) EdgeCleared(name string) bool {
 	switch name {
 	case post.EdgeUser:
 		return m.cleareduser
-	case post.EdgeSchedule:
-		return m.clearedschedule
+	case post.EdgeSchedules:
+		return m.clearedschedules
 	case post.EdgeParent:
 		return m.clearedparent
 	case post.EdgeReplies:
@@ -1931,9 +1988,6 @@ func (m *PostMutation) ClearEdge(name string) error {
 	case post.EdgeUser:
 		m.ClearUser()
 		return nil
-	case post.EdgeSchedule:
-		m.ClearSchedule()
-		return nil
 	case post.EdgeParent:
 		m.ClearParent()
 		return nil
@@ -1948,8 +2002,8 @@ func (m *PostMutation) ResetEdge(name string) error {
 	case post.EdgeUser:
 		m.ResetUser()
 		return nil
-	case post.EdgeSchedule:
-		m.ResetSchedule()
+	case post.EdgeSchedules:
+		m.ResetSchedules()
 		return nil
 	case post.EdgeParent:
 		m.ResetParent()
@@ -1978,9 +2032,9 @@ type ScheduleMutation struct {
 	clearedFields  map[string]struct{}
 	user           *int
 	cleareduser    bool
-	posts          map[int]struct{}
-	removedposts   map[int]struct{}
-	clearedposts   bool
+	post           map[int]struct{}
+	removedpost    map[int]struct{}
+	clearedpost    bool
 	done           bool
 	oldValue       func(context.Context) (*Schedule, error)
 	predicates     []predicate.Schedule
@@ -2422,58 +2476,58 @@ func (m *ScheduleMutation) ResetUser() {
 	m.cleareduser = false
 }
 
-// AddPostIDs adds the "posts" edge to the Post entity by ids.
+// AddPostIDs adds the "post" edge to the Post entity by ids.
 func (m *ScheduleMutation) AddPostIDs(ids ...int) {
-	if m.posts == nil {
-		m.posts = make(map[int]struct{})
+	if m.post == nil {
+		m.post = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.posts[ids[i]] = struct{}{}
+		m.post[ids[i]] = struct{}{}
 	}
 }
 
-// ClearPosts clears the "posts" edge to the Post entity.
-func (m *ScheduleMutation) ClearPosts() {
-	m.clearedposts = true
+// ClearPost clears the "post" edge to the Post entity.
+func (m *ScheduleMutation) ClearPost() {
+	m.clearedpost = true
 }
 
-// PostsCleared reports if the "posts" edge to the Post entity was cleared.
-func (m *ScheduleMutation) PostsCleared() bool {
-	return m.clearedposts
+// PostCleared reports if the "post" edge to the Post entity was cleared.
+func (m *ScheduleMutation) PostCleared() bool {
+	return m.clearedpost
 }
 
-// RemovePostIDs removes the "posts" edge to the Post entity by IDs.
+// RemovePostIDs removes the "post" edge to the Post entity by IDs.
 func (m *ScheduleMutation) RemovePostIDs(ids ...int) {
-	if m.removedposts == nil {
-		m.removedposts = make(map[int]struct{})
+	if m.removedpost == nil {
+		m.removedpost = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.posts, ids[i])
-		m.removedposts[ids[i]] = struct{}{}
+		delete(m.post, ids[i])
+		m.removedpost[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedPosts returns the removed IDs of the "posts" edge to the Post entity.
-func (m *ScheduleMutation) RemovedPostsIDs() (ids []int) {
-	for id := range m.removedposts {
+// RemovedPost returns the removed IDs of the "post" edge to the Post entity.
+func (m *ScheduleMutation) RemovedPostIDs() (ids []int) {
+	for id := range m.removedpost {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// PostsIDs returns the "posts" edge IDs in the mutation.
-func (m *ScheduleMutation) PostsIDs() (ids []int) {
-	for id := range m.posts {
+// PostIDs returns the "post" edge IDs in the mutation.
+func (m *ScheduleMutation) PostIDs() (ids []int) {
+	for id := range m.post {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetPosts resets all changes to the "posts" edge.
-func (m *ScheduleMutation) ResetPosts() {
-	m.posts = nil
-	m.clearedposts = false
-	m.removedposts = nil
+// ResetPost resets all changes to the "post" edge.
+func (m *ScheduleMutation) ResetPost() {
+	m.post = nil
+	m.clearedpost = false
+	m.removedpost = nil
 }
 
 // Where appends a list predicates to the ScheduleMutation builder.
@@ -2751,8 +2805,8 @@ func (m *ScheduleMutation) AddedEdges() []string {
 	if m.user != nil {
 		edges = append(edges, schedule.EdgeUser)
 	}
-	if m.posts != nil {
-		edges = append(edges, schedule.EdgePosts)
+	if m.post != nil {
+		edges = append(edges, schedule.EdgePost)
 	}
 	return edges
 }
@@ -2765,9 +2819,9 @@ func (m *ScheduleMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
-	case schedule.EdgePosts:
-		ids := make([]ent.Value, 0, len(m.posts))
-		for id := range m.posts {
+	case schedule.EdgePost:
+		ids := make([]ent.Value, 0, len(m.post))
+		for id := range m.post {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2778,8 +2832,8 @@ func (m *ScheduleMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ScheduleMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedposts != nil {
-		edges = append(edges, schedule.EdgePosts)
+	if m.removedpost != nil {
+		edges = append(edges, schedule.EdgePost)
 	}
 	return edges
 }
@@ -2788,9 +2842,9 @@ func (m *ScheduleMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *ScheduleMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case schedule.EdgePosts:
-		ids := make([]ent.Value, 0, len(m.removedposts))
-		for id := range m.removedposts {
+	case schedule.EdgePost:
+		ids := make([]ent.Value, 0, len(m.removedpost))
+		for id := range m.removedpost {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2804,8 +2858,8 @@ func (m *ScheduleMutation) ClearedEdges() []string {
 	if m.cleareduser {
 		edges = append(edges, schedule.EdgeUser)
 	}
-	if m.clearedposts {
-		edges = append(edges, schedule.EdgePosts)
+	if m.clearedpost {
+		edges = append(edges, schedule.EdgePost)
 	}
 	return edges
 }
@@ -2816,8 +2870,8 @@ func (m *ScheduleMutation) EdgeCleared(name string) bool {
 	switch name {
 	case schedule.EdgeUser:
 		return m.cleareduser
-	case schedule.EdgePosts:
-		return m.clearedposts
+	case schedule.EdgePost:
+		return m.clearedpost
 	}
 	return false
 }
@@ -2840,8 +2894,8 @@ func (m *ScheduleMutation) ResetEdge(name string) error {
 	case schedule.EdgeUser:
 		m.ResetUser()
 		return nil
-	case schedule.EdgePosts:
-		m.ResetPosts()
+	case schedule.EdgePost:
+		m.ResetPost()
 		return nil
 	}
 	return fmt.Errorf("unknown Schedule edge %s", name)

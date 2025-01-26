@@ -19,7 +19,7 @@ func (Post) Fields() []ent.Field {
 		field.Int("parent_post_id").Optional().Nillable(),
 		field.Int("user_id"),
 		field.String("content").NotEmpty(),
-		field.Int("schedule_id").Optional(),
+		field.JSON("schedule_ids",[]int{}).Optional(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
@@ -29,7 +29,7 @@ func (Post) Fields() []ent.Field {
 func (Post) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).Ref("posts").Field("user_id").Unique().Required(),
-		edge.From("schedule", Schedule.Type).Ref("posts").Field("schedule_id").Unique(),
+		edge.To("schedules", Schedule.Type),
 		edge.From("parent", Post.Type).
             Ref("replies").
             Field("parent_post_id").

@@ -433,21 +433,21 @@ func HasUserWith(preds ...predicate.User) predicate.Schedule {
 	})
 }
 
-// HasPosts applies the HasEdge predicate on the "posts" edge.
-func HasPosts() predicate.Schedule {
+// HasPost applies the HasEdge predicate on the "post" edge.
+func HasPost() predicate.Schedule {
 	return predicate.Schedule(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, PostsTable, PostsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, PostTable, PostPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPostsWith applies the HasEdge predicate on the "posts" edge with a given conditions (other predicates).
-func HasPostsWith(preds ...predicate.Post) predicate.Schedule {
+// HasPostWith applies the HasEdge predicate on the "post" edge with a given conditions (other predicates).
+func HasPostWith(preds ...predicate.Post) predicate.Schedule {
 	return predicate.Schedule(func(s *sql.Selector) {
-		step := newPostsStep()
+		step := newPostStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

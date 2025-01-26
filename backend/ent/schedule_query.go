@@ -26,7 +26,7 @@ type ScheduleQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Schedule
 	withUser   *UserQuery
-	withPosts  *PostQuery
+	withPost   *PostQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -85,8 +85,8 @@ func (sq *ScheduleQuery) QueryUser() *UserQuery {
 	return query
 }
 
-// QueryPosts chains the current query on the "posts" edge.
-func (sq *ScheduleQuery) QueryPosts() *PostQuery {
+// QueryPost chains the current query on the "post" edge.
+func (sq *ScheduleQuery) QueryPost() *PostQuery {
 	query := (&PostClient{config: sq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
@@ -99,7 +99,7 @@ func (sq *ScheduleQuery) QueryPosts() *PostQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(schedule.Table, schedule.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, schedule.PostsTable, schedule.PostsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, schedule.PostTable, schedule.PostPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,7 +300,7 @@ func (sq *ScheduleQuery) Clone() *ScheduleQuery {
 		inters:     append([]Interceptor{}, sq.inters...),
 		predicates: append([]predicate.Schedule{}, sq.predicates...),
 		withUser:   sq.withUser.Clone(),
-		withPosts:  sq.withPosts.Clone(),
+		withPost:   sq.withPost.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -318,14 +318,14 @@ func (sq *ScheduleQuery) WithUser(opts ...func(*UserQuery)) *ScheduleQuery {
 	return sq
 }
 
-// WithPosts tells the query-builder to eager-load the nodes that are connected to
-// the "posts" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *ScheduleQuery) WithPosts(opts ...func(*PostQuery)) *ScheduleQuery {
+// WithPost tells the query-builder to eager-load the nodes that are connected to
+// the "post" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *ScheduleQuery) WithPost(opts ...func(*PostQuery)) *ScheduleQuery {
 	query := (&PostClient{config: sq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	sq.withPosts = query
+	sq.withPost = query
 	return sq
 }
 
@@ -409,7 +409,7 @@ func (sq *ScheduleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sch
 		_spec       = sq.querySpec()
 		loadedTypes = [2]bool{
 			sq.withUser != nil,
-			sq.withPosts != nil,
+			sq.withPost != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -436,10 +436,10 @@ func (sq *ScheduleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sch
 			return nil, err
 		}
 	}
-	if query := sq.withPosts; query != nil {
-		if err := sq.loadPosts(ctx, query, nodes,
-			func(n *Schedule) { n.Edges.Posts = []*Post{} },
-			func(n *Schedule, e *Post) { n.Edges.Posts = append(n.Edges.Posts, e) }); err != nil {
+	if query := sq.withPost; query != nil {
+		if err := sq.loadPost(ctx, query, nodes,
+			func(n *Schedule) { n.Edges.Post = []*Post{} },
+			func(n *Schedule, e *Post) { n.Edges.Post = append(n.Edges.Post, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -475,33 +475,64 @@ func (sq *ScheduleQuery) loadUser(ctx context.Context, query *UserQuery, nodes [
 	}
 	return nil
 }
-func (sq *ScheduleQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*Schedule, init func(*Schedule), assign func(*Schedule, *Post)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Schedule)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
+func (sq *ScheduleQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*Schedule, init func(*Schedule), assign func(*Schedule, *Post)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[int]*Schedule)
+	nids := make(map[int]map[*Schedule]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
 		if init != nil {
-			init(nodes[i])
+			init(node)
 		}
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(post.FieldScheduleID)
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(schedule.PostTable)
+		s.Join(joinT).On(s.C(post.FieldID), joinT.C(schedule.PostPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(schedule.PostPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(schedule.PostPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
 	}
-	query.Where(predicate.Post(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(schedule.PostsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Schedule]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Post](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ScheduleID
-		node, ok := nodeids[fk]
+		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "schedule_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected "post" node returned %v`, n.ID)
 		}
-		assign(node, n)
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

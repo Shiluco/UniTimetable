@@ -70,11 +70,6 @@ func Content(v string) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldContent, v))
 }
 
-// ScheduleID applies equality check predicate on the "schedule_id" field. It's identical to ScheduleIDEQ.
-func ScheduleID(v int) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldScheduleID, v))
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldCreatedAt, v))
@@ -200,34 +195,14 @@ func ContentContainsFold(v string) predicate.Post {
 	return predicate.Post(sql.FieldContainsFold(FieldContent, v))
 }
 
-// ScheduleIDEQ applies the EQ predicate on the "schedule_id" field.
-func ScheduleIDEQ(v int) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldScheduleID, v))
+// ScheduleIdsIsNil applies the IsNil predicate on the "schedule_ids" field.
+func ScheduleIdsIsNil() predicate.Post {
+	return predicate.Post(sql.FieldIsNull(FieldScheduleIds))
 }
 
-// ScheduleIDNEQ applies the NEQ predicate on the "schedule_id" field.
-func ScheduleIDNEQ(v int) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldScheduleID, v))
-}
-
-// ScheduleIDIn applies the In predicate on the "schedule_id" field.
-func ScheduleIDIn(vs ...int) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldScheduleID, vs...))
-}
-
-// ScheduleIDNotIn applies the NotIn predicate on the "schedule_id" field.
-func ScheduleIDNotIn(vs ...int) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldScheduleID, vs...))
-}
-
-// ScheduleIDIsNil applies the IsNil predicate on the "schedule_id" field.
-func ScheduleIDIsNil() predicate.Post {
-	return predicate.Post(sql.FieldIsNull(FieldScheduleID))
-}
-
-// ScheduleIDNotNil applies the NotNil predicate on the "schedule_id" field.
-func ScheduleIDNotNil() predicate.Post {
-	return predicate.Post(sql.FieldNotNull(FieldScheduleID))
+// ScheduleIdsNotNil applies the NotNil predicate on the "schedule_ids" field.
+func ScheduleIdsNotNil() predicate.Post {
+	return predicate.Post(sql.FieldNotNull(FieldScheduleIds))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -333,21 +308,21 @@ func HasUserWith(preds ...predicate.User) predicate.Post {
 	})
 }
 
-// HasSchedule applies the HasEdge predicate on the "schedule" edge.
-func HasSchedule() predicate.Post {
+// HasSchedules applies the HasEdge predicate on the "schedules" edge.
+func HasSchedules() predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ScheduleTable, ScheduleColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, SchedulesTable, SchedulesPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasScheduleWith applies the HasEdge predicate on the "schedule" edge with a given conditions (other predicates).
-func HasScheduleWith(preds ...predicate.Schedule) predicate.Post {
+// HasSchedulesWith applies the HasEdge predicate on the "schedules" edge with a given conditions (other predicates).
+func HasSchedulesWith(preds ...predicate.Schedule) predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {
-		step := newScheduleStep()
+		step := newSchedulesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

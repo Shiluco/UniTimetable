@@ -99,14 +99,14 @@ func (sc *ScheduleCreate) SetUser(u *User) *ScheduleCreate {
 	return sc.SetUserID(u.ID)
 }
 
-// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+// AddPostIDs adds the "post" edge to the Post entity by IDs.
 func (sc *ScheduleCreate) AddPostIDs(ids ...int) *ScheduleCreate {
 	sc.mutation.AddPostIDs(ids...)
 	return sc
 }
 
-// AddPosts adds the "posts" edges to the Post entity.
-func (sc *ScheduleCreate) AddPosts(p ...*Post) *ScheduleCreate {
+// AddPost adds the "post" edges to the Post entity.
+func (sc *ScheduleCreate) AddPost(p ...*Post) *ScheduleCreate {
 	ids := make([]int, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
@@ -270,12 +270,12 @@ func (sc *ScheduleCreate) createSpec() (*Schedule, *sqlgraph.CreateSpec) {
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.PostsIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   schedule.PostsTable,
-			Columns: []string{schedule.PostsColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   schedule.PostTable,
+			Columns: schedule.PostPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),

@@ -43,7 +43,7 @@ type ScheduleEdges struct {
 	// User who owns the schedule.
 	User *User `json:"user,omitempty"`
 	// Posts associated with the schedule.
-	Posts []*Post `json:"posts,omitempty"`
+	Post []*Post `json:"post,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -60,13 +60,13 @@ func (e ScheduleEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// PostsOrErr returns the Posts value or an error if the edge
+// PostOrErr returns the Post value or an error if the edge
 // was not loaded in eager-loading.
-func (e ScheduleEdges) PostsOrErr() ([]*Post, error) {
+func (e ScheduleEdges) PostOrErr() ([]*Post, error) {
 	if e.loadedTypes[1] {
-		return e.Posts, nil
+		return e.Post, nil
 	}
-	return nil, &NotLoadedError{edge: "posts"}
+	return nil, &NotLoadedError{edge: "post"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -161,9 +161,9 @@ func (s *Schedule) QueryUser() *UserQuery {
 	return NewScheduleClient(s.config).QueryUser(s)
 }
 
-// QueryPosts queries the "posts" edge of the Schedule entity.
-func (s *Schedule) QueryPosts() *PostQuery {
-	return NewScheduleClient(s.config).QueryPosts(s)
+// QueryPost queries the "post" edge of the Schedule entity.
+func (s *Schedule) QueryPost() *PostQuery {
+	return NewScheduleClient(s.config).QueryPost(s)
 }
 
 // Update returns a builder for updating this Schedule.

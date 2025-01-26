@@ -9,6 +9,7 @@ import (
     "github.com/Shiluco/UniTimetable/backend/ent"
     "github.com/Shiluco/UniTimetable/backend/ent/post"
     "github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
+    "github.com/Shiluco/UniTimetable/backend/internal/schedule"
 )
 
 type PostHandler struct {
@@ -131,37 +132,109 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 
 // CreatePost 投稿を作成（通常の投稿または返信）
 func (h *PostHandler) CreatePost(c *gin.Context) {
-    var req struct {
-        ParentPostID *int   `json:"parent_post_id"`
-        Content      string `json:"content" binding:"required"`
-        ScheduleID   *int   `json:"schedule_id"`
-    }
-
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    // 現在のユーザーを取得
     currentUser := middleware.GetCurrentUser(c)
     if currentUser == nil {
         c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
         return
     }
+    file,header,err := c.Request.FormFile("htmlFile")
+    if err != nil {
+        c.JSON(400, gin.H{"error": "Failed to get file"})
+        return
+    }
+    defer file.Close()
+
+    content,err := c.PostForm("content")
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+        return
+    }
+    userIDstr, err := c.PostForm("userId")
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+        return
+    }
+    parentPostIDstr, err := c.PostForm("parentPostId")
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+        return
+    }
+    if userIDStr == "" || content == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+        return
+    }
+
+    userID, err := strconv.Atoi(userIDstr)
+    if err != nil {
+        c.JSON(400, gin.H{"error": "Failed to get user ID"})
+        return
+    }
+
+    var parentID *int
+    if parentIDStr != "" {
+        id, err := strconv.Atoi(parentIDStr)
+        if err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parentID"})
+            return
+        }
+        parentID = &id
+    }
+
+    schedules, err := schedule.ProcessFile(file)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    ctx := c.Request.Context()
+    var savedSchedules []*ent.Schedule
+    var savedSchedulesID []int
+    // トランザクションを開始
+    tx, err := h.client.Tx(ctx)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "トランザクションの開始に失敗しました"})
+        return
+    }
+    for _, schedule := range schedules {
+        _, err := tx.Schedule.Create().
+            SetUserID(currentUser.ID).
+            SetDayOfWeek(schedule.DayOfWeek).
+            SetTimeSlot(schedule.TimeSlot).
+            SetSubject(schedule.Subject).
+            SetLocation(schedule.Location).
+            Save(ctx)
+        if err != nil {
+            tx.Rollback()
+            c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("時間割の保存に失敗しました: %v", err)})
+            return
+        }
+        savedSchedulesIDs = append(savedSchedulesIDs, schedule.ID)
+    }
+
+    // トランザクションをコミット
+    if err := tx.Commit(); err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "トランザクションのコミットに失敗しました"})
+        return
+    }   
+
+    // c.JSON(http.StatusOK, gin.H{
+    //     "message": "時間割を保存しました",
+    //     "schedules": savedSchedules,
+    // })
 
     // 投稿の作成
     create := h.client.Post.Create().
-        SetContent(req.Content).
-        SetUserID(currentUser.ID).
+        SetContent(content).
+        SetUserID(userID).
         SetCreatedAt(time.Now()).
         SetUpdatedAt(time.Now())
 
     // オプションフィールドの設定
-    if req.ParentPostID != nil {
-        create.SetParentPostID(*req.ParentPostID)
+    if parentID != nil {
+        create.SetParentPostID(*parentID)
     }
-    if req.ScheduleID != nil {
-        create.SetScheduleID(*req.ScheduleID)
+    if savedSchedulesIDs != nil {
+        create.SetScheduleID(savedSchedulesIDs)
     }
 
     post, err := create.Save(c.Request.Context())
