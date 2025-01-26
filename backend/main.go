@@ -43,4 +43,5 @@ func main() {
 	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
 		log.Fatalf("サーバー起動失敗: %v", err)
 	}
+	SaveUniversityData(client, "backend/internal/univ_data/univ.json")
 }

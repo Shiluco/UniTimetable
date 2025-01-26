@@ -1,0 +1,57 @@
+{
+    "departments": [
+        {
+            "department_id": 1,
+            "name": "工学部",
+            "majors": [
+                {
+                    "major_id": 1,
+                    "department_id": 1,
+                    "name": "機械工学科"
+                },
+                {
+                    "major_id": 2,
+                    "department_id": 1,
+                    "name": "電気工学科"
+                }
+            ]
+        },
+        {
+            "department_id": 2,
+            "name": "文学部",
+            "majors": [
+                {
+                    "major_id": 3,
+                    "department_id": 2,
+                    "name": "日本文学科"
+                },
+                {
+                    "major_id": 4,
+                    "department_id": 2,
+                    "name": "英文学科"
+                }
+            ]
+        },
+        {
+            "department_id": 3,
+            "name": "情報学部",
+            "majors": [
+                {
+                    "major_id": 5,
+                    "department_id": 3,
+                    "name": "情報科学科"
+                },
+                {
+                    "major_id": 6,
+                    "department_id": 3,
+                    "name": "情報社会学科"
+                },
+                {
+                    "major_id": 7,
+                    "department_id": 3,
+                    "name": "行動情報学科"
+                }
+            ]
+        }
+    ]
+}
