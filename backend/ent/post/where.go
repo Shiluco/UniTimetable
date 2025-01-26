@@ -313,7 +313,7 @@ func HasSchedules() predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, SchedulesTable, SchedulesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, SchedulesTable, SchedulesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

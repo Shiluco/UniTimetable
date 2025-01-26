@@ -16,7 +16,7 @@ type Schedule struct {
 func (Schedule) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("id").Unique().Immutable().StructTag(`json:"schedule_id"`),
-		field.Int("user_id"),
+		field.Int("post_id"),
 		field.Int("day_of_week").
 			Min(1).  // 0: 日曜日
 			Max(7).  // 6: 土曜日
@@ -35,7 +35,6 @@ func (Schedule) Fields() []ent.Field {
 // Edges of the Schedule.
 func (Schedule) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).Ref("schedules").Field("user_id").Unique().Required().Comment("User who owns the schedule."),
-		edge.From("post", Post.Type).Ref("schedules").Comment("Posts associated with the schedule."),
+		edge.From("post", Post.Type).Ref("schedules").Field("post_id").Unique().Required().Comment("Post associated with the schedule."),
 	}
 }

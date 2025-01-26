@@ -55,9 +55,9 @@ func IDLTE(id int) predicate.Schedule {
 	return predicate.Schedule(sql.FieldLTE(FieldID, id))
 }
 
-// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v int) predicate.Schedule {
-	return predicate.Schedule(sql.FieldEQ(FieldUserID, v))
+// PostID applies equality check predicate on the "post_id" field. It's identical to PostIDEQ.
+func PostID(v int) predicate.Schedule {
+	return predicate.Schedule(sql.FieldEQ(FieldPostID, v))
 }
 
 // DayOfWeek applies equality check predicate on the "day_of_week" field. It's identical to DayOfWeekEQ.
@@ -90,24 +90,24 @@ func UpdatedAt(v time.Time) predicate.Schedule {
 	return predicate.Schedule(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v int) predicate.Schedule {
-	return predicate.Schedule(sql.FieldEQ(FieldUserID, v))
+// PostIDEQ applies the EQ predicate on the "post_id" field.
+func PostIDEQ(v int) predicate.Schedule {
+	return predicate.Schedule(sql.FieldEQ(FieldPostID, v))
 }
 
-// UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v int) predicate.Schedule {
-	return predicate.Schedule(sql.FieldNEQ(FieldUserID, v))
+// PostIDNEQ applies the NEQ predicate on the "post_id" field.
+func PostIDNEQ(v int) predicate.Schedule {
+	return predicate.Schedule(sql.FieldNEQ(FieldPostID, v))
 }
 
-// UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...int) predicate.Schedule {
-	return predicate.Schedule(sql.FieldIn(FieldUserID, vs...))
+// PostIDIn applies the In predicate on the "post_id" field.
+func PostIDIn(vs ...int) predicate.Schedule {
+	return predicate.Schedule(sql.FieldIn(FieldPostID, vs...))
 }
 
-// UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...int) predicate.Schedule {
-	return predicate.Schedule(sql.FieldNotIn(FieldUserID, vs...))
+// PostIDNotIn applies the NotIn predicate on the "post_id" field.
+func PostIDNotIn(vs ...int) predicate.Schedule {
+	return predicate.Schedule(sql.FieldNotIn(FieldPostID, vs...))
 }
 
 // DayOfWeekEQ applies the EQ predicate on the "day_of_week" field.
@@ -410,35 +410,12 @@ func UpdatedAtLTE(v time.Time) predicate.Schedule {
 	return predicate.Schedule(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// HasUser applies the HasEdge predicate on the "user" edge.
-func HasUser() predicate.Schedule {
-	return predicate.Schedule(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
-func HasUserWith(preds ...predicate.User) predicate.Schedule {
-	return predicate.Schedule(func(s *sql.Selector) {
-		step := newUserStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasPost applies the HasEdge predicate on the "post" edge.
 func HasPost() predicate.Schedule {
 	return predicate.Schedule(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PostTable, PostPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

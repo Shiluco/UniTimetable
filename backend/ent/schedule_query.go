@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -15,7 +14,6 @@ import (
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
 	"github.com/Shiluco/UniTimetable/backend/ent/predicate"
 	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
-	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
 // ScheduleQuery is the builder for querying Schedule entities.
@@ -25,8 +23,8 @@ type ScheduleQuery struct {
 	order      []schedule.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Schedule
-	withUser   *UserQuery
 	withPost   *PostQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,28 +61,6 @@ func (sq *ScheduleQuery) Order(o ...schedule.OrderOption) *ScheduleQuery {
 	return sq
 }
 
-// QueryUser chains the current query on the "user" edge.
-func (sq *ScheduleQuery) QueryUser() *UserQuery {
-	query := (&UserClient{config: sq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := sq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(schedule.Table, schedule.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, schedule.UserTable, schedule.UserColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryPost chains the current query on the "post" edge.
 func (sq *ScheduleQuery) QueryPost() *PostQuery {
 	query := (&PostClient{config: sq.config}).Query()
@@ -99,7 +75,7 @@ func (sq *ScheduleQuery) QueryPost() *PostQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(schedule.Table, schedule.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, schedule.PostTable, schedule.PostPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, schedule.PostTable, schedule.PostColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -299,23 +275,11 @@ func (sq *ScheduleQuery) Clone() *ScheduleQuery {
 		order:      append([]schedule.OrderOption{}, sq.order...),
 		inters:     append([]Interceptor{}, sq.inters...),
 		predicates: append([]predicate.Schedule{}, sq.predicates...),
-		withUser:   sq.withUser.Clone(),
 		withPost:   sq.withPost.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
 	}
-}
-
-// WithUser tells the query-builder to eager-load the nodes that are connected to
-// the "user" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *ScheduleQuery) WithUser(opts ...func(*UserQuery)) *ScheduleQuery {
-	query := (&UserClient{config: sq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	sq.withUser = query
-	return sq
 }
 
 // WithPost tells the query-builder to eager-load the nodes that are connected to
@@ -335,12 +299,12 @@ func (sq *ScheduleQuery) WithPost(opts ...func(*PostQuery)) *ScheduleQuery {
 // Example:
 //
 //	var v []struct {
-//		UserID int `json:"user_id,omitempty"`
+//		PostID int `json:"post_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Schedule.Query().
-//		GroupBy(schedule.FieldUserID).
+//		GroupBy(schedule.FieldPostID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *ScheduleQuery) GroupBy(field string, fields ...string) *ScheduleGroupBy {
@@ -358,11 +322,11 @@ func (sq *ScheduleQuery) GroupBy(field string, fields ...string) *ScheduleGroupB
 // Example:
 //
 //	var v []struct {
-//		UserID int `json:"user_id,omitempty"`
+//		PostID int `json:"post_id,omitempty"`
 //	}
 //
 //	client.Schedule.Query().
-//		Select(schedule.FieldUserID).
+//		Select(schedule.FieldPostID).
 //		Scan(ctx, &v)
 func (sq *ScheduleQuery) Select(fields ...string) *ScheduleSelect {
 	sq.ctx.Fields = append(sq.ctx.Fields, fields...)
@@ -406,12 +370,15 @@ func (sq *ScheduleQuery) prepareQuery(ctx context.Context) error {
 func (sq *ScheduleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Schedule, error) {
 	var (
 		nodes       = []*Schedule{}
+		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [2]bool{
-			sq.withUser != nil,
+		loadedTypes = [1]bool{
 			sq.withPost != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, schedule.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Schedule).scanValues(nil, columns)
 	}
@@ -430,27 +397,20 @@ func (sq *ScheduleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sch
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := sq.withUser; query != nil {
-		if err := sq.loadUser(ctx, query, nodes, nil,
-			func(n *Schedule, e *User) { n.Edges.User = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := sq.withPost; query != nil {
-		if err := sq.loadPost(ctx, query, nodes,
-			func(n *Schedule) { n.Edges.Post = []*Post{} },
-			func(n *Schedule, e *Post) { n.Edges.Post = append(n.Edges.Post, e) }); err != nil {
+		if err := sq.loadPost(ctx, query, nodes, nil,
+			func(n *Schedule, e *Post) { n.Edges.Post = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (sq *ScheduleQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Schedule, init func(*Schedule), assign func(*Schedule, *User)) error {
+func (sq *ScheduleQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*Schedule, init func(*Schedule), assign func(*Schedule, *Post)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Schedule)
 	for i := range nodes {
-		fk := nodes[i].UserID
+		fk := nodes[i].PostID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -459,7 +419,7 @@ func (sq *ScheduleQuery) loadUser(ctx context.Context, query *UserQuery, nodes [
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(user.IDIn(ids...))
+	query.Where(post.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -467,71 +427,10 @@ func (sq *ScheduleQuery) loadUser(ctx context.Context, query *UserQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "post_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (sq *ScheduleQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*Schedule, init func(*Schedule), assign func(*Schedule, *Post)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Schedule)
-	nids := make(map[int]map[*Schedule]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(schedule.PostTable)
-		s.Join(joinT).On(s.C(post.FieldID), joinT.C(schedule.PostPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(schedule.PostPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(schedule.PostPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*Schedule]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*Post](ctx, query, qr, query.inters)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "post" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
 		}
 	}
 	return nil
@@ -562,8 +461,8 @@ func (sq *ScheduleQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if sq.withUser != nil {
-			_spec.Node.AddColumnOnce(schedule.FieldUserID)
+		if sq.withPost != nil {
+			_spec.Node.AddColumnOnce(schedule.FieldPostID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {

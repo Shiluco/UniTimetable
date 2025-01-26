@@ -631,9 +631,7 @@ func (uq *UserQuery) loadSchedules(ctx context.Context, query *ScheduleQuery, no
 			init(nodes[i])
 		}
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(schedule.FieldUserID)
-	}
+	query.withFKs = true
 	query.Where(predicate.Schedule(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.SchedulesColumn), fks...))
 	}))
@@ -642,10 +640,13 @@ func (uq *UserQuery) loadSchedules(ctx context.Context, query *ScheduleQuery, no
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.UserID
-		node, ok := nodeids[fk]
+		fk := n.user_schedules
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_schedules" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_schedules" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

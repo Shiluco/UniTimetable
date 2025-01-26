@@ -43,11 +43,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// SchedulesTable is the table that holds the schedules relation/edge. The primary key declared below.
-	SchedulesTable = "post_schedules"
+	// SchedulesTable is the table that holds the schedules relation/edge.
+	SchedulesTable = "schedules"
 	// SchedulesInverseTable is the table name for the Schedule entity.
 	// It exists in this package in order to avoid circular dependency with the "schedule" package.
 	SchedulesInverseTable = "schedules"
+	// SchedulesColumn is the table column denoting the schedules relation/edge.
+	SchedulesColumn = "post_id"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "posts"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -68,12 +70,6 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
-
-var (
-	// SchedulesPrimaryKey and SchedulesColumn2 are the table columns denoting the
-	// primary key for the schedules relation (M2M).
-	SchedulesPrimaryKey = []string{"post_id", "schedule_id"}
-)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -181,7 +177,7 @@ func newSchedulesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SchedulesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, SchedulesTable, SchedulesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, SchedulesTable, SchedulesColumn),
 	)
 }
 func newParentStep() *sqlgraph.Step {

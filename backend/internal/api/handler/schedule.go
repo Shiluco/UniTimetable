@@ -1,51 +1,70 @@
 package handler
 
-// import (
-//     "net/http"
-//     "strconv"
-//     "time"
+import (
+    "net/http"
+    "strconv"
 
-//     "github.com/gin-gonic/gin"
-//     "github.com/Shiluco/UniTimetable/backend/ent"
-//     "github.com/Shiluco/UniTimetable/backend/ent/schedule"
-//     "github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
-// )
+    "github.com/gin-gonic/gin"
+    "github.com/Shiluco/UniTimetable/backend/ent"
+    "github.com/Shiluco/UniTimetable/backend/ent/schedule"
+    //"github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
+)
 
-// type ScheduleHandler struct {
-//     client *ent.Client
-// }
+type ScheduleHandler struct {
+    client *ent.Client
+}
 
-// func NewScheduleHandler(client *ent.Client) *ScheduleHandler {
-//     return &ScheduleHandler{client: client}
-// }
+func NewScheduleHandler(client *ent.Client) *ScheduleHandler {
+    return &ScheduleHandler{client: client}
+}
 
-// // GetSchedule 特定の時間割を取得
-// func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
-//     id, err := strconv.Atoi(c.Param("id"))
-//     if err != nil {
-//         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid schedule ID"})
-//         return
-//     }
+// GetSchedule 時間割取得ハンドラー（単一または一覧）
+func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
+    // IDパラメータの取得（単一スケジュールの場合）
+    idParam := c.Param("id")
+    
+    if idParam != "" {
+        // 単一のスケジュールを取得
+        id, err := strconv.Atoi(idParam)
+        if err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid schedule ID"})
+            return
+        }
 
-//     schedule, err := h.client.Schedule.Query().
-//         Where(schedule.ID(id)).
-//         WithUser().           // 作成者
-//         WithPosts().         // 投稿
-//         Only(c.Request.Context())
+        schedule, err := h.client.Schedule.Query().
+            Where(schedule.ID(id)).
+            WithPost(). // 投稿情報を取得
+            Only(c.Request.Context())
 
-//     if err != nil {
-//         if ent.IsNotFound(err) {
-//             c.JSON(http.StatusNotFound, gin.H{"error": "Schedule not found"})
-//             return
-//         }
-//         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//         return
-//     }
+        if err != nil {
+            if ent.IsNotFound(err) {
+                c.JSON(http.StatusNotFound, gin.H{"error": "Schedule not found"})
+                return
+            }
+            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
 
-//     c.JSON(http.StatusOK, schedule)
-// }
+        // 単一スケジュール情報をJSON形式で返す
+        c.JSON(http.StatusOK, schedule)
+        return
+    }
 
-// // CreateSchedule 時間割を作成
+    // スケジュールの一覧を取得
+    schedules, err := h.client.Schedule.Query().
+        WithPost(). // 投稿情報を取得
+        All(c.Request.Context())
+
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // スケジュール一覧をJSON形式で返す
+    c.JSON(http.StatusOK, schedules)
+}
+
+// CreateSchedule 時間割を作成
 // func (h *ScheduleHandler) CreateSchedule(c *gin.Context) {
 //     var req struct {
 //         DayOfWeek int   `json:"day_of_week" binding:"omitempty,min=1,max=7"`
@@ -71,7 +90,7 @@ package handler
 //         SetTimeSlot(req.TimeSlot).
 //         SetSubject(req.Subject).
 //         SetLocation(req.Location).
-//         SetUserID(currentUser.ID).
+//         SetPostID(currentUser.ID).
 //         SetCreatedAt(time.Now()).
 //         SetUpdatedAt(time.Now()).
 //         Save(c.Request.Context())
@@ -84,7 +103,7 @@ package handler
 //     c.JSON(http.StatusCreated, schedule)
 // }
 
-// // UpdateSchedule 時間割を更新
+// UpdateSchedule 時間割を更新
 // func (h *ScheduleHandler) UpdateSchedule(c *gin.Context) {
 //     id, err := strconv.Atoi(c.Param("id"))
 //     if err != nil {
@@ -155,7 +174,7 @@ package handler
 //     c.JSON(http.StatusOK, schedule)
 // }
 
-// // DeleteSchedule 時間割を削除
+// DeleteSchedule 時間割を削除
 // func (h *ScheduleHandler) DeleteSchedule(c *gin.Context) {
 //     id, err := strconv.Atoi(c.Param("id"))
 //     if err != nil {
