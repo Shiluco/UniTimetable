@@ -14,7 +14,6 @@ import (
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
 	"github.com/Shiluco/UniTimetable/backend/ent/predicate"
 	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
-	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
 // ScheduleUpdate is the builder for updating Schedule entities.
@@ -30,16 +29,16 @@ func (su *ScheduleUpdate) Where(ps ...predicate.Schedule) *ScheduleUpdate {
 	return su
 }
 
-// SetUserID sets the "user_id" field.
-func (su *ScheduleUpdate) SetUserID(i int) *ScheduleUpdate {
-	su.mutation.SetUserID(i)
+// SetPostID sets the "post_id" field.
+func (su *ScheduleUpdate) SetPostID(i int) *ScheduleUpdate {
+	su.mutation.SetPostID(i)
 	return su
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (su *ScheduleUpdate) SetNillableUserID(i *int) *ScheduleUpdate {
+// SetNillablePostID sets the "post_id" field if the given value is not nil.
+func (su *ScheduleUpdate) SetNillablePostID(i *int) *ScheduleUpdate {
 	if i != nil {
-		su.SetUserID(*i)
+		su.SetPostID(*i)
 	}
 	return su
 }
@@ -126,24 +125,9 @@ func (su *ScheduleUpdate) SetUpdatedAt(t time.Time) *ScheduleUpdate {
 	return su
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (su *ScheduleUpdate) SetUser(u *User) *ScheduleUpdate {
-	return su.SetUserID(u.ID)
-}
-
-// AddPostIDs adds the "post" edge to the Post entity by IDs.
-func (su *ScheduleUpdate) AddPostIDs(ids ...int) *ScheduleUpdate {
-	su.mutation.AddPostIDs(ids...)
-	return su
-}
-
-// AddPost adds the "post" edges to the Post entity.
-func (su *ScheduleUpdate) AddPost(p ...*Post) *ScheduleUpdate {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return su.AddPostIDs(ids...)
+// SetPost sets the "post" edge to the Post entity.
+func (su *ScheduleUpdate) SetPost(p *Post) *ScheduleUpdate {
+	return su.SetPostID(p.ID)
 }
 
 // Mutation returns the ScheduleMutation object of the builder.
@@ -151,31 +135,10 @@ func (su *ScheduleUpdate) Mutation() *ScheduleMutation {
 	return su.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (su *ScheduleUpdate) ClearUser() *ScheduleUpdate {
-	su.mutation.ClearUser()
-	return su
-}
-
-// ClearPost clears all "post" edges to the Post entity.
+// ClearPost clears the "post" edge to the Post entity.
 func (su *ScheduleUpdate) ClearPost() *ScheduleUpdate {
 	su.mutation.ClearPost()
 	return su
-}
-
-// RemovePostIDs removes the "post" edge to Post entities by IDs.
-func (su *ScheduleUpdate) RemovePostIDs(ids ...int) *ScheduleUpdate {
-	su.mutation.RemovePostIDs(ids...)
-	return su
-}
-
-// RemovePost removes "post" edges to Post entities.
-func (su *ScheduleUpdate) RemovePost(p ...*Post) *ScheduleUpdate {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return su.RemovePostIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -231,8 +194,8 @@ func (su *ScheduleUpdate) check() error {
 			return &ValidationError{Name: "subject", err: fmt.Errorf(`ent: validator failed for field "Schedule.subject": %w`, err)}
 		}
 	}
-	if su.mutation.UserCleared() && len(su.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Schedule.user"`)
+	if su.mutation.PostCleared() && len(su.mutation.PostIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Schedule.post"`)
 	}
 	return nil
 }
@@ -273,70 +236,25 @@ func (su *ScheduleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.UpdatedAt(); ok {
 		_spec.SetField(schedule.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if su.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   schedule.UserTable,
-			Columns: []string{schedule.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   schedule.UserTable,
-			Columns: []string{schedule.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if su.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
+			Columns: []string{schedule.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.RemovedPostIDs(); len(nodes) > 0 && !su.mutation.PostCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := su.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
+			Columns: []string{schedule.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
@@ -367,16 +285,16 @@ type ScheduleUpdateOne struct {
 	mutation *ScheduleMutation
 }
 
-// SetUserID sets the "user_id" field.
-func (suo *ScheduleUpdateOne) SetUserID(i int) *ScheduleUpdateOne {
-	suo.mutation.SetUserID(i)
+// SetPostID sets the "post_id" field.
+func (suo *ScheduleUpdateOne) SetPostID(i int) *ScheduleUpdateOne {
+	suo.mutation.SetPostID(i)
 	return suo
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (suo *ScheduleUpdateOne) SetNillableUserID(i *int) *ScheduleUpdateOne {
+// SetNillablePostID sets the "post_id" field if the given value is not nil.
+func (suo *ScheduleUpdateOne) SetNillablePostID(i *int) *ScheduleUpdateOne {
 	if i != nil {
-		suo.SetUserID(*i)
+		suo.SetPostID(*i)
 	}
 	return suo
 }
@@ -463,24 +381,9 @@ func (suo *ScheduleUpdateOne) SetUpdatedAt(t time.Time) *ScheduleUpdateOne {
 	return suo
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (suo *ScheduleUpdateOne) SetUser(u *User) *ScheduleUpdateOne {
-	return suo.SetUserID(u.ID)
-}
-
-// AddPostIDs adds the "post" edge to the Post entity by IDs.
-func (suo *ScheduleUpdateOne) AddPostIDs(ids ...int) *ScheduleUpdateOne {
-	suo.mutation.AddPostIDs(ids...)
-	return suo
-}
-
-// AddPost adds the "post" edges to the Post entity.
-func (suo *ScheduleUpdateOne) AddPost(p ...*Post) *ScheduleUpdateOne {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return suo.AddPostIDs(ids...)
+// SetPost sets the "post" edge to the Post entity.
+func (suo *ScheduleUpdateOne) SetPost(p *Post) *ScheduleUpdateOne {
+	return suo.SetPostID(p.ID)
 }
 
 // Mutation returns the ScheduleMutation object of the builder.
@@ -488,31 +391,10 @@ func (suo *ScheduleUpdateOne) Mutation() *ScheduleMutation {
 	return suo.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (suo *ScheduleUpdateOne) ClearUser() *ScheduleUpdateOne {
-	suo.mutation.ClearUser()
-	return suo
-}
-
-// ClearPost clears all "post" edges to the Post entity.
+// ClearPost clears the "post" edge to the Post entity.
 func (suo *ScheduleUpdateOne) ClearPost() *ScheduleUpdateOne {
 	suo.mutation.ClearPost()
 	return suo
-}
-
-// RemovePostIDs removes the "post" edge to Post entities by IDs.
-func (suo *ScheduleUpdateOne) RemovePostIDs(ids ...int) *ScheduleUpdateOne {
-	suo.mutation.RemovePostIDs(ids...)
-	return suo
-}
-
-// RemovePost removes "post" edges to Post entities.
-func (suo *ScheduleUpdateOne) RemovePost(p ...*Post) *ScheduleUpdateOne {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return suo.RemovePostIDs(ids...)
 }
 
 // Where appends a list predicates to the ScheduleUpdate builder.
@@ -581,8 +463,8 @@ func (suo *ScheduleUpdateOne) check() error {
 			return &ValidationError{Name: "subject", err: fmt.Errorf(`ent: validator failed for field "Schedule.subject": %w`, err)}
 		}
 	}
-	if suo.mutation.UserCleared() && len(suo.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Schedule.user"`)
+	if suo.mutation.PostCleared() && len(suo.mutation.PostIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Schedule.post"`)
 	}
 	return nil
 }
@@ -640,70 +522,25 @@ func (suo *ScheduleUpdateOne) sqlSave(ctx context.Context) (_node *Schedule, err
 	if value, ok := suo.mutation.UpdatedAt(); ok {
 		_spec.SetField(schedule.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if suo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   schedule.UserTable,
-			Columns: []string{schedule.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   schedule.UserTable,
-			Columns: []string{schedule.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if suo.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
+			Columns: []string{schedule.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.RemovedPostIDs(); len(nodes) > 0 && !suo.mutation.PostCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := suo.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
+			Columns: []string{schedule.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),

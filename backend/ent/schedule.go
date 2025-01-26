@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/Shiluco/UniTimetable/backend/ent/post"
 	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
-	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
 // Schedule is the model entity for the Schedule schema.
@@ -18,8 +18,8 @@ type Schedule struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"schedule_id"`
-	// UserID holds the value of the "user_id" field.
-	UserID int `json:"user_id,omitempty"`
+	// PostID holds the value of the "post_id" field.
+	PostID int `json:"post_id,omitempty"`
 	// 曜日（0:日曜日 - 6:土曜日）
 	DayOfWeek int `json:"day_of_week,omitempty"`
 	// 時限（1-6）
@@ -34,37 +34,27 @@ type Schedule struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ScheduleQuery when eager-loading is set.
-	Edges        ScheduleEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges          ScheduleEdges `json:"edges"`
+	user_schedules *int
+	selectValues   sql.SelectValues
 }
 
 // ScheduleEdges holds the relations/edges for other nodes in the graph.
 type ScheduleEdges struct {
-	// User who owns the schedule.
-	User *User `json:"user,omitempty"`
-	// Posts associated with the schedule.
-	Post []*Post `json:"post,omitempty"`
+	// Post associated with the schedule.
+	Post *Post `json:"post,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ScheduleEdges) UserOrErr() (*User, error) {
-	if e.User != nil {
-		return e.User, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: user.Label}
-	}
-	return nil, &NotLoadedError{edge: "user"}
+	loadedTypes [1]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
-// was not loaded in eager-loading.
-func (e ScheduleEdges) PostOrErr() ([]*Post, error) {
-	if e.loadedTypes[1] {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ScheduleEdges) PostOrErr() (*Post, error) {
+	if e.Post != nil {
 		return e.Post, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: post.Label}
 	}
 	return nil, &NotLoadedError{edge: "post"}
 }
@@ -74,12 +64,14 @@ func (*Schedule) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case schedule.FieldID, schedule.FieldUserID, schedule.FieldDayOfWeek, schedule.FieldTimeSlot:
+		case schedule.FieldID, schedule.FieldPostID, schedule.FieldDayOfWeek, schedule.FieldTimeSlot:
 			values[i] = new(sql.NullInt64)
 		case schedule.FieldSubject, schedule.FieldLocation:
 			values[i] = new(sql.NullString)
 		case schedule.FieldCreatedAt, schedule.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case schedule.ForeignKeys[0]: // user_schedules
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -101,11 +93,11 @@ func (s *Schedule) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			s.ID = int(value.Int64)
-		case schedule.FieldUserID:
+		case schedule.FieldPostID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field post_id", values[i])
 			} else if value.Valid {
-				s.UserID = int(value.Int64)
+				s.PostID = int(value.Int64)
 			}
 		case schedule.FieldDayOfWeek:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -143,6 +135,13 @@ func (s *Schedule) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.UpdatedAt = value.Time
 			}
+		case schedule.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_schedules", value)
+			} else if value.Valid {
+				s.user_schedules = new(int)
+				*s.user_schedules = int(value.Int64)
+			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
 		}
@@ -154,11 +153,6 @@ func (s *Schedule) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (s *Schedule) Value(name string) (ent.Value, error) {
 	return s.selectValues.Get(name)
-}
-
-// QueryUser queries the "user" edge of the Schedule entity.
-func (s *Schedule) QueryUser() *UserQuery {
-	return NewScheduleClient(s.config).QueryUser(s)
 }
 
 // QueryPost queries the "post" edge of the Schedule entity.
@@ -189,8 +183,8 @@ func (s *Schedule) String() string {
 	var builder strings.Builder
 	builder.WriteString("Schedule(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", s.ID))
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.UserID))
+	builder.WriteString("post_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.PostID))
 	builder.WriteString(", ")
 	builder.WriteString("day_of_week=")
 	builder.WriteString(fmt.Sprintf("%v", s.DayOfWeek))

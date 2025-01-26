@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
 	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
-	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
 // ScheduleCreate is the builder for creating a Schedule entity.
@@ -22,9 +21,9 @@ type ScheduleCreate struct {
 	hooks    []Hook
 }
 
-// SetUserID sets the "user_id" field.
-func (sc *ScheduleCreate) SetUserID(i int) *ScheduleCreate {
-	sc.mutation.SetUserID(i)
+// SetPostID sets the "post_id" field.
+func (sc *ScheduleCreate) SetPostID(i int) *ScheduleCreate {
+	sc.mutation.SetPostID(i)
 	return sc
 }
 
@@ -94,24 +93,9 @@ func (sc *ScheduleCreate) SetID(i int) *ScheduleCreate {
 	return sc
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (sc *ScheduleCreate) SetUser(u *User) *ScheduleCreate {
-	return sc.SetUserID(u.ID)
-}
-
-// AddPostIDs adds the "post" edge to the Post entity by IDs.
-func (sc *ScheduleCreate) AddPostIDs(ids ...int) *ScheduleCreate {
-	sc.mutation.AddPostIDs(ids...)
-	return sc
-}
-
-// AddPost adds the "post" edges to the Post entity.
-func (sc *ScheduleCreate) AddPost(p ...*Post) *ScheduleCreate {
-	ids := make([]int, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return sc.AddPostIDs(ids...)
+// SetPost sets the "post" edge to the Post entity.
+func (sc *ScheduleCreate) SetPost(p *Post) *ScheduleCreate {
+	return sc.SetPostID(p.ID)
 }
 
 // Mutation returns the ScheduleMutation object of the builder.
@@ -161,8 +145,8 @@ func (sc *ScheduleCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (sc *ScheduleCreate) check() error {
-	if _, ok := sc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Schedule.user_id"`)}
+	if _, ok := sc.mutation.PostID(); !ok {
+		return &ValidationError{Name: "post_id", err: errors.New(`ent: missing required field "Schedule.post_id"`)}
 	}
 	if _, ok := sc.mutation.DayOfWeek(); !ok {
 		return &ValidationError{Name: "day_of_week", err: errors.New(`ent: missing required field "Schedule.day_of_week"`)}
@@ -194,8 +178,8 @@ func (sc *ScheduleCreate) check() error {
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Schedule.updated_at"`)}
 	}
-	if len(sc.mutation.UserIDs()) == 0 {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Schedule.user"`)}
+	if len(sc.mutation.PostIDs()) == 0 {
+		return &ValidationError{Name: "post", err: errors.New(`ent: missing required edge "Schedule.post"`)}
 	}
 	return nil
 }
@@ -253,29 +237,12 @@ func (sc *ScheduleCreate) createSpec() (*Schedule, *sqlgraph.CreateSpec) {
 		_spec.SetField(schedule.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := sc.mutation.UserIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   schedule.UserTable,
-			Columns: []string{schedule.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.UserID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := sc.mutation.PostIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
 			Table:   schedule.PostTable,
-			Columns: schedule.PostPrimaryKey,
+			Columns: []string{schedule.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
@@ -284,6 +251,7 @@ func (sc *ScheduleCreate) createSpec() (*Schedule, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.PostID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

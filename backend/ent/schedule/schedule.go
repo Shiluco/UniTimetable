@@ -14,8 +14,8 @@ const (
 	Label = "schedule"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
+	// FieldPostID holds the string denoting the post_id field in the database.
+	FieldPostID = "post_id"
 	// FieldDayOfWeek holds the string denoting the day_of_week field in the database.
 	FieldDayOfWeek = "day_of_week"
 	// FieldTimeSlot holds the string denoting the time_slot field in the database.
@@ -28,30 +28,23 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeUser holds the string denoting the user edge name in mutations.
-	EdgeUser = "user"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
 	// Table holds the table name of the schedule in the database.
 	Table = "schedules"
-	// UserTable is the table that holds the user relation/edge.
-	UserTable = "schedules"
-	// UserInverseTable is the table name for the User entity.
-	// It exists in this package in order to avoid circular dependency with the "user" package.
-	UserInverseTable = "users"
-	// UserColumn is the table column denoting the user relation/edge.
-	UserColumn = "user_id"
-	// PostTable is the table that holds the post relation/edge. The primary key declared below.
-	PostTable = "post_schedules"
+	// PostTable is the table that holds the post relation/edge.
+	PostTable = "schedules"
 	// PostInverseTable is the table name for the Post entity.
 	// It exists in this package in order to avoid circular dependency with the "post" package.
 	PostInverseTable = "posts"
+	// PostColumn is the table column denoting the post relation/edge.
+	PostColumn = "post_id"
 )
 
 // Columns holds all SQL columns for schedule fields.
 var Columns = []string{
 	FieldID,
-	FieldUserID,
+	FieldPostID,
 	FieldDayOfWeek,
 	FieldTimeSlot,
 	FieldSubject,
@@ -60,16 +53,21 @@ var Columns = []string{
 	FieldUpdatedAt,
 }
 
-var (
-	// PostPrimaryKey and PostColumn2 are the table columns denoting the
-	// primary key for the post relation (M2M).
-	PostPrimaryKey = []string{"post_id", "schedule_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "schedules"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_schedules",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -99,9 +97,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+// ByPostID orders the results by the post_id field.
+func ByPostID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPostID, opts...).ToFunc()
 }
 
 // ByDayOfWeek orders the results by the day_of_week field.
@@ -134,37 +132,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByUserField orders the results by user field.
-func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByPostField orders the results by post field.
+func ByPostField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newPostStep(), sql.OrderByField(field, opts...))
 	}
-}
-
-// ByPostCount orders the results by post count.
-func ByPostCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newPostStep(), opts...)
-	}
-}
-
-// ByPost orders the results by post terms.
-func ByPost(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPostStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-func newUserStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-	)
 }
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PostInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, PostTable, PostPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
 	)
 }

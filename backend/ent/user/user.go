@@ -69,7 +69,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "schedule" package.
 	SchedulesInverseTable = "schedules"
 	// SchedulesColumn is the table column denoting the schedules relation/edge.
-	SchedulesColumn = "user_id"
+	SchedulesColumn = "user_schedules"
 )
 
 // Columns holds all SQL columns for user fields.
