@@ -6,44 +6,52 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtSecret = []byte("your-secret-key")
-
-// JWTClaims カスタムクレーム
-type JWTClaims struct {
+type TokenClaims struct {
 	UserID int    `json:"user_id"`
 	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
-// GenerateJWT JWTトークンを生成
-func GenerateJWT(userID int, email string) (string, error) {
-	claims := &JWTClaims{
+func GenerateTokens(userID int, email string) (accessToken string, refreshToken string, err error) {
+	accessClaims := &TokenClaims{
 		UserID: userID,
 		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
-}
-
-// ValidateJWT JWTトークンを検証
-func ValidateJWT(tokenString string) (*JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
-	})
-
-	if err != nil {
-		return nil, err
+	refreshClaims := &TokenClaims{
+		UserID: userID,
+		Email:  email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	}
 
-	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
+	accessToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims).SignedString([]byte("access_secret"))
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err = jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims).SignedString([]byte("refresh_secret"))
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+func ValidateToken(tokenString string, secretKey string) (*TokenClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &TokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+
+	if claims, ok := token.Claims.(*TokenClaims); ok && token.Valid {
 		return claims, nil
 	}
 
-	return nil, jwt.ErrSignatureInvalid
+	return nil, err
 }
-
