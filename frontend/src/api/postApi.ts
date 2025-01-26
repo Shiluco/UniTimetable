@@ -1,6 +1,7 @@
 import { Fetcher } from "@/util/fetcher";
-import {  PostResponse, PostsResponse } from "@/types/post";
+import { PostResponse, PostsResponse } from "@/types/post";
 
+const url = "/posts";
 // 投稿の作成
 export const createPostApi = async (
   user_id: number,
@@ -9,7 +10,7 @@ export const createPostApi = async (
   schedule_id: number,
   image_url: string
 ): Promise<PostResponse> => {
-  const response = await Fetcher<PostResponse>("/v1/posts", {
+  const response = await Fetcher<PostResponse>(url, {
     method: "POST",
     body: JSON.stringify({
       user_id,
@@ -32,7 +33,7 @@ export const updatePostApi = async (
   schedule_id: number,
   image_url: string
 ): Promise<PostResponse> => {
-  const response = await Fetcher<PostResponse>("/v1/posts", {
+  const response = await Fetcher<PostResponse>(url, {
     method: "PUT",
     body: JSON.stringify({
       post_id,
@@ -70,7 +71,7 @@ export const getPostsApi = async (query_params?: {
         .join("&")
     : "";
 
-  const response = await Fetcher<PostsResponse>(`/v1/posts${queryString}`, {
+  const response = await Fetcher<PostsResponse>(`${url}${queryString}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -79,7 +80,7 @@ export const getPostsApi = async (query_params?: {
 };
 
 export const deletePostApi = async (post_id: number): Promise<void> => {
-  await Fetcher<void>(`/v1/posts?post_id=${post_id}`, {
+  await Fetcher<void>(`${url}?post_id=${post_id}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   });
