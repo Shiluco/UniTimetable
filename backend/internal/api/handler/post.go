@@ -159,10 +159,10 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         return
     }
     parentPostIDStr := c.PostForm("parentPostId")
-    if parentPostIDStr == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
-        return
-    }
+    // if parentPostIDStr == "" {
+    //     c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+    //     return
+    // }
     if userIDStr == "" || content == "" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
         return
@@ -201,15 +201,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         return
     }
 
-    // ctx := c.Request.Context()
-
     var savedSchedulesIDs []int
-    // トランザクションを開始
-    //tx, err := h.client.Tx(ctx)
-    // if err != nil {
-    //     c.JSON(http.StatusInternalServerError, gin.H{"error": "トランザクションの開始に失敗しました"})
-    //     return
-    // }
     for _, schedule := range schedules {
         savedSchedule, err := h.client.Schedule.Create().
             SetPostID(post.ID).

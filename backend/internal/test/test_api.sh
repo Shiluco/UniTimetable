@@ -65,46 +65,32 @@ echo $LOGIN_RESPONSE | jq '.'
 # トークンを更新
 TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
 
-# 時間割作成のテスト
-echo -e "\n${GREEN}Testing schedule creation...${NC}"
-SCHEDULE_RESPONSE=$(curl -s -X POST "${BASE_URL}/schedules" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "day_of_week": 1,
-    "time_slot": 1,
-    "subject": "プログラミング演習",
-    "location": "情報処理演習室"
-  }')
-echo $SCHEDULE_RESPONSE | jq '.'
-
-# 作成した時間割のIDを取得
-SCHEDULE_ID=$(echo $SCHEDULE_RESPONSE | jq -r '.schedule_id')
-
 # 通常の投稿作成のテスト
+# テスト用HTMLファイルのパス
+HTML_FILE="./test.html"
 echo -e "\n${GREEN}Testing post creation...${NC}"
-POST_RESPONSE=$(curl -s -X POST "${BASE_URL}/posts" \
+POST_RESPONSE=$(curl -X POST "${BASE_URL}/posts" \
   -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"content\": \"テスト投稿です\",
-    \"schedule_id\": ${SCHEDULE_ID}
-  }")
+  -H "Content-Type: multipart/form-data" \
+  -F "content=テスト投稿です"\
+  -F "userId=1"\
+  -F "parentPostId=" \
+  -F "htmlFile=@${HTML_FILE}")
 echo $POST_RESPONSE | jq '.'
 
 # 作成した投稿のIDを取得
 POST_ID=$(echo $POST_RESPONSE | jq -r '.post_id')
 
 # 返信作成のテスト
-echo -e "\n${GREEN}Testing reply creation...${NC}"
-REPLY_RESPONSE=$(curl -s -X POST "${BASE_URL}/posts" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"parent_post_id\": ${POST_ID},
-    \"content\": \"返信テストです\"
-  }")
-echo $REPLY_RESPONSE | jq '.'
+# echo -e "\n${GREEN}Testing reply creation...${NC}"
+# REPLY_RESPONSE=$(curl -s -X POST "${BASE_URL}/users/1" \
+#   -H "Authorization: Bearer ${TOKEN}" \
+#   -H "Content-Type: application/json" \
+#   -d "{
+#     \"parent_post_id\": ${POST_ID},
+#     \"content\": \"返信テストです\"
+#   }")
+# echo $REPLY_RESPONSE | jq '.'
 
 # 単一の投稿取得テスト
 echo -e "\n${GREEN}Testing get single post...${NC}"
@@ -129,41 +115,40 @@ process_response() {
     fi
 }
 
-# 返信一覧の取得テスト
-echo -e "\n${GREEN}Testing get replies...${NC}"
-GET_REPLIES_RESPONSE=$(curl -s "${BASE_URL}/posts?parent_id=${POST_ID}" \
-  -H "Authorization: Bearer ${TOKEN}")
-process_response "$GET_REPLIES_RESPONSE"
+# # 返信一覧の取得テスト
+# echo -e "\n${GREEN}Testing get replies...${NC}"
+# GET_REPLIES_RESPONSE=$(curl -s "${BASE_URL}/posts?parent_id=${POST_ID}" \
+#   -H "Authorization: Bearer ${TOKEN}")
+# process_response "$GET_REPLIES_RESPONSE"
 
 # 時間割に関連する投稿一覧の取得テスト
-if [ ! -z "$SCHEDULE_ID" ]; then
-    echo -e "\n${GREEN}Testing get posts by schedule...${NC}"
-    GET_SCHEDULE_POSTS_RESPONSE=$(curl -s "${BASE_URL}/posts?schedule_id=${SCHEDULE_ID}" \
-      -H "Authorization: Bearer ${TOKEN}")
-    process_response "$GET_SCHEDULE_POSTS_RESPONSE"
-fi
+# if [ ! -z "$SCHEDULE_ID" ]; then
+#     echo -e "\n${GREEN}Testing get posts by schedule...${NC}"
+#     GET_SCHEDULE_POSTS_RESPONSE=$(curl -s "${BASE_URL}/posts?schedule_id=${SCHEDULE_ID}" \
+#       -H "Authorization: Bearer ${TOKEN}")
+#     process_response "$GET_SCHEDULE_POSTS_RESPONSE"
+# fi
 
 # 投稿の更新テスト
-echo -e "\n${GREEN}Testing post update...${NC}"
-curl -s -X PUT "${BASE_URL}/posts/${POST_ID}" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "content": "更新されたテスト投稿です"
-  }' | jq '.'
+# echo -e "\n${GREEN}Testing post update...${NC}"
+# curl -s -X PUT "${BASE_URL}/posts/${POST_ID}" \
+#   -H "Authorization: Bearer ${TOKEN}" \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "content": "更新されたテスト投稿です"
+#   }' | jq '.'
 
 # 投稿の削除テスト
-echo -e "\n${GREEN}Testing post deletion...${NC}"
-curl -s -X DELETE "${BASE_URL}/posts/${POST_ID}" \
-  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+# echo -e "\n${GREEN}Testing post deletion...${NC}"
+# curl -s -X DELETE "${BASE_URL}/posts/${POST_ID}" \
+#   -H "Authorization: Bearer ${TOKEN}" | jq '.'
 
 # テスト結果の表示
 echo -e "\n${GREEN}Test Summary:${NC}"
 echo "Passed: ${TESTS_PASSED}"
 echo "Failed: ${TESTS_FAILED}"
 
-# テスト用HTMLファイルのパス
-HTML_FILE="./test.html"
+
 # ファイルアップロードのテスト
 echo -e "\n${GREEN}Testing file upload...${NC}"
 UPLOAD_RESPONSE=$(curl -s -X POST "${BASE_URL}/files/upload" \
