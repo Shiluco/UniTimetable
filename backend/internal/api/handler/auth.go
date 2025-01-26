@@ -3,10 +3,13 @@ package handler
 import (
 	"net/http"
 	"time"
+    "context"
+    "strings"
 
 	"github.com/Shiluco/UniTimetable/backend/ent"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 	"github.com/Shiluco/UniTimetable/backend/internal/auth"
+    "github.com/Shiluco/UniTimetable/backend/ent/major"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +27,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		Name     string `json:"name" binding:"required"`
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required,min=8"`
+        DepartmentID int `json:"department_id" binding:"required"`
+        MajorID int `json:"major_id" binding:"required"`
+        Grade int8 `json:"grade" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -43,7 +49,19 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 		return
 	}
+    if !isValidEmailDomain(req.Email) {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email domain"})
+        return
+    }
+    if !isValidGrade(req.Grade) {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid grade"})
+        return
+    }
 
+    if !isValidMajorDepartment(c.Request.Context(), h.client, req.MajorID, req.DepartmentID) {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid major or department"})
+        return
+    }
 	// パスワードのハッシュ化
 	hashedPassword, err := auth.HashPassword(req.Password)
 	if err != nil {
@@ -56,6 +74,8 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		SetName(req.Name).
 		SetEmail(req.Email).
 		SetPassword(hashedPassword).
+        SetDepartmentID(req.DepartmentID).
+        SetMajorID(req.MajorID).
 		SetCreatedAt(time.Now()).
 		SetUpdatedAt(time.Now()).
 		Save(c.Request.Context())
@@ -70,6 +90,8 @@ func (h *AuthHandler) Register(c *gin.Context) {
 			"id":    u.ID,
 			"name":  u.Name,
 			"email": u.Email,
+            "department_id": u.DepartmentID,
+            "major_id": u.MajorID,  
 		},
 	})
 }
@@ -128,3 +150,19 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		},
 	})
 }
+func isValidEmailDomain(email string) bool {
+    return strings.HasSuffix(email, "@shizuoka.ac.jp")
+}
+
+func isValidGrade(grade int8) bool {
+    return grade > 0 && grade < 5
+}
+
+func isValidMajorDepartment(ctx context.Context, client *ent.Client, majorID int, departmentID int) bool {
+    major, err := client.Major.Query().Where(major.ID(majorID)).Only(ctx)
+    if err != nil {
+        return false
+    }
+    return major.DepartmentID == departmentID
+}
+

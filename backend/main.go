@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Shiluco/UniTimetable/backend/ent"
+	"github.com/Shiluco/UniTimetable/backend/internal/univData"
 	"github.com/Shiluco/UniTimetable/backend/internal/api"
 	"github.com/Shiluco/UniTimetable/backend/pkg/logger"
 	_ "github.com/lib/pq"
@@ -37,10 +38,22 @@ func main() {
 		log.Fatalf("スキーマ作成失敗: %v", err)
 	}
 
+	ctx := context.Background()
+	if err := univData.SaveUniversityData(ctx, client); err != nil { // 修正: univ_data パッケージから関数を呼び出す
+        log.Fatalf("failed to save university data: %v", err)
+    }
+
+    log.Printf("testの学部学科をデータベースに保存しました。")
+
+	if err := univData.SaveUserData(ctx, client); err != nil {
+		log.Fatalf("failed to save user data: %v", err)
+	}
+	log.Printf("testのユーザーをデータベースに保存しました。")
 	r := api.SetupRoutes(client)
 	port := "8080"
 	log.Printf("サーバー起動 ポート: %s", port)
 	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
 		log.Fatalf("サーバー起動失敗: %v", err)
 	}
+	
 }
