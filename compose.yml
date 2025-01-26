@@ -1,27 +1,24 @@
 services:
-  nextjs:
-    build:
-      context: ./frontend # Dockerfile があるディレクトリ
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000" # Next.js アプリ用
-      - "6006:6006" # Storybook 用
-    volumes:
-      - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
-      - /app/node_modules # node_modules をコンテナ内で管理
-    environment:
-      NODE_ENV: development
-    command: sh -c "yarn install && yarn dev & yarn storybook --ci"
+  # nextjs:
+  #   build:
+  #     context: ./frontend # Dockerfile があるディレクトリ
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000" # Next.js アプリ用
+  #     - "6006:6006" # Storybook 用
+  #   volumes:
+  #     - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
+  #     - /app/node_modules # node_modules をコンテナ内で管理
+  #   environment:
+  #     NODE_ENV: development
+  #   command: sh -c "yarn install && yarn dev & yarn storybook --ci"
 
   go:
     build:
       context: ./backend # Dockerfile があるディレクトリ
       dockerfile: Dockerfile
     ports:
-      - "8080:8080" # API サーバー用
-    volumes:
-      - ./backend:/app # ローカルコードをコンテナにマウント
-    command: sh -c "go mod download && go run cmd/server/main.go"
+      - "8080:8080" # API サーバー用s
     depends_on:
       db:
         condition: service_healthy
@@ -41,7 +38,7 @@ services:
       - postgres_data:/var/lib/postgresql/data # データ永続化用
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d unitimetable"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d unitimetable" ]
       interval: 10s
       timeout: 5s
       retries: 5

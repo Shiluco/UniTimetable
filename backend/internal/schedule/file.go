@@ -1,20 +1,13 @@
-package handler
+package schedule
 
 import (
-    "encoding/json"
     "fmt"
-    "io"
     "mime/multipart"
-    "net/http"
     "path/filepath"
     "strings"
-
-    "github.com/gin-gonic/gin"
-    "github.com/Shiluco/UniTimetable/backend/ent"
-    "github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
-    "github.com/Shiluco/UniTimetable/backend/internal/schedule"
+    "encoding/json"
+    "io"
 )
-
 
 // ScheduleData 時間割データの構造体
 type ScheduleData struct {
@@ -25,28 +18,27 @@ type ScheduleData struct {
 }
 
 // ProcessFile ファイル処理ハンドラー
-func ProcessFile(file multipart.File) ([]byte, error) {
+func ProcessFile(file multipart.File, fileHeader *multipart.FileHeader) ([]ScheduleData, error) {
 
     // ファイルサイズの制限（10MB）
-    if file.Size > 10<<20 {
-		return nil, fmt.Errorf("ファイルサイズは10MB以下にしてください")
+    if fileHeader.Size > 10<<20 {
+        return nil, fmt.Errorf("ファイルサイズは10MB以下にしてください")
     }
 
     // ファイル拡張子の確認
-    ext := strings.ToLower(filepath.Ext(file.Filename))
+    ext := strings.ToLower(filepath.Ext(fileHeader.Filename))
     if ext != ".html" {
         return nil, fmt.Errorf("HTMLファイルのみ対応しています")
     }
 
-    // ファイルを開く
-    src, err := file.Open()
+    // multipart.Fileから[]byteに変換
+    content, err := io.ReadAll(file)
     if err != nil {
-        return nil, fmt.Errorf("ファイルを開けません")
+        return nil, fmt.Errorf("ファイルの読み込みに失敗しました: %v", err)
     }
-    defer src.Close()
 
-    // ファイルの内容を読み込む
-    content, err := processHTMLFile(src)
+    // HTMLコンテンツを処理して時間割データを取得
+    scheduleData, err := GetSchedule(content)
     if err != nil {
         return nil, fmt.Errorf("ファイルの処理に失敗しました: %v", err)
     }
@@ -55,7 +47,7 @@ func ProcessFile(file multipart.File) ([]byte, error) {
     var scheduleResponse struct {
         Schedules []ScheduleData `json:"schedules"`
     }
-    if err := json.Unmarshal(content, &scheduleResponse); err != nil {
+    if err := json.Unmarshal(scheduleData, &scheduleResponse); err != nil {
         return nil, fmt.Errorf("時間割データの解析に失敗しました")
     }
 
@@ -64,18 +56,3 @@ func ProcessFile(file multipart.File) ([]byte, error) {
 
     return scheduleResponse.Schedules, nil
 }
-
-// processHTMLFile HTMLファイルを処理する関数
-func processHTMLFile(file multipart.File) ([]byte, error) {
-    content, err := io.ReadAll(file)
-    if err != nil {
-        return nil, fmt.Errorf("ファイルの読み込みに失敗しました: %v", err)
-    }
-
-    scheduleData, err := schedule.GetSchedule(content)
-    if err != nil {
-        return nil, fmt.Errorf("時間割の解析に失敗しました: %v", err)
-    }
-
-    return scheduleData, nil
-} 
