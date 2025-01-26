@@ -36,6 +36,6 @@ func (Schedule) Fields() []ent.Field {
 func (Schedule) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).Ref("schedules").Field("user_id").Unique().Required().Comment("User who owns the schedule."),
-		edge.To("posts", Post.Type).Comment("Posts associated with the schedule."),
+		edge.From("post", Post.Type).Ref("schedules").Comment("Posts associated with the schedule."),
 	}
 }

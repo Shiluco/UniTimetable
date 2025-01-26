@@ -48,17 +48,9 @@ func (pc *PostCreate) SetContent(s string) *PostCreate {
 	return pc
 }
 
-// SetScheduleID sets the "schedule_id" field.
-func (pc *PostCreate) SetScheduleID(i int) *PostCreate {
-	pc.mutation.SetScheduleID(i)
-	return pc
-}
-
-// SetNillableScheduleID sets the "schedule_id" field if the given value is not nil.
-func (pc *PostCreate) SetNillableScheduleID(i *int) *PostCreate {
-	if i != nil {
-		pc.SetScheduleID(*i)
-	}
+// SetScheduleIds sets the "schedule_ids" field.
+func (pc *PostCreate) SetScheduleIds(i []int) *PostCreate {
+	pc.mutation.SetScheduleIds(i)
 	return pc
 }
 
@@ -101,9 +93,19 @@ func (pc *PostCreate) SetUser(u *User) *PostCreate {
 	return pc.SetUserID(u.ID)
 }
 
-// SetSchedule sets the "schedule" edge to the Schedule entity.
-func (pc *PostCreate) SetSchedule(s *Schedule) *PostCreate {
-	return pc.SetScheduleID(s.ID)
+// AddScheduleIDs adds the "schedules" edge to the Schedule entity by IDs.
+func (pc *PostCreate) AddScheduleIDs(ids ...int) *PostCreate {
+	pc.mutation.AddScheduleIDs(ids...)
+	return pc
+}
+
+// AddSchedules adds the "schedules" edges to the Schedule entity.
+func (pc *PostCreate) AddSchedules(s ...*Schedule) *PostCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return pc.AddScheduleIDs(ids...)
 }
 
 // SetParentID sets the "parent" edge to the Post entity by ID.
@@ -243,6 +245,10 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
+	if value, ok := pc.mutation.ScheduleIds(); ok {
+		_spec.SetField(post.FieldScheduleIds, field.TypeJSON, value)
+		_node.ScheduleIds = value
+	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -268,12 +274,12 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_node.UserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.ScheduleIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.SchedulesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   post.ScheduleTable,
-			Columns: []string{post.ScheduleColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.SchedulesTable,
+			Columns: post.SchedulesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(schedule.FieldID, field.TypeInt),
@@ -282,7 +288,6 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ScheduleID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.ParentIDs(); len(nodes) > 0 {

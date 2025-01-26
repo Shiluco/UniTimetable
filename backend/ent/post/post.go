@@ -20,16 +20,16 @@ const (
 	FieldUserID = "user_id"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
-	// FieldScheduleID holds the string denoting the schedule_id field in the database.
-	FieldScheduleID = "schedule_id"
+	// FieldScheduleIds holds the string denoting the schedule_ids field in the database.
+	FieldScheduleIds = "schedule_ids"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// EdgeSchedule holds the string denoting the schedule edge name in mutations.
-	EdgeSchedule = "schedule"
+	// EdgeSchedules holds the string denoting the schedules edge name in mutations.
+	EdgeSchedules = "schedules"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeReplies holds the string denoting the replies edge name in mutations.
@@ -43,13 +43,11 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_id"
-	// ScheduleTable is the table that holds the schedule relation/edge.
-	ScheduleTable = "posts"
-	// ScheduleInverseTable is the table name for the Schedule entity.
+	// SchedulesTable is the table that holds the schedules relation/edge. The primary key declared below.
+	SchedulesTable = "post_schedules"
+	// SchedulesInverseTable is the table name for the Schedule entity.
 	// It exists in this package in order to avoid circular dependency with the "schedule" package.
-	ScheduleInverseTable = "schedules"
-	// ScheduleColumn is the table column denoting the schedule relation/edge.
-	ScheduleColumn = "schedule_id"
+	SchedulesInverseTable = "schedules"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "posts"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -66,10 +64,16 @@ var Columns = []string{
 	FieldParentPostID,
 	FieldUserID,
 	FieldContent,
-	FieldScheduleID,
+	FieldScheduleIds,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
+
+var (
+	// SchedulesPrimaryKey and SchedulesColumn2 are the table columns denoting the
+	// primary key for the schedules relation (M2M).
+	SchedulesPrimaryKey = []string{"post_id", "schedule_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -115,11 +119,6 @@ func ByContent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContent, opts...).ToFunc()
 }
 
-// ByScheduleID orders the results by the schedule_id field.
-func ByScheduleID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldScheduleID, opts...).ToFunc()
-}
-
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
@@ -137,10 +136,17 @@ func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByScheduleField orders the results by schedule field.
-func ByScheduleField(field string, opts ...sql.OrderTermOption) OrderOption {
+// BySchedulesCount orders the results by schedules count.
+func BySchedulesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newScheduleStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newSchedulesStep(), opts...)
+	}
+}
+
+// BySchedules orders the results by schedules terms.
+func BySchedules(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSchedulesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -171,11 +177,11 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
-func newScheduleStep() *sqlgraph.Step {
+func newSchedulesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ScheduleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ScheduleTable, ScheduleColumn),
+		sqlgraph.To(SchedulesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, SchedulesTable, SchedulesPrimaryKey...),
 	)
 }
 func newParentStep() *sqlgraph.Step {

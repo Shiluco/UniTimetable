@@ -43,10 +43,10 @@ var (
 	PostsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "content", Type: field.TypeString},
+		{Name: "schedule_ids", Type: field.TypeJSON, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "parent_post_id", Type: field.TypeInt, Nullable: true},
-		{Name: "schedule_id", Type: field.TypeInt, Nullable: true},
 		{Name: "user_id", Type: field.TypeInt},
 	}
 	// PostsTable holds the schema information for the "posts" table.
@@ -57,14 +57,8 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "posts_posts_replies",
-				Columns:    []*schema.Column{PostsColumns[4]},
-				RefColumns: []*schema.Column{PostsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "posts_schedules_posts",
 				Columns:    []*schema.Column{PostsColumns[5]},
-				RefColumns: []*schema.Column{SchedulesColumns[0]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -133,6 +127,31 @@ var (
 			},
 		},
 	}
+	// PostSchedulesColumns holds the columns for the "post_schedules" table.
+	PostSchedulesColumns = []*schema.Column{
+		{Name: "post_id", Type: field.TypeInt},
+		{Name: "schedule_id", Type: field.TypeInt},
+	}
+	// PostSchedulesTable holds the schema information for the "post_schedules" table.
+	PostSchedulesTable = &schema.Table{
+		Name:       "post_schedules",
+		Columns:    PostSchedulesColumns,
+		PrimaryKey: []*schema.Column{PostSchedulesColumns[0], PostSchedulesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "post_schedules_post_id",
+				Columns:    []*schema.Column{PostSchedulesColumns[0]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "post_schedules_schedule_id",
+				Columns:    []*schema.Column{PostSchedulesColumns[1]},
+				RefColumns: []*schema.Column{SchedulesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DepartmentsTable,
@@ -140,15 +159,17 @@ var (
 		PostsTable,
 		SchedulesTable,
 		UsersTable,
+		PostSchedulesTable,
 	}
 )
 
 func init() {
 	MajorsTable.ForeignKeys[0].RefTable = DepartmentsTable
 	PostsTable.ForeignKeys[0].RefTable = PostsTable
-	PostsTable.ForeignKeys[1].RefTable = SchedulesTable
-	PostsTable.ForeignKeys[2].RefTable = UsersTable
+	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	SchedulesTable.ForeignKeys[0].RefTable = UsersTable
 	UsersTable.ForeignKeys[0].RefTable = DepartmentsTable
 	UsersTable.ForeignKeys[1].RefTable = MajorsTable
+	PostSchedulesTable.ForeignKeys[0].RefTable = PostsTable
+	PostSchedulesTable.ForeignKeys[1].RefTable = SchedulesTable
 }

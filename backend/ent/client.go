@@ -691,15 +691,15 @@ func (c *PostClient) QueryUser(po *Post) *UserQuery {
 	return query
 }
 
-// QuerySchedule queries the schedule edge of a Post.
-func (c *PostClient) QuerySchedule(po *Post) *ScheduleQuery {
+// QuerySchedules queries the schedules edge of a Post.
+func (c *PostClient) QuerySchedules(po *Post) *ScheduleQuery {
 	query := (&ScheduleClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := po.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(post.Table, post.FieldID, id),
 			sqlgraph.To(schedule.Table, schedule.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, post.ScheduleTable, post.ScheduleColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, post.SchedulesTable, post.SchedulesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
 		return fromV, nil
@@ -888,15 +888,15 @@ func (c *ScheduleClient) QueryUser(s *Schedule) *UserQuery {
 	return query
 }
 
-// QueryPosts queries the posts edge of a Schedule.
-func (c *ScheduleClient) QueryPosts(s *Schedule) *PostQuery {
+// QueryPost queries the post edge of a Schedule.
+func (c *ScheduleClient) QueryPost(s *Schedule) *PostQuery {
 	query := (&PostClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(schedule.Table, schedule.FieldID, id),
 			sqlgraph.To(post.Table, post.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, schedule.PostsTable, schedule.PostsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, schedule.PostTable, schedule.PostPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

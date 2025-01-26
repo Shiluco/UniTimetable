@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -10,7 +11,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/Shiluco/UniTimetable/backend/ent/post"
-	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 )
 
@@ -25,8 +25,8 @@ type Post struct {
 	UserID int `json:"user_id,omitempty"`
 	// Content holds the value of the "content" field.
 	Content string `json:"content,omitempty"`
-	// ScheduleID holds the value of the "schedule_id" field.
-	ScheduleID int `json:"schedule_id,omitempty"`
+	// ScheduleIds holds the value of the "schedule_ids" field.
+	ScheduleIds []int `json:"schedule_ids,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -41,8 +41,8 @@ type Post struct {
 type PostEdges struct {
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
-	// Schedule holds the value of the schedule edge.
-	Schedule *Schedule `json:"schedule,omitempty"`
+	// Schedules holds the value of the schedules edge.
+	Schedules []*Schedule `json:"schedules,omitempty"`
 	// 親投稿（返信先）
 	Parent *Post `json:"parent,omitempty"`
 	// 返信投稿
@@ -63,15 +63,13 @@ func (e PostEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// ScheduleOrErr returns the Schedule value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PostEdges) ScheduleOrErr() (*Schedule, error) {
-	if e.Schedule != nil {
-		return e.Schedule, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: schedule.Label}
+// SchedulesOrErr returns the Schedules value or an error if the edge
+// was not loaded in eager-loading.
+func (e PostEdges) SchedulesOrErr() ([]*Schedule, error) {
+	if e.loadedTypes[1] {
+		return e.Schedules, nil
 	}
-	return nil, &NotLoadedError{edge: "schedule"}
+	return nil, &NotLoadedError{edge: "schedules"}
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -99,7 +97,9 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case post.FieldID, post.FieldParentPostID, post.FieldUserID, post.FieldScheduleID:
+		case post.FieldScheduleIds:
+			values[i] = new([]byte)
+		case post.FieldID, post.FieldParentPostID, post.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case post.FieldContent:
 			values[i] = new(sql.NullString)
@@ -145,11 +145,13 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.Content = value.String
 			}
-		case post.FieldScheduleID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field schedule_id", values[i])
-			} else if value.Valid {
-				po.ScheduleID = int(value.Int64)
+		case post.FieldScheduleIds:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field schedule_ids", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &po.ScheduleIds); err != nil {
+					return fmt.Errorf("unmarshal field schedule_ids: %w", err)
+				}
 			}
 		case post.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -181,9 +183,9 @@ func (po *Post) QueryUser() *UserQuery {
 	return NewPostClient(po.config).QueryUser(po)
 }
 
-// QuerySchedule queries the "schedule" edge of the Post entity.
-func (po *Post) QuerySchedule() *ScheduleQuery {
-	return NewPostClient(po.config).QuerySchedule(po)
+// QuerySchedules queries the "schedules" edge of the Post entity.
+func (po *Post) QuerySchedules() *ScheduleQuery {
+	return NewPostClient(po.config).QuerySchedules(po)
 }
 
 // QueryParent queries the "parent" edge of the Post entity.
@@ -230,8 +232,8 @@ func (po *Post) String() string {
 	builder.WriteString("content=")
 	builder.WriteString(po.Content)
 	builder.WriteString(", ")
-	builder.WriteString("schedule_id=")
-	builder.WriteString(fmt.Sprintf("%v", po.ScheduleID))
+	builder.WriteString("schedule_ids=")
+	builder.WriteString(fmt.Sprintf("%v", po.ScheduleIds))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(po.CreatedAt.Format(time.ANSIC))

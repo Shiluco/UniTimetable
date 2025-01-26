@@ -8,7 +8,6 @@ import (
 	// "github.com/gin-gonic/gin"
 	"github.com/Shiluco/UniTimetable/backend/internal/api"
 	// "github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
-	"github.com/Shiluco/UniTimetable/backend/config"
 	"github.com/Shiluco/UniTimetable/backend/pkg/logger"
 	"github.com/Shiluco/UniTimetable/backend/ent"
 	_ "github.com/lib/pq"
@@ -16,15 +15,15 @@ import (
 
 func main() {
 	// 設定ファイルを読み込み
-	if err := config.LoadConfig(); err != nil {
-		log.Fatalf("設定ファイルの読み込みに失敗しました: %v", err)
-	}
+	// if err := config.LoadConfig(); err != nil {
+	// 	log.Fatalf("設定ファイルの読み込みに失敗しました: %v", err)
+	// }
 
 	// ロガーの初期化
 	logger.InitLogger()
 
 	// entクライアントの初期化
-	client, err := ent.Open("postgres", config.Config.DatabaseURL)
+	client, err := ent.Open("postgres", "postgresql://postgres:password@db:5432/unitimetable?sslmode=disable")
 	if err != nil {
 		log.Fatalf("entクライアントの作成に失敗しました: %v", err)
 	}
@@ -39,10 +38,7 @@ func main() {
 	r := api.SetupRoutes(client)
 
 	// サーバーを起動
-	port := config.Config.Port
-	if port == "" {
-		port = "8080"
-	}
+	port := "8080"
 
 	log.Printf("サーバーを起動します。ポート: %s", port)
 	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
