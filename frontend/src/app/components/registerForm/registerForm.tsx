@@ -9,10 +9,9 @@ interface RegisterFormProps {
   majorOptions: Option[];
   yearOptions: Option[];
   className?: string;
-  onBack: () => void;
 }
 
-export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, className, onBack }: RegisterFormProps) => {
+export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, className }: RegisterFormProps) => {
   return (
     <div className={`registerForm ${className}`}>
       <SelectBox className="w-100 mb-10" options={departmentOptions} placeholder="学部" />
@@ -22,7 +21,7 @@ export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, cla
       <TextBox placeholder="静大メアド" type="search" className="mb-10" />
       <TextBox placeholder="パスワード" type="password" className="mb-20" />
       <div className="registerForm__button flexWrap">
-        <Button label="前画面に戻る" type="normal" reverse={true} onClick={onBack} />
+        <Button label="前画面に戻る" type="normal" reverse={true} onClick={() => (window.location.href = "/login")} />
         <Button label="登録する" type="normal" />
       </div>
     </div>
