@@ -21,6 +21,7 @@ export const useAuth = () => {
   const handleLogout = useCallback(() => {
     // ローカルストレージのトークンを削除
     localStorage.removeItem("authToken");
+    window.location.href = "/login";
   }, []);
 
   return { handleLogin, handleLogout, isLoading, error, loginResponse }; // 必要なデータや関数を返す

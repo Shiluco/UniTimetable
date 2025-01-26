@@ -5,9 +5,7 @@ export const Fetcher = async <T>(
   const baseURL = process.env.NEXT_PUBLIC_API_URL; // 環境変数からベースURLを取得
 
   if (!baseURL) {
-    throw new Error(
-      "Base URL is not defined. Check your environment variables."
-    );
+    throw new Error("Base URL is not defined. Check your environment variables.");
   }
 
   const url = `${baseURL}${endpoint}`; // ベースURLとエンドポイントを結合
@@ -20,19 +18,20 @@ export const Fetcher = async <T>(
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}), // トークンがある場合のみ追加
   };
-  
 
   console.log("Request URL:", url);
   console.log("Request Options:", { ...options, headers });
 
   const response = await fetch(url, { ...options, headers });
 
-
   if (response.status === 401) {
+    window.location.href = "/login";
     throw new Error("Unauthorized: Please log in.");
   } else if (response.status === 403) {
+    window.location.href = "/login";
     throw new Error("Forbidden: You do not have access to this resource.");
   } else if (response.status === 404) {
+    window.location.href = "/login";
     throw new Error("Not Found: The requested resource could not be found.");
   }
 
