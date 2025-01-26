@@ -1,0 +1,39 @@
+.select-box {
+  &-container {
+    position: relative;
+  }
+
+  &-select {
+    appearance: none;
+    background-color: #9CA3AF;
+    color: white;
+    padding: 8px 36px 8px 16px;
+    border: none;
+    border-radius: 9999px;
+    cursor: pointer;
+    width: 100%;
+
+    &:focus {
+      outline: none;
+    }
+
+    option {
+      background-color: white;
+      color: black;
+    }
+  }
+
+  &-container::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+    pointer-events: none;
+  }
+}

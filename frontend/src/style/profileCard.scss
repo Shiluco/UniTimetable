@@ -1,0 +1,57 @@
+@use 'variables' as var;
+
+.profile-card {
+  padding: 30px;
+  background: var.$common-background-color;
+  height: fit-content;
+  box-shadow: 0 4px 4px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    background: #333;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .profile-info {
+    text-align: center;
+    width: 100%;
+
+    .profile-name {
+      font-size: 16px;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .profile-details {
+      border-radius: 8px;
+      padding: 10px 30px;
+      margin-bottom: 16px;
+      border: 1px solid #000;
+      width: 100%;
+      box-sizing: border-box;
+
+      p {
+        margin: 10px 0;
+        line-height: 1.5;
+        border-bottom: 1px solid #000;
+      }
+
+      p:last-child {
+        border: none;
+      }
+
+      .profile-text {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+  }
+}

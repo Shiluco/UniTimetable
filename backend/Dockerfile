@@ -1,20 +1,28 @@
-FROM golang:latest AS builder
+ROM golang:latest AS builder
 
+# 2. 作業ディレクトリを設定
 WORKDIR /app
 
-# 必要なツールのインストール
-RUN go install entgo.io/ent/cmd/ent@latest
-
-# 依存関係のコピーとダウンロード
+# 3. Goモジュールを初期化して依存関係をインストール
 COPY go.mod go.sum ./
 RUN go mod download
 
-# ソースコードのコピー
+# 4. アプリケーションのソースコードをコピー
 COPY . .
 
-# entの生成
-RUN go generate ./ent
+# 5. アプリケーションをビルド
+RUN CGO_ENABLED=0 GOOS=linux go build -o main . 
 
+# 6. 軽量なAlpine Linuxイメージをベースイメージとして指定
+FROM alpine:latest
+
+WORKDIR /app
+
+# 7. builder stageで生成したGoのバイナリファイルをApline Linuxのイメージにコピー
+COPY --from=builder /app/main /app/main
+
+# 8. 必要なポートを公開
 EXPOSE 8080
 
-CMD ["go", "run", "cmd/server/main.go"]
+# 9. アプリケーションを起動
+CMD ["./main"]

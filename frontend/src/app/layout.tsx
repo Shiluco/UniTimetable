@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { UserInfoProvider } from "@/app/hooks/user/userInfoContext"; // UserProvider をインポート
+import { PostInfoProvider } from "@/app/hooks/post/postInfoContext"; // PostProvider をインポート
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <UserInfoProvider>
+          <PostInfoProvider>{children}</PostInfoProvider> {/* ラッパー追加 */}
+        </UserInfoProvider>
       </body>
     </html>
   );
