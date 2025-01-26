@@ -1,5 +1,4 @@
-# 1. ベースイメージを最新バージョンで指定
-FROM golang:latest AS builder
+ROM golang:latest AS builder
 
 # 2. 作業ディレクトリを設定
 WORKDIR /app

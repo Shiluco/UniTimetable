@@ -1,0 +1,96 @@
+
+[0;32mTesting user registration...[0m
+{
+  "error": "Email already exists"
+}
+
+[0;32mTesting login...[0m
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3Mzc4MjUyMzIsImlhdCI6MTczNzczODgzMn0.mF33RGsbDqEDHqJHShGTzDO1v2MmPeyK8FohjllpO3E",
+  "user": {
+    "email": "test@example.com",
+    "id": 1,
+    "name": "テストユーザー"
+  }
+}
+
+[0;32mTesting schedule creation...[0m
+{
+  "error": "Key: 'DayOfWeek' Error:Field validation for 'DayOfWeek' failed on the 'required' tag"
+}
+
+[0;32mTesting post creation...[0m
+{
+  "post_id": 7,
+  "user_id": 1,
+  "content": "テスト投稿です",
+  "created_at": "2025-01-24T17:13:52.745198257Z",
+  "updated_at": "2025-01-24T17:13:52.745198356Z",
+  "edges": {}
+}
+
+[0;32mTesting reply creation...[0m
+{
+  "post_id": 8,
+  "parent_post_id": 7,
+  "user_id": 1,
+  "content": "返信テストです",
+  "created_at": "2025-01-24T17:13:52.794468375Z",
+  "updated_at": "2025-01-24T17:13:52.794468484Z",
+  "edges": {}
+}
+
+[0;32mTesting get single post...[0m
+{
+  "post_id": 7,
+  "user_id": 1,
+  "content": "テスト投稿です",
+  "created_at": "2025-01-24T17:13:52.745198Z",
+  "updated_at": "2025-01-24T17:13:52.745198Z",
+  "edges": {
+    "user": {
+      "user_id": 1,
+      "name": "テストユーザー",
+      "email": "test@example.com",
+      "created_at": "2025-01-24T17:12:32.947783Z",
+      "updated_at": "2025-01-24T17:12:32.947784Z",
+      "edges": {}
+    },
+    "replies": [
+      {
+        "post_id": 8,
+        "parent_post_id": 7,
+        "user_id": 1,
+        "content": "返信テストです",
+        "created_at": "2025-01-24T17:13:52.794468Z",
+        "updated_at": "2025-01-24T17:13:52.794468Z",
+        "edges": {}
+      }
+    ]
+  }
+}
+
+[0;32mTesting get replies...[0m
+404
+
+[0;32mTesting get posts by schedule...[0m
+404
+
+[0;32mTesting post update...[0m
+{
+  "post_id": 7,
+  "user_id": 1,
+  "content": "更新されたテスト投稿です",
+  "created_at": "2025-01-24T17:13:52.745198Z",
+  "updated_at": "2025-01-24T17:13:52.884605Z",
+  "edges": {}
+}
+
+[0;32mTesting post deletion...[0m
+{
+  "message": "Post deleted successfully"
+}
+
+[0;32mTest Summary:[0m
+Passed: 0
+Failed: 0
