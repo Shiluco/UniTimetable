@@ -114,7 +114,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		Only(c.Request.Context())
 	if err != nil {
 		if ent.IsNotFound(err) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -123,7 +123,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	// パスワードの検証
 	if err := auth.CheckPassword(req.Password, u.Password); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
 

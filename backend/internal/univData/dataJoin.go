@@ -8,8 +8,7 @@ import (
     "os"
 
     "github.com/Shiluco/UniTimetable/backend/ent"
-    // "github.com/Shiluco/UniTimetable/backend/ent/department"
-    // "github.com/Shiluco/UniTimetable/backend/ent/major"
+    "github.com/Shiluco/UniTimetable/backend/internal/auth"
 )
 
 // Department は学部の情報を表す構造体です。
@@ -107,7 +106,12 @@ func SaveUserData(ctx context.Context, client *ent.Client) error {
         return fmt.Errorf("failed to unmarshal JSON: %w", err)
     }
 
+    var hashedPassword string
     for _, user := range userData.Users {
+        hashedPassword, err = auth.HashPassword(user.UserPassword)
+        if err != nil {
+            return fmt.Errorf("failed to hash password: %w", err)
+        }
         _, err := client.User.Create().
             SetID(user.UserID).
             SetDepartmentID(user.DepartmentID).
@@ -115,7 +119,7 @@ func SaveUserData(ctx context.Context, client *ent.Client) error {
             SetGrade(user.Grade).
             SetName(user.UserName).
             SetEmail(user.UserEmail).
-            SetPassword(user.UserPassword).
+            SetPassword(hashedPassword).
             Save(ctx)
         if err != nil {
             return fmt.Errorf("failed to create user: %w", err)

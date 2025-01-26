@@ -57,13 +57,13 @@ echo -e "\n${GREEN}Testing login...${NC}"
 LOGIN_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "test@example.com",
-    "password": "password123"
+    "email": "test@shizuoka.ac.jp",
+    "password": "test"
   }')
 echo $LOGIN_RESPONSE | jq '.'
 
 # トークンを更新
-TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
+TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.accessToken')
 
 # 通常の投稿作成のテスト
 # テスト用HTMLファイルのパス

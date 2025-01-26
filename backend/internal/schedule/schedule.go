@@ -18,6 +18,15 @@ var timeSlotMap = map[string]int{
 	"11・12": 6,
 	"13・14": 7,
 }
+type ScheduleBody struct {
+	ID int `json:"id"`
+	PostID int `json:"post_id"`
+	DayOfWeek int `json:"day_of_week"`
+	TimeSlot int `json:"time_slot"`
+	Subject string `json:"subject"`
+	Location string `json:"location"`
+}
+
 func GetSchedule(content []byte) ([]byte, error) {
 	// HTMLファイルを開く
 	// file, err := os.Open(htmlPath)
