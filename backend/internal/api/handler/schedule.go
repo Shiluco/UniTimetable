@@ -1,67 +1,67 @@
 package handler
 
 import (
-    "net/http"
-    "strconv"
+	"net/http"
+	"strconv"
 
-    "github.com/gin-gonic/gin"
-    "github.com/Shiluco/UniTimetable/backend/ent"
-    "github.com/Shiluco/UniTimetable/backend/ent/schedule"
-    //"github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
+	"github.com/Shiluco/UniTimetable/backend/ent"
+	"github.com/Shiluco/UniTimetable/backend/ent/schedule"
+	"github.com/gin-gonic/gin"
+	//"github.com/Shiluco/UniTimetable/backend/internal/api/middleware"
 )
 
 type ScheduleHandler struct {
-    client *ent.Client
+	client *ent.Client
 }
 
 func NewScheduleHandler(client *ent.Client) *ScheduleHandler {
-    return &ScheduleHandler{client: client}
+	return &ScheduleHandler{client: client}
 }
 
 // GetSchedule 時間割取得ハンドラー（単一または一覧）
 func (h *ScheduleHandler) GetSchedule(c *gin.Context) {
-    // IDパラメータの取得（単一スケジュールの場合）
-    idParam := c.Param("id")
-    
-    if idParam != "" {
-        // 単一のスケジュールを取得
-        id, err := strconv.Atoi(idParam)
-        if err != nil {
-            c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid schedule ID"})
-            return
-        }
+	// IDパラメータの取得（単一スケジュールの場合）
+	idParam := c.Param("id")
 
-        schedule, err := h.client.Schedule.Query().
-            Where(schedule.ID(id)).
-            WithPost(). // 投稿情報を取得
-            Only(c.Request.Context())
+	if idParam != "" {
+		// 単一のスケジュールを取得
+		id, err := strconv.Atoi(idParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid schedule ID"})
+			return
+		}
 
-        if err != nil {
-            if ent.IsNotFound(err) {
-                c.JSON(http.StatusNotFound, gin.H{"error": "Schedule not found"})
-                return
-            }
-            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-            return
-        }
+		schedule, err := h.client.Schedule.Query().
+			Where(schedule.ID(id)).
+			WithPost(). // 投稿情報を取得
+			Only(c.Request.Context())
 
-        // 単一スケジュール情報をJSON形式で返す
-        c.JSON(http.StatusOK, schedule)
-        return
-    }
+		if err != nil {
+			if ent.IsNotFound(err) {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Schedule not found"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-    // スケジュールの一覧を取得
-    schedules, err := h.client.Schedule.Query().
-        WithPost(). // 投稿情報を取得
-        All(c.Request.Context())
+		// 単一スケジュール情報をJSON形式で返す
+		c.JSON(http.StatusOK, schedule)
+		return
+	}
 
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+	// スケジュールの一覧を取得
+	schedules, err := h.client.Schedule.Query().
+		WithPost(). // 投稿情報を取得
+		All(c.Request.Context())
 
-    // スケジュール一覧をJSON形式で返す
-    c.JSON(http.StatusOK, schedules)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// スケジュール一覧をJSON形式で返す
+	c.JSON(http.StatusOK, schedules)
 }
 
 // CreateSchedule 時間割を作成

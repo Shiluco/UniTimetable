@@ -1,38 +1,43 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Layout } from "@/app/components/layout/layout";
-import styles from "./page.module.css";
 import { PostItem } from "@/app/components/postItem/postItem";
-
-const sampleSchedules = [
-  {
-    schedule_id: 1,
-    user_id: 1,
-    day_of_week: 1,
-    time_slot: 1,
-    subject: "人工知能概論",
-    location: "情13",
-    schedule_url: "/schedules/1",
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-01T00:00:00Z",
-  },
-  {
-    schedule_id: 2,
-    user_id: 1,
-    day_of_week: 3,
-    time_slot: 2,
-    subject: "応用プログラミングC",
-    location: "オンライン",
-    schedule_url: "/schedules/2",
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-01T00:00:00Z",
-  },
-];
+import styles from "./page.module.css";
+import { usePost } from "@/app/hooks/post/usePost";
+import { useSchedule } from "@/app/hooks/schedule/useSchedule";
+import { Schedule } from "@/types/schedule";
 
 export default function HomePage() {
+  const { postsInfo, loading, error, getPosts } = usePost();
+  const { schedules, getSchedules } = useSchedule();
+  const [mySchedules, setMySchedules] = useState<Schedule[]>([]);
+
+  useEffect(() => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      try {
+        const userObj = JSON.parse(userString);
+        if (userObj?.id) {
+          // userId がある場合のみAPIコール
+          getPosts(userObj.id);
+        }
+      } catch (err) {
+        console.error("Failed to parse user:", err);
+      }
+    }
+
+    getSchedules();
+  }, []);
+
+  useEffect(() => {
+    const enrolledScheduleIds = postsInfo.map((post) => post.schedule_id);
+    setMySchedules(schedules.filter((schedule) => enrolledScheduleIds.includes(schedule.schedule_id)));
+  }, [postsInfo, schedules]);
   return (
     <Layout>
-      <PostItem schedules={sampleSchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {loading ? <p>Loading schedules...</p> : <PostItem schedules={mySchedules} name="Sample Name" department="Sample Department" major="Sample Major" year={1} className={styles.timeline_postItem} comment="message" />}
     </Layout>
   );
 }
