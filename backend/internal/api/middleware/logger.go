@@ -67,6 +67,7 @@ func Logger() gin.HandlerFunc {
 				zap.Duration("latency", latency),
 				zap.String("ip", clientIP),
 				zap.String("user-agent", userAgent),
+				zap.String("errors", errorMessage),
 			)
 		}
 

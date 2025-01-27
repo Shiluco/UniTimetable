@@ -1,6 +1,6 @@
 "use client";
 
-import { Schedule } from "@/types/timetables";
+import { Schedule } from "@/types/schedule";
 import "@/style/postItem.scss";
 import { UserInfo } from "@/app/components/common/userInfo/userInfo";
 import { Timetable } from "@/app/components/timetable/timetable";
