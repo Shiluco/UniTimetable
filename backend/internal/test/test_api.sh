@@ -63,7 +63,7 @@ LOGIN_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/login" \
 echo $LOGIN_RESPONSE | jq '.'
 
 # トークンを更新
-TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.accessToken')
+TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.data.accessToken')
 
 # 通常の投稿作成のテスト
 # テスト用HTMLファイルのパス

@@ -74,7 +74,12 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
     // フィルター条件の適用
 
     if userID > 0 {
-        postQuery.Where(post.UserIDEQ(userID))
+        postQuery.Where(post.UserIDEQ(userID)).
+        Order(ent.Desc(post.FieldCreatedAt)).
+        Limit(1).
+        
+        WithSchedules().
+        Only(ctx)
     }
     if parentID > 0 {
         // 特定の投稿への返信を取得
@@ -224,6 +229,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     } 
+   
     c.JSON(http.StatusCreated, post)
 }
 
