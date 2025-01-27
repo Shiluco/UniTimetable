@@ -85,7 +85,7 @@ export const RegisterForm = ({ departmentOptions, majorOptions, yearOptions, cla
       return;
     }
 
-    registerService(name, email, password);
+    registerService(name, email, password, 1, 1, 1);//TODO: ここで学部、学科、学年を選択できるようにする
   };
 
   return (
