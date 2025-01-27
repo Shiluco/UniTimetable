@@ -97,6 +97,11 @@ echo -e "\n${GREEN}Testing get single post...${NC}"
 curl -s "${BASE_URL}/posts/${POST_ID}" \
   -H "Authorization: Bearer ${TOKEN}" | jq '.'
 
+
+echo -e "\n${GREEN}Testing get single post...${NC}"
+curl -s "${BASE_URL}/posts?user_id=1" \
+  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+
 # JSONレスポンスを処理する関数
 process_response() {
     local response=$1

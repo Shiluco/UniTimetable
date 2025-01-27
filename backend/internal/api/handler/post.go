@@ -74,12 +74,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
     // フィルター条件の適用
 
     if userID > 0 {
-        postQuery.Where(post.UserIDEQ(userID)).
-        Order(ent.Desc(post.FieldCreatedAt)).
-        Limit(1).
-        
-        WithSchedules().
-        Only(ctx)
+        postQuery.Where(post.UserIDEQ(userID))
     }
     if parentID > 0 {
         // 特定の投稿への返信を取得
@@ -207,6 +202,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
     }
 
     var savedSchedulesIDs []int
+    var savedSchedules []map[string]interface{}
     for _, schedule := range schedules {
         savedSchedule, err := h.client.Schedule.Create().
             SetPostID(post.ID).
@@ -220,6 +216,13 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
             return
         }
         savedSchedulesIDs = append(savedSchedulesIDs, savedSchedule.ID)
+        savedSchedules = append(savedSchedules, map[string]interface{}{
+            "id": savedSchedule.ID,
+            "day_of_week": savedSchedule.DayOfWeek,
+            "time_slot": savedSchedule.TimeSlot,
+            "subject": savedSchedule.Subject,
+            "location": savedSchedule.Location,
+        })
     }
 
     post,err = h.client.Post.UpdateOneID(post.ID).
@@ -229,8 +232,14 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     } 
-   
-    c.JSON(http.StatusCreated, post)
+    c.JSON(http.StatusCreated, gin.H{
+		"status":  "success",
+		"message": "Post created successfully",
+		"data": gin.H{
+			"post": post,
+			"schedules": savedSchedules,
+		},
+	})
 }
 
 // UpdatePost 投稿を更新
