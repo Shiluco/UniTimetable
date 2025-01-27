@@ -10,21 +10,28 @@ export const Fetcher = async <T>(
   const url = `${baseURL}${endpoint}`; // ベースURLとエンドポイントを結合
 
   const token = options.authRequired
-    ? localStorage.getItem("authToken") // トークンを取得
+    ? localStorage.getItem("accessToken") // トークンを取得
     : null;
+  console.log("Fetcher - Token:", token);
 
   const headers = {
     ...options.headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}), // トークンがある場合のみ追加
   };
 
-  console.log("Request URL:", url);
-  console.log("Request Options:", { ...options, headers });
+  console.log("Fetcher - Request URL:", url);
+  console.log("Fetcher - Request Method:", options.method);
+  console.log("Fetcher - Request Headers:", headers);
+  if (options.body) {
+    console.log("Fetcher - Request Body:", options.body);
+  }
 
   const response = await fetch(url, { ...options, headers });
 
+  // レスポンスのステータスをログ出したい場合
+  console.log("Fetcher - Response Status:", response.status);
+
   if (response.status === 401) {
-    window.location.href = "/login";
     throw new Error("Unauthorized: Please log in.");
   } else if (response.status === 403) {
     window.location.href = "/login";

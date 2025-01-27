@@ -1,16 +1,6 @@
 import { useState } from "react";
-import {
-  fetchSchedules,
-  createSchedule,
-  updateSchedule,
-  deleteSchedule,
-} from "@/service/scheduleService";
-import {
-  Schedule,
-  ApiResponse,
-  SchedulesResponse,
-  ScheduleResponse,
-} from "@/types/schedule";
+import { fetchSchedules, createSchedule, updateSchedule, deleteSchedule } from "@/service/scheduleService";
+import { Schedule, ApiResponse, SchedulesResponse, ScheduleResponse } from "@/types/schedule";
 
 export const useSchedule = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -22,9 +12,9 @@ export const useSchedule = () => {
     setLoading(true);
     setError(null);
     try {
-      const response: ApiResponse<SchedulesResponse> = await fetchSchedules(
-        query_params
-      );
+      const response: ApiResponse<SchedulesResponse> = await fetchSchedules(query_params);
+
+      // 成功したらスケジュール一覧をステートに反映
       setSchedules(response.data.schedules);
     } catch (err) {
       console.error("Error fetching schedules:", err);
@@ -35,25 +25,18 @@ export const useSchedule = () => {
   };
 
   // Create Schedule
-  const addSchedule = async (
-    user_id: number,
-    day_of_week: number,
-    time_slot: number,
-    subject: string,
-    location: string,
-    schedule_url: string
-  ) => {
+  const addSchedule = async (user_id: number, day_of_week: number, time_slot: number, subject: string, location: string, schedule_url: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response: ApiResponse<ScheduleResponse> = await createSchedule(
+      const response: ApiResponse<ScheduleResponse> = await createSchedule({
         user_id,
         day_of_week,
         time_slot,
         subject,
         location,
-        schedule_url
-      );
+        schedule_url,
+      });
       setSchedules((prev) => [...prev, response.data]);
     } catch (err) {
       console.error("Error creating schedule:", err);
@@ -64,32 +47,20 @@ export const useSchedule = () => {
   };
 
   // Update Schedule
-  const modifySchedule = async (
-    schedule_id: number,
-    user_id: number,
-    day_of_week: number,
-    time_slot: number,
-    subject: string,
-    location: string,
-    schedule_url: string
-  ) => {
+  const modifySchedule = async (schedule_id: number, user_id: number, day_of_week: number, time_slot: number, subject: string, location: string, schedule_url: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response: ApiResponse<ScheduleResponse> = await updateSchedule(
+      const response: ApiResponse<ScheduleResponse> = await updateSchedule({
         schedule_id,
         user_id,
         day_of_week,
         time_slot,
         subject,
         location,
-        schedule_url
-      );
-      setSchedules((prev) =>
-        prev.map((schedule) =>
-          schedule.schedule_id === schedule_id ? response.data : schedule
-        )
-      );
+        schedule_url,
+      });
+      setSchedules((prev) => prev.map((schedule) => (schedule.schedule_id === schedule_id ? response.data : schedule)));
     } catch (err) {
       console.error("Error updating schedule:", err);
       setError("Failed to update schedule. Please try again later.");
@@ -104,9 +75,7 @@ export const useSchedule = () => {
     setError(null);
     try {
       await deleteSchedule(schedule_id);
-      setSchedules((prev) =>
-        prev.filter((schedule) => schedule.schedule_id !== schedule_id)
-      );
+      setSchedules((prev) => prev.filter((schedule) => schedule.schedule_id !== schedule_id));
     } catch (err) {
       console.error("Error deleting schedule:", err);
       setError("Failed to delete schedule. Please try again later.");
