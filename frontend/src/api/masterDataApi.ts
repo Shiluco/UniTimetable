@@ -6,12 +6,14 @@ export const getDepartmentsApi = async (): Promise<Department[]> => {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
+  // console.log(response);
 
   return response;
 };
 
 // 学科一覧取得API
 export const getMajorsApi = async (): Promise<Major[]> => {
+  console.log("getMajorsApi");
   const response = await Fetcher<Major[]>("/majors", {
     method: "GET",
     headers: { "Content-Type": "application/json" },

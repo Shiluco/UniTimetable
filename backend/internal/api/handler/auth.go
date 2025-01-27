@@ -1,15 +1,15 @@
 package handler
 
 import (
+	"context"
 	"net/http"
+	"strings"
 	"time"
-    "context"
-    "strings"
 
 	"github.com/Shiluco/UniTimetable/backend/ent"
+	"github.com/Shiluco/UniTimetable/backend/ent/major"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
 	"github.com/Shiluco/UniTimetable/backend/internal/auth"
-    "github.com/Shiluco/UniTimetable/backend/ent/major"
 	"github.com/gin-gonic/gin"
 )
 
