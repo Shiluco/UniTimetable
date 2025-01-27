@@ -52,7 +52,7 @@ func ProcessFile(file multipart.File, fileHeader *multipart.FileHeader) ([]Sched
     }
 
     // デバッグ用のログ
-    fmt.Printf("Parsed schedules: %+v\n", scheduleResponse.Schedules)
+    //fmt.Printf("Parsed schedules: %+v\n", scheduleResponse.Schedules)
 
     return scheduleResponse.Schedules, nil
 }

@@ -34,6 +34,10 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
 
         user, err := h.client.User.Query().
             Where(user.ID(id)).
+            WithDepartment().
+            WithMajor().
+            WithPosts().
+            WithSchedules().
             Only(ctx)
 
         if err != nil {

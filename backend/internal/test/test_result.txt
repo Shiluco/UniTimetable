@@ -1,0 +1,1623 @@
+
+[0;32mTesting user registration...[0m
+{
+  "error": "Key: 'DepartmentID' Error:Field validation for 'DepartmentID' failed on the 'required' tag\nKey: 'MajorID' Error:Field validation for 'MajorID' failed on the 'required' tag\nKey: 'Grade' Error:Field validation for 'Grade' failed on the 'required' tag"
+}
+
+[0;32mTesting login...[0m
+{
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAc2hpenVva2EuYWMuanAiLCJleHAiOjE3Mzc5NjgxMzMsImlhdCI6MTczNzk2NDUzM30.zC6xAJz8ZkI4Ov62uXLmL-0VSwAXwSwxmoysvzxX9Rs",
+    "expires_in": 3600,
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAc2hpenVva2EuYWMuanAiLCJleHAiOjE3Mzg1NjkzMzMsImlhdCI6MTczNzk2NDUzM30.MEnRgDriTpJjw66YiqlXj1GJ3mErmU5-k8NcOEFLEbw",
+    "token_type": "Bearer",
+    "user": {
+      "email": "test@shizuoka.ac.jp",
+      "id": 1,
+      "name": "test"
+    }
+  },
+  "message": "Login successful",
+  "status": "success"
+}
+
+[0;32mTesting post creation...[0m
+{
+  "data": {
+    "post": {
+      "post_id": 8,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "schedule_ids": [
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85
+      ],
+      "created_at": "2025-01-27T07:55:33.218814Z",
+      "updated_at": "2025-01-27T07:55:33.243209Z",
+      "edges": {}
+    },
+    "schedules": [
+      {
+        "day_of_week": 2,
+        "id": 69,
+        "location": "（共通） 情１３",
+        "subject": "人工知能概論",
+        "time_slot": 1
+      },
+      {
+        "day_of_week": 3,
+        "id": 70,
+        "location": "（共通） 情１３",
+        "subject": "計算機アーキテクチャⅠ",
+        "time_slot": 1
+      },
+      {
+        "day_of_week": 4,
+        "id": 71,
+        "location": "（共通） 工２－２２",
+        "subject": "総合英語ⅠＣ",
+        "time_slot": 1
+      },
+      {
+        "day_of_week": 2,
+        "id": 72,
+        "location": "（共通） 情２４",
+        "subject": "美術とメディア",
+        "time_slot": 2
+      },
+      {
+        "day_of_week": 3,
+        "id": 73,
+        "location": "（共通） 工５－２２",
+        "subject": "中級英語Ｂ",
+        "time_slot": 2
+      },
+      {
+        "day_of_week": 4,
+        "id": 74,
+        "location": "（共通） 共通講義棟３１",
+        "subject": "データベースシステム論",
+        "time_slot": 2
+      },
+      {
+        "day_of_week": 5,
+        "id": 75,
+        "location": "（共通） その他",
+        "subject": "スポーツⅡ",
+        "time_slot": 2
+      },
+      {
+        "day_of_week": 1,
+        "id": 76,
+        "location": "（共通） 情１３",
+        "subject": "ディジタル信号処理",
+        "time_slot": 3
+      },
+      {
+        "day_of_week": 2,
+        "id": 77,
+        "location": "（共通） 共通講義棟２１",
+        "subject": "応用プログラミングB",
+        "time_slot": 3
+      },
+      {
+        "day_of_week": 2,
+        "id": 78,
+        "location": "（共通） 共通講義棟２１",
+        "subject": "応用プログラミングC",
+        "time_slot": 3
+      },
+      {
+        "day_of_week": 3,
+        "id": 79,
+        "location": "（共通） その他",
+        "subject": "健康体育実技Ⅱ",
+        "time_slot": 3
+      },
+      {
+        "day_of_week": 5,
+        "id": 80,
+        "location": "（共通） 工８－２１",
+        "subject": "心理と行動Ｂ",
+        "time_slot": 3
+      },
+      {
+        "day_of_week": 2,
+        "id": 81,
+        "location": "（共通） 共通講義棟２１",
+        "subject": "応用プログラミングB",
+        "time_slot": 4
+      },
+      {
+        "day_of_week": 2,
+        "id": 82,
+        "location": "（共通） 共通講義棟２１",
+        "subject": "応用プログラミングC",
+        "time_slot": 4
+      },
+      {
+        "day_of_week": 3,
+        "id": 83,
+        "location": "（共通） 共通講義棟２１",
+        "subject": "コンパイラ",
+        "time_slot": 4
+      },
+      {
+        "day_of_week": 1,
+        "id": 84,
+        "location": "（共通） 情１３",
+        "subject": "計算理論",
+        "time_slot": 5
+      },
+      {
+        "day_of_week": 5,
+        "id": 85,
+        "location": "（共通） 共通講義棟２１",
+        "subject": "社会モデル",
+        "time_slot": 5
+      }
+    ]
+  },
+  "message": "Post created successfully",
+  "status": "success"
+}
+
+[0;32mTesting post creation...[0m
+{
+  "data": {
+    "post": {
+      "post_id": 9,
+      "parent_post_id": 1,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "created_at": "2025-01-27T07:55:33.292930543Z",
+      "updated_at": "2025-01-27T07:55:33.292930667Z",
+      "edges": {}
+    }
+  },
+  "message": "Post created successfully"
+}
+
+[0;32mTesting get single post...[0m
+{
+  "post_id": 8,
+  "user_id": 1,
+  "content": "テスト投稿です",
+  "schedule_ids": [
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85
+  ],
+  "created_at": "2025-01-27T07:55:33.218814Z",
+  "updated_at": "2025-01-27T07:55:33.243209Z",
+  "edges": {
+    "user": {
+      "user_id": 1,
+      "name": "test",
+      "email": "test@shizuoka.ac.jp",
+      "department_id": 1,
+      "major_id": 1,
+      "grade": 1,
+      "created_at": "2025-01-27T07:25:38.430057Z",
+      "updated_at": "2025-01-27T07:25:38.430057Z",
+      "edges": {}
+    },
+    "schedules": [
+      {
+        "schedule_id": 69,
+        "post_id": 8,
+        "day_of_week": 2,
+        "time_slot": 1,
+        "subject": "人工知能概論",
+        "location": "（共通） 情１３",
+        "created_at": "2025-01-27T07:55:33.221927Z",
+        "updated_at": "2025-01-27T07:55:33.221927Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 70,
+        "post_id": 8,
+        "day_of_week": 3,
+        "time_slot": 1,
+        "subject": "計算機アーキテクチャⅠ",
+        "location": "（共通） 情１３",
+        "created_at": "2025-01-27T07:55:33.223401Z",
+        "updated_at": "2025-01-27T07:55:33.223402Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 71,
+        "post_id": 8,
+        "day_of_week": 4,
+        "time_slot": 1,
+        "subject": "総合英語ⅠＣ",
+        "location": "（共通） 工２－２２",
+        "created_at": "2025-01-27T07:55:33.224714Z",
+        "updated_at": "2025-01-27T07:55:33.224715Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 72,
+        "post_id": 8,
+        "day_of_week": 2,
+        "time_slot": 2,
+        "subject": "美術とメディア",
+        "location": "（共通） 情２４",
+        "created_at": "2025-01-27T07:55:33.226675Z",
+        "updated_at": "2025-01-27T07:55:33.226675Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 73,
+        "post_id": 8,
+        "day_of_week": 3,
+        "time_slot": 2,
+        "subject": "中級英語Ｂ",
+        "location": "（共通） 工５－２２",
+        "created_at": "2025-01-27T07:55:33.227766Z",
+        "updated_at": "2025-01-27T07:55:33.227767Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 74,
+        "post_id": 8,
+        "day_of_week": 4,
+        "time_slot": 2,
+        "subject": "データベースシステム論",
+        "location": "（共通） 共通講義棟３１",
+        "created_at": "2025-01-27T07:55:33.228948Z",
+        "updated_at": "2025-01-27T07:55:33.228949Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 75,
+        "post_id": 8,
+        "day_of_week": 5,
+        "time_slot": 2,
+        "subject": "スポーツⅡ",
+        "location": "（共通） その他",
+        "created_at": "2025-01-27T07:55:33.230081Z",
+        "updated_at": "2025-01-27T07:55:33.230081Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 76,
+        "post_id": 8,
+        "day_of_week": 1,
+        "time_slot": 3,
+        "subject": "ディジタル信号処理",
+        "location": "（共通） 情１３",
+        "created_at": "2025-01-27T07:55:33.231247Z",
+        "updated_at": "2025-01-27T07:55:33.231247Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 77,
+        "post_id": 8,
+        "day_of_week": 2,
+        "time_slot": 3,
+        "subject": "応用プログラミングB",
+        "location": "（共通） 共通講義棟２１",
+        "created_at": "2025-01-27T07:55:33.232805Z",
+        "updated_at": "2025-01-27T07:55:33.232805Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 78,
+        "post_id": 8,
+        "day_of_week": 2,
+        "time_slot": 3,
+        "subject": "応用プログラミングC",
+        "location": "（共通） 共通講義棟２１",
+        "created_at": "2025-01-27T07:55:33.23404Z",
+        "updated_at": "2025-01-27T07:55:33.23404Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 79,
+        "post_id": 8,
+        "day_of_week": 3,
+        "time_slot": 3,
+        "subject": "健康体育実技Ⅱ",
+        "location": "（共通） その他",
+        "created_at": "2025-01-27T07:55:33.235314Z",
+        "updated_at": "2025-01-27T07:55:33.235314Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 80,
+        "post_id": 8,
+        "day_of_week": 5,
+        "time_slot": 3,
+        "subject": "心理と行動Ｂ",
+        "location": "（共通） 工８－２１",
+        "created_at": "2025-01-27T07:55:33.236287Z",
+        "updated_at": "2025-01-27T07:55:33.236287Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 81,
+        "post_id": 8,
+        "day_of_week": 2,
+        "time_slot": 4,
+        "subject": "応用プログラミングB",
+        "location": "（共通） 共通講義棟２１",
+        "created_at": "2025-01-27T07:55:33.237477Z",
+        "updated_at": "2025-01-27T07:55:33.237477Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 82,
+        "post_id": 8,
+        "day_of_week": 2,
+        "time_slot": 4,
+        "subject": "応用プログラミングC",
+        "location": "（共通） 共通講義棟２１",
+        "created_at": "2025-01-27T07:55:33.238761Z",
+        "updated_at": "2025-01-27T07:55:33.238762Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 83,
+        "post_id": 8,
+        "day_of_week": 3,
+        "time_slot": 4,
+        "subject": "コンパイラ",
+        "location": "（共通） 共通講義棟２１",
+        "created_at": "2025-01-27T07:55:33.23996Z",
+        "updated_at": "2025-01-27T07:55:33.23996Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 84,
+        "post_id": 8,
+        "day_of_week": 1,
+        "time_slot": 5,
+        "subject": "計算理論",
+        "location": "（共通） 情１３",
+        "created_at": "2025-01-27T07:55:33.241Z",
+        "updated_at": "2025-01-27T07:55:33.241Z",
+        "edges": {}
+      },
+      {
+        "schedule_id": 85,
+        "post_id": 8,
+        "day_of_week": 5,
+        "time_slot": 5,
+        "subject": "社会モデル",
+        "location": "（共通） 共通講義棟２１",
+        "created_at": "2025-01-27T07:55:33.242115Z",
+        "updated_at": "2025-01-27T07:55:33.242115Z",
+        "edges": {}
+      }
+    ]
+  }
+}
+
+[0;32mTesting get single post...[0m
+{
+  "page": 1,
+  "page_size": 10,
+  "posts": [
+    {
+      "post_id": 8,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "schedule_ids": [
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85
+      ],
+      "created_at": "2025-01-27T07:55:33.218814Z",
+      "updated_at": "2025-01-27T07:55:33.243209Z",
+      "edges": {
+        "user": {
+          "user_id": 1,
+          "name": "test",
+          "email": "test@shizuoka.ac.jp",
+          "department_id": 1,
+          "major_id": 1,
+          "grade": 1,
+          "created_at": "2025-01-27T07:25:38.430057Z",
+          "updated_at": "2025-01-27T07:25:38.430057Z",
+          "edges": {}
+        },
+        "schedules": [
+          {
+            "schedule_id": 69,
+            "post_id": 8,
+            "day_of_week": 2,
+            "time_slot": 1,
+            "subject": "人工知能概論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:33.221927Z",
+            "updated_at": "2025-01-27T07:55:33.221927Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 70,
+            "post_id": 8,
+            "day_of_week": 3,
+            "time_slot": 1,
+            "subject": "計算機アーキテクチャⅠ",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:33.223401Z",
+            "updated_at": "2025-01-27T07:55:33.223402Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 71,
+            "post_id": 8,
+            "day_of_week": 4,
+            "time_slot": 1,
+            "subject": "総合英語ⅠＣ",
+            "location": "（共通） 工２－２２",
+            "created_at": "2025-01-27T07:55:33.224714Z",
+            "updated_at": "2025-01-27T07:55:33.224715Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 72,
+            "post_id": 8,
+            "day_of_week": 2,
+            "time_slot": 2,
+            "subject": "美術とメディア",
+            "location": "（共通） 情２４",
+            "created_at": "2025-01-27T07:55:33.226675Z",
+            "updated_at": "2025-01-27T07:55:33.226675Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 73,
+            "post_id": 8,
+            "day_of_week": 3,
+            "time_slot": 2,
+            "subject": "中級英語Ｂ",
+            "location": "（共通） 工５－２２",
+            "created_at": "2025-01-27T07:55:33.227766Z",
+            "updated_at": "2025-01-27T07:55:33.227767Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 74,
+            "post_id": 8,
+            "day_of_week": 4,
+            "time_slot": 2,
+            "subject": "データベースシステム論",
+            "location": "（共通） 共通講義棟３１",
+            "created_at": "2025-01-27T07:55:33.228948Z",
+            "updated_at": "2025-01-27T07:55:33.228949Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 75,
+            "post_id": 8,
+            "day_of_week": 5,
+            "time_slot": 2,
+            "subject": "スポーツⅡ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:55:33.230081Z",
+            "updated_at": "2025-01-27T07:55:33.230081Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 76,
+            "post_id": 8,
+            "day_of_week": 1,
+            "time_slot": 3,
+            "subject": "ディジタル信号処理",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:33.231247Z",
+            "updated_at": "2025-01-27T07:55:33.231247Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 77,
+            "post_id": 8,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:33.232805Z",
+            "updated_at": "2025-01-27T07:55:33.232805Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 78,
+            "post_id": 8,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:33.23404Z",
+            "updated_at": "2025-01-27T07:55:33.23404Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 79,
+            "post_id": 8,
+            "day_of_week": 3,
+            "time_slot": 3,
+            "subject": "健康体育実技Ⅱ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:55:33.235314Z",
+            "updated_at": "2025-01-27T07:55:33.235314Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 80,
+            "post_id": 8,
+            "day_of_week": 5,
+            "time_slot": 3,
+            "subject": "心理と行動Ｂ",
+            "location": "（共通） 工８－２１",
+            "created_at": "2025-01-27T07:55:33.236287Z",
+            "updated_at": "2025-01-27T07:55:33.236287Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 81,
+            "post_id": 8,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:33.237477Z",
+            "updated_at": "2025-01-27T07:55:33.237477Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 82,
+            "post_id": 8,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:33.238761Z",
+            "updated_at": "2025-01-27T07:55:33.238762Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 83,
+            "post_id": 8,
+            "day_of_week": 3,
+            "time_slot": 4,
+            "subject": "コンパイラ",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:33.23996Z",
+            "updated_at": "2025-01-27T07:55:33.23996Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 84,
+            "post_id": 8,
+            "day_of_week": 1,
+            "time_slot": 5,
+            "subject": "計算理論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:33.241Z",
+            "updated_at": "2025-01-27T07:55:33.241Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 85,
+            "post_id": 8,
+            "day_of_week": 5,
+            "time_slot": 5,
+            "subject": "社会モデル",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:33.242115Z",
+            "updated_at": "2025-01-27T07:55:33.242115Z",
+            "edges": {}
+          }
+        ]
+      }
+    },
+    {
+      "post_id": 6,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "schedule_ids": [
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68
+      ],
+      "created_at": "2025-01-27T07:55:17.488902Z",
+      "updated_at": "2025-01-27T07:55:17.518759Z",
+      "edges": {
+        "user": {
+          "user_id": 1,
+          "name": "test",
+          "email": "test@shizuoka.ac.jp",
+          "department_id": 1,
+          "major_id": 1,
+          "grade": 1,
+          "created_at": "2025-01-27T07:25:38.430057Z",
+          "updated_at": "2025-01-27T07:25:38.430057Z",
+          "edges": {}
+        },
+        "schedules": [
+          {
+            "schedule_id": 52,
+            "post_id": 6,
+            "day_of_week": 2,
+            "time_slot": 1,
+            "subject": "人工知能概論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:17.493461Z",
+            "updated_at": "2025-01-27T07:55:17.493461Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 53,
+            "post_id": 6,
+            "day_of_week": 3,
+            "time_slot": 1,
+            "subject": "計算機アーキテクチャⅠ",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:17.495812Z",
+            "updated_at": "2025-01-27T07:55:17.495812Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 54,
+            "post_id": 6,
+            "day_of_week": 4,
+            "time_slot": 1,
+            "subject": "総合英語ⅠＣ",
+            "location": "（共通） 工２－２２",
+            "created_at": "2025-01-27T07:55:17.497578Z",
+            "updated_at": "2025-01-27T07:55:17.497579Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 55,
+            "post_id": 6,
+            "day_of_week": 2,
+            "time_slot": 2,
+            "subject": "美術とメディア",
+            "location": "（共通） 情２４",
+            "created_at": "2025-01-27T07:55:17.498956Z",
+            "updated_at": "2025-01-27T07:55:17.498957Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 56,
+            "post_id": 6,
+            "day_of_week": 3,
+            "time_slot": 2,
+            "subject": "中級英語Ｂ",
+            "location": "（共通） 工５－２２",
+            "created_at": "2025-01-27T07:55:17.500342Z",
+            "updated_at": "2025-01-27T07:55:17.500345Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 57,
+            "post_id": 6,
+            "day_of_week": 4,
+            "time_slot": 2,
+            "subject": "データベースシステム論",
+            "location": "（共通） 共通講義棟３１",
+            "created_at": "2025-01-27T07:55:17.501593Z",
+            "updated_at": "2025-01-27T07:55:17.501594Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 58,
+            "post_id": 6,
+            "day_of_week": 5,
+            "time_slot": 2,
+            "subject": "スポーツⅡ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:55:17.502708Z",
+            "updated_at": "2025-01-27T07:55:17.502708Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 59,
+            "post_id": 6,
+            "day_of_week": 1,
+            "time_slot": 3,
+            "subject": "ディジタル信号処理",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:17.503955Z",
+            "updated_at": "2025-01-27T07:55:17.503955Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 60,
+            "post_id": 6,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:17.505084Z",
+            "updated_at": "2025-01-27T07:55:17.505084Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 61,
+            "post_id": 6,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:17.507944Z",
+            "updated_at": "2025-01-27T07:55:17.507944Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 62,
+            "post_id": 6,
+            "day_of_week": 3,
+            "time_slot": 3,
+            "subject": "健康体育実技Ⅱ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:55:17.509124Z",
+            "updated_at": "2025-01-27T07:55:17.509124Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 63,
+            "post_id": 6,
+            "day_of_week": 5,
+            "time_slot": 3,
+            "subject": "心理と行動Ｂ",
+            "location": "（共通） 工８－２１",
+            "created_at": "2025-01-27T07:55:17.510189Z",
+            "updated_at": "2025-01-27T07:55:17.510189Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 64,
+            "post_id": 6,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:17.511185Z",
+            "updated_at": "2025-01-27T07:55:17.511185Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 65,
+            "post_id": 6,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:17.512288Z",
+            "updated_at": "2025-01-27T07:55:17.512288Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 66,
+            "post_id": 6,
+            "day_of_week": 3,
+            "time_slot": 4,
+            "subject": "コンパイラ",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:17.514137Z",
+            "updated_at": "2025-01-27T07:55:17.514137Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 67,
+            "post_id": 6,
+            "day_of_week": 1,
+            "time_slot": 5,
+            "subject": "計算理論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:55:17.515523Z",
+            "updated_at": "2025-01-27T07:55:17.515523Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 68,
+            "post_id": 6,
+            "day_of_week": 5,
+            "time_slot": 5,
+            "subject": "社会モデル",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:55:17.5171Z",
+            "updated_at": "2025-01-27T07:55:17.5171Z",
+            "edges": {}
+          }
+        ]
+      }
+    },
+    {
+      "post_id": 4,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "schedule_ids": [
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51
+      ],
+      "created_at": "2025-01-27T07:38:00.265823Z",
+      "updated_at": "2025-01-27T07:38:00.301984Z",
+      "edges": {
+        "user": {
+          "user_id": 1,
+          "name": "test",
+          "email": "test@shizuoka.ac.jp",
+          "department_id": 1,
+          "major_id": 1,
+          "grade": 1,
+          "created_at": "2025-01-27T07:25:38.430057Z",
+          "updated_at": "2025-01-27T07:25:38.430057Z",
+          "edges": {}
+        },
+        "schedules": [
+          {
+            "schedule_id": 35,
+            "post_id": 4,
+            "day_of_week": 2,
+            "time_slot": 1,
+            "subject": "人工知能概論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:38:00.271108Z",
+            "updated_at": "2025-01-27T07:38:00.271108Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 36,
+            "post_id": 4,
+            "day_of_week": 3,
+            "time_slot": 1,
+            "subject": "計算機アーキテクチャⅠ",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:38:00.274694Z",
+            "updated_at": "2025-01-27T07:38:00.274694Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 37,
+            "post_id": 4,
+            "day_of_week": 4,
+            "time_slot": 1,
+            "subject": "総合英語ⅠＣ",
+            "location": "（共通） 工２－２２",
+            "created_at": "2025-01-27T07:38:00.277529Z",
+            "updated_at": "2025-01-27T07:38:00.277529Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 38,
+            "post_id": 4,
+            "day_of_week": 2,
+            "time_slot": 2,
+            "subject": "美術とメディア",
+            "location": "（共通） 情２４",
+            "created_at": "2025-01-27T07:38:00.280967Z",
+            "updated_at": "2025-01-27T07:38:00.280968Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 39,
+            "post_id": 4,
+            "day_of_week": 3,
+            "time_slot": 2,
+            "subject": "中級英語Ｂ",
+            "location": "（共通） 工５－２２",
+            "created_at": "2025-01-27T07:38:00.282178Z",
+            "updated_at": "2025-01-27T07:38:00.282178Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 40,
+            "post_id": 4,
+            "day_of_week": 4,
+            "time_slot": 2,
+            "subject": "データベースシステム論",
+            "location": "（共通） 共通講義棟３１",
+            "created_at": "2025-01-27T07:38:00.285017Z",
+            "updated_at": "2025-01-27T07:38:00.285018Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 41,
+            "post_id": 4,
+            "day_of_week": 5,
+            "time_slot": 2,
+            "subject": "スポーツⅡ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:38:00.28609Z",
+            "updated_at": "2025-01-27T07:38:00.286091Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 42,
+            "post_id": 4,
+            "day_of_week": 1,
+            "time_slot": 3,
+            "subject": "ディジタル信号処理",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:38:00.288766Z",
+            "updated_at": "2025-01-27T07:38:00.288766Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 43,
+            "post_id": 4,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:38:00.289988Z",
+            "updated_at": "2025-01-27T07:38:00.289988Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 44,
+            "post_id": 4,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:38:00.292824Z",
+            "updated_at": "2025-01-27T07:38:00.292825Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 45,
+            "post_id": 4,
+            "day_of_week": 3,
+            "time_slot": 3,
+            "subject": "健康体育実技Ⅱ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:38:00.294244Z",
+            "updated_at": "2025-01-27T07:38:00.294244Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 46,
+            "post_id": 4,
+            "day_of_week": 5,
+            "time_slot": 3,
+            "subject": "心理と行動Ｂ",
+            "location": "（共通） 工８－２１",
+            "created_at": "2025-01-27T07:38:00.295472Z",
+            "updated_at": "2025-01-27T07:38:00.295472Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 47,
+            "post_id": 4,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:38:00.296705Z",
+            "updated_at": "2025-01-27T07:38:00.296705Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 48,
+            "post_id": 4,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:38:00.297871Z",
+            "updated_at": "2025-01-27T07:38:00.297871Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 49,
+            "post_id": 4,
+            "day_of_week": 3,
+            "time_slot": 4,
+            "subject": "コンパイラ",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:38:00.298957Z",
+            "updated_at": "2025-01-27T07:38:00.298957Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 50,
+            "post_id": 4,
+            "day_of_week": 1,
+            "time_slot": 5,
+            "subject": "計算理論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:38:00.300003Z",
+            "updated_at": "2025-01-27T07:38:00.300003Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 51,
+            "post_id": 4,
+            "day_of_week": 5,
+            "time_slot": 5,
+            "subject": "社会モデル",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:38:00.30099Z",
+            "updated_at": "2025-01-27T07:38:00.30099Z",
+            "edges": {}
+          }
+        ]
+      }
+    },
+    {
+      "post_id": 2,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "schedule_ids": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "created_at": "2025-01-27T07:34:57.859654Z",
+      "updated_at": "2025-01-27T07:34:57.885364Z",
+      "edges": {
+        "user": {
+          "user_id": 1,
+          "name": "test",
+          "email": "test@shizuoka.ac.jp",
+          "department_id": 1,
+          "major_id": 1,
+          "grade": 1,
+          "created_at": "2025-01-27T07:25:38.430057Z",
+          "updated_at": "2025-01-27T07:25:38.430057Z",
+          "edges": {}
+        },
+        "schedules": [
+          {
+            "schedule_id": 18,
+            "post_id": 2,
+            "day_of_week": 2,
+            "time_slot": 1,
+            "subject": "人工知能概論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:34:57.864159Z",
+            "updated_at": "2025-01-27T07:34:57.864159Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 19,
+            "post_id": 2,
+            "day_of_week": 3,
+            "time_slot": 1,
+            "subject": "計算機アーキテクチャⅠ",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:34:57.865963Z",
+            "updated_at": "2025-01-27T07:34:57.865964Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 20,
+            "post_id": 2,
+            "day_of_week": 4,
+            "time_slot": 1,
+            "subject": "総合英語ⅠＣ",
+            "location": "（共通） 工２－２２",
+            "created_at": "2025-01-27T07:34:57.867236Z",
+            "updated_at": "2025-01-27T07:34:57.867236Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 21,
+            "post_id": 2,
+            "day_of_week": 2,
+            "time_slot": 2,
+            "subject": "美術とメディア",
+            "location": "（共通） 情２４",
+            "created_at": "2025-01-27T07:34:57.868736Z",
+            "updated_at": "2025-01-27T07:34:57.868737Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 22,
+            "post_id": 2,
+            "day_of_week": 3,
+            "time_slot": 2,
+            "subject": "中級英語Ｂ",
+            "location": "（共通） 工５－２２",
+            "created_at": "2025-01-27T07:34:57.870058Z",
+            "updated_at": "2025-01-27T07:34:57.870058Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 23,
+            "post_id": 2,
+            "day_of_week": 4,
+            "time_slot": 2,
+            "subject": "データベースシステム論",
+            "location": "（共通） 共通講義棟３１",
+            "created_at": "2025-01-27T07:34:57.871381Z",
+            "updated_at": "2025-01-27T07:34:57.871382Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 24,
+            "post_id": 2,
+            "day_of_week": 5,
+            "time_slot": 2,
+            "subject": "スポーツⅡ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:34:57.872579Z",
+            "updated_at": "2025-01-27T07:34:57.872579Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 25,
+            "post_id": 2,
+            "day_of_week": 1,
+            "time_slot": 3,
+            "subject": "ディジタル信号処理",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:34:57.873693Z",
+            "updated_at": "2025-01-27T07:34:57.873693Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 26,
+            "post_id": 2,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:34:57.874844Z",
+            "updated_at": "2025-01-27T07:34:57.874844Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 27,
+            "post_id": 2,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:34:57.875965Z",
+            "updated_at": "2025-01-27T07:34:57.875965Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 28,
+            "post_id": 2,
+            "day_of_week": 3,
+            "time_slot": 3,
+            "subject": "健康体育実技Ⅱ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:34:57.877114Z",
+            "updated_at": "2025-01-27T07:34:57.877114Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 29,
+            "post_id": 2,
+            "day_of_week": 5,
+            "time_slot": 3,
+            "subject": "心理と行動Ｂ",
+            "location": "（共通） 工８－２１",
+            "created_at": "2025-01-27T07:34:57.878252Z",
+            "updated_at": "2025-01-27T07:34:57.878252Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 30,
+            "post_id": 2,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:34:57.879581Z",
+            "updated_at": "2025-01-27T07:34:57.879581Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 31,
+            "post_id": 2,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:34:57.88071Z",
+            "updated_at": "2025-01-27T07:34:57.88071Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 32,
+            "post_id": 2,
+            "day_of_week": 3,
+            "time_slot": 4,
+            "subject": "コンパイラ",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:34:57.881737Z",
+            "updated_at": "2025-01-27T07:34:57.881737Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 33,
+            "post_id": 2,
+            "day_of_week": 1,
+            "time_slot": 5,
+            "subject": "計算理論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:34:57.882991Z",
+            "updated_at": "2025-01-27T07:34:57.882991Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 34,
+            "post_id": 2,
+            "day_of_week": 5,
+            "time_slot": 5,
+            "subject": "社会モデル",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:34:57.884236Z",
+            "updated_at": "2025-01-27T07:34:57.884236Z",
+            "edges": {}
+          }
+        ]
+      }
+    },
+    {
+      "post_id": 1,
+      "user_id": 1,
+      "content": "テスト投稿です",
+      "schedule_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "created_at": "2025-01-27T07:25:42.998748Z",
+      "updated_at": "2025-01-27T07:25:43.025201Z",
+      "edges": {
+        "user": {
+          "user_id": 1,
+          "name": "test",
+          "email": "test@shizuoka.ac.jp",
+          "department_id": 1,
+          "major_id": 1,
+          "grade": 1,
+          "created_at": "2025-01-27T07:25:38.430057Z",
+          "updated_at": "2025-01-27T07:25:38.430057Z",
+          "edges": {}
+        },
+        "schedules": [
+          {
+            "schedule_id": 1,
+            "post_id": 1,
+            "day_of_week": 2,
+            "time_slot": 1,
+            "subject": "人工知能概論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:25:43.00331Z",
+            "updated_at": "2025-01-27T07:25:43.003311Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 2,
+            "post_id": 1,
+            "day_of_week": 3,
+            "time_slot": 1,
+            "subject": "計算機アーキテクチャⅠ",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:25:43.006799Z",
+            "updated_at": "2025-01-27T07:25:43.006799Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 3,
+            "post_id": 1,
+            "day_of_week": 4,
+            "time_slot": 1,
+            "subject": "総合英語ⅠＣ",
+            "location": "（共通） 工２－２２",
+            "created_at": "2025-01-27T07:25:43.008112Z",
+            "updated_at": "2025-01-27T07:25:43.008112Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 4,
+            "post_id": 1,
+            "day_of_week": 2,
+            "time_slot": 2,
+            "subject": "美術とメディア",
+            "location": "（共通） 情２４",
+            "created_at": "2025-01-27T07:25:43.009299Z",
+            "updated_at": "2025-01-27T07:25:43.009299Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 5,
+            "post_id": 1,
+            "day_of_week": 3,
+            "time_slot": 2,
+            "subject": "中級英語Ｂ",
+            "location": "（共通） 工５－２２",
+            "created_at": "2025-01-27T07:25:43.010415Z",
+            "updated_at": "2025-01-27T07:25:43.010415Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 6,
+            "post_id": 1,
+            "day_of_week": 4,
+            "time_slot": 2,
+            "subject": "データベースシステム論",
+            "location": "（共通） 共通講義棟３１",
+            "created_at": "2025-01-27T07:25:43.011432Z",
+            "updated_at": "2025-01-27T07:25:43.011432Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 7,
+            "post_id": 1,
+            "day_of_week": 5,
+            "time_slot": 2,
+            "subject": "スポーツⅡ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:25:43.012809Z",
+            "updated_at": "2025-01-27T07:25:43.012809Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 8,
+            "post_id": 1,
+            "day_of_week": 1,
+            "time_slot": 3,
+            "subject": "ディジタル信号処理",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:25:43.013902Z",
+            "updated_at": "2025-01-27T07:25:43.013902Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 9,
+            "post_id": 1,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:25:43.014993Z",
+            "updated_at": "2025-01-27T07:25:43.014993Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 10,
+            "post_id": 1,
+            "day_of_week": 2,
+            "time_slot": 3,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:25:43.016014Z",
+            "updated_at": "2025-01-27T07:25:43.016014Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 11,
+            "post_id": 1,
+            "day_of_week": 3,
+            "time_slot": 3,
+            "subject": "健康体育実技Ⅱ",
+            "location": "（共通） その他",
+            "created_at": "2025-01-27T07:25:43.017069Z",
+            "updated_at": "2025-01-27T07:25:43.017069Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 12,
+            "post_id": 1,
+            "day_of_week": 5,
+            "time_slot": 3,
+            "subject": "心理と行動Ｂ",
+            "location": "（共通） 工８－２１",
+            "created_at": "2025-01-27T07:25:43.018223Z",
+            "updated_at": "2025-01-27T07:25:43.018223Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 13,
+            "post_id": 1,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングB",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:25:43.019331Z",
+            "updated_at": "2025-01-27T07:25:43.019331Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 14,
+            "post_id": 1,
+            "day_of_week": 2,
+            "time_slot": 4,
+            "subject": "応用プログラミングC",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:25:43.020517Z",
+            "updated_at": "2025-01-27T07:25:43.020517Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 15,
+            "post_id": 1,
+            "day_of_week": 3,
+            "time_slot": 4,
+            "subject": "コンパイラ",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:25:43.021625Z",
+            "updated_at": "2025-01-27T07:25:43.021626Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 16,
+            "post_id": 1,
+            "day_of_week": 1,
+            "time_slot": 5,
+            "subject": "計算理論",
+            "location": "（共通） 情１３",
+            "created_at": "2025-01-27T07:25:43.022715Z",
+            "updated_at": "2025-01-27T07:25:43.022715Z",
+            "edges": {}
+          },
+          {
+            "schedule_id": 17,
+            "post_id": 1,
+            "day_of_week": 5,
+            "time_slot": 5,
+            "subject": "社会モデル",
+            "location": "（共通） 共通講義棟２１",
+            "created_at": "2025-01-27T07:25:43.023844Z",
+            "updated_at": "2025-01-27T07:25:43.023844Z",
+            "edges": {}
+          }
+        ],
+        "replies": [
+          {
+            "post_id": 3,
+            "parent_post_id": 1,
+            "user_id": 1,
+            "content": "テスト投稿です",
+            "created_at": "2025-01-27T07:34:57.93127Z",
+            "updated_at": "2025-01-27T07:34:57.93127Z",
+            "edges": {}
+          },
+          {
+            "post_id": 5,
+            "parent_post_id": 1,
+            "user_id": 1,
+            "content": "テスト投稿です",
+            "created_at": "2025-01-27T07:38:00.349459Z",
+            "updated_at": "2025-01-27T07:38:00.349459Z",
+            "edges": {}
+          },
+          {
+            "post_id": 7,
+            "parent_post_id": 1,
+            "user_id": 1,
+            "content": "テスト投稿です",
+            "created_at": "2025-01-27T07:55:17.568676Z",
+            "updated_at": "2025-01-27T07:55:17.568676Z",
+            "edges": {}
+          },
+          {
+            "post_id": 9,
+            "parent_post_id": 1,
+            "user_id": 1,
+            "content": "テスト投稿です",
+            "created_at": "2025-01-27T07:55:33.292931Z",
+            "updated_at": "2025-01-27T07:55:33.292931Z",
+            "edges": {}
+          }
+        ]
+      }
+    }
+  ],
+  "total": 5,
+  "total_pages": 1
+}
+
+[0;32mTest Summary:[0m
+Passed: 0
+Failed: 0
+
+[0;32mTesting file upload...[0m
+Response:
+404
+[0;31m✗ File upload test failed[0m
+Error details:
+404

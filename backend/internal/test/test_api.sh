@@ -57,13 +57,13 @@ echo -e "\n${GREEN}Testing login...${NC}"
 LOGIN_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "test@example.com",
-    "password": "password123"
+    "email": "test@shizuoka.ac.jp",
+    "password": "test"
   }')
 echo $LOGIN_RESPONSE | jq '.'
 
 # トークンを更新
-TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
+TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.data.accessToken')
 
 # 通常の投稿作成のテスト
 # テスト用HTMLファイルのパス
@@ -79,8 +79,16 @@ POST_RESPONSE=$(curl -X POST "${BASE_URL}/posts" \
 echo $POST_RESPONSE | jq '.'
 
 # 作成した投稿のIDを取得
-POST_ID=$(echo $POST_RESPONSE | jq -r '.post_id')
+POST_ID=$(echo $POST_RESPONSE | jq -r '.data.post.post_id')
 
+echo -e "\n${GREEN}Testing post creation...${NC}"
+POST_RESPONSE=$(curl -X POST "${BASE_URL}/posts" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: multipart/form-data" \
+  -F "content=テスト投稿です"\
+  -F "userId=1"\
+  -F "parentPostId=1")
+echo $POST_RESPONSE | jq '.'
 # 返信作成のテスト
 # echo -e "\n${GREEN}Testing reply creation...${NC}"
 # REPLY_RESPONSE=$(curl -s -X POST "${BASE_URL}/users/1" \
@@ -92,9 +100,19 @@ POST_ID=$(echo $POST_RESPONSE | jq -r '.post_id')
 #   }")
 # echo $REPLY_RESPONSE | jq '.'
 
+# 単一のUser情報取得テスト
+echo -e "\n${GREEN}Testing get single user...${NC}"
+curl -s "${BASE_URL}/users?id=1" \
+  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+
 # 単一の投稿取得テスト
 echo -e "\n${GREEN}Testing get single post...${NC}"
 curl -s "${BASE_URL}/posts/${POST_ID}" \
+  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+
+
+echo -e "\n${GREEN}Testing get single post...${NC}"
+curl -s "${BASE_URL}/posts?user_id=1" \
   -H "Authorization: Bearer ${TOKEN}" | jq '.'
 
 # JSONレスポンスを処理する関数
@@ -147,17 +165,6 @@ process_response() {
 echo -e "\n${GREEN}Test Summary:${NC}"
 echo "Passed: ${TESTS_PASSED}"
 echo "Failed: ${TESTS_FAILED}"
-
-
-# ファイルアップロードのテスト
-echo -e "\n${GREEN}Testing file upload...${NC}"
-UPLOAD_RESPONSE=$(curl -s -X POST "${BASE_URL}/files/upload" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -F "file=@${HTML_FILE}")
-
-# レスポンスの表示
-echo "Response:"
-echo $UPLOAD_RESPONSE | jq '.'
 
 # テスト結果の確認
 if echo "$UPLOAD_RESPONSE" | jq -e 'has("message")' >/dev/null; then

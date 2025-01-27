@@ -135,18 +135,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
         return
     }
-    file,header,err := c.Request.FormFile("htmlFile")
-    if err != nil {
-        c.JSON(400, gin.H{"error": "Failed to get file"})
-        return
-    }
-
-    schedules, err := schedule.ProcessFile(file,header)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-    defer file.Close()
+    
 
     content := c.PostForm("content")
     if content == "" {
@@ -159,10 +148,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         return
     }
     parentPostIDStr := c.PostForm("parentPostId")
-    // if parentPostIDStr == "" {
-    //     c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
-    //     return
-    // }
+    
     if userIDStr == "" || content == "" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
         return
@@ -173,15 +159,14 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         c.JSON(400, gin.H{"error": "Failed to get user ID"})
         return
     }
-
     var parentPostID *int
     if parentPostIDStr != "" {
-        id, err := strconv.Atoi(parentPostIDStr)
+        parent, err := strconv.Atoi(parentPostIDStr)
         if err != nil {
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parentPostID"})
             return
         }
-        parentPostID = &id
+        parentPostID = &parent
     }
 
     create := h.client.Post.Create().
@@ -200,8 +185,25 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-
+    
+    file,header,err := c.Request.FormFile("htmlFile")
+    if err != nil {
+        if(post.ParentPostID == nil){
+            c.JSON(400, gin.H{"error": "Failed to get file"})
+            return
+        }else{
+            c.JSON(http.StatusOK, gin.H{"message": "Post created successfully", "data": gin.H{"post": post}})
+            return
+        }
+    }
+    schedules, err := schedule.ProcessFile(file,header)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+    defer file.Close()
     var savedSchedulesIDs []int
+    var savedSchedules []map[string]interface{}
     for _, schedule := range schedules {
         savedSchedule, err := h.client.Schedule.Create().
             SetPostID(post.ID).
@@ -215,6 +217,13 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
             return
         }
         savedSchedulesIDs = append(savedSchedulesIDs, savedSchedule.ID)
+        savedSchedules = append(savedSchedules, map[string]interface{}{
+            "id": savedSchedule.ID,
+            "day_of_week": savedSchedule.DayOfWeek,
+            "time_slot": savedSchedule.TimeSlot,
+            "subject": savedSchedule.Subject,
+            "location": savedSchedule.Location,
+        })
     }
 
     post,err = h.client.Post.UpdateOneID(post.ID).
@@ -223,8 +232,15 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
-    }  
-    c.JSON(http.StatusCreated, post)
+    } 
+    c.JSON(http.StatusCreated, gin.H{
+		"status":  "success",
+		"message": "Post created successfully",
+		"data": gin.H{
+			"post": post,
+			"schedules": savedSchedules,
+		},
+	})
 }
 
 // UpdatePost 投稿を更新
