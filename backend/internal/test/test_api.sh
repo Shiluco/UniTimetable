@@ -79,8 +79,16 @@ POST_RESPONSE=$(curl -X POST "${BASE_URL}/posts" \
 echo $POST_RESPONSE | jq '.'
 
 # 作成した投稿のIDを取得
-POST_ID=$(echo $POST_RESPONSE | jq -r '.post_id')
+POST_ID=$(echo $POST_RESPONSE | jq -r '.data.post.post_id')
 
+echo -e "\n${GREEN}Testing post creation...${NC}"
+POST_RESPONSE=$(curl -X POST "${BASE_URL}/posts" \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: multipart/form-data" \
+  -F "content=テスト投稿です"\
+  -F "userId=1"\
+  -F "parentPostId=1")
+echo $POST_RESPONSE | jq '.'
 # 返信作成のテスト
 # echo -e "\n${GREEN}Testing reply creation...${NC}"
 # REPLY_RESPONSE=$(curl -s -X POST "${BASE_URL}/users/1" \
