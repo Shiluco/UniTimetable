@@ -4,7 +4,9 @@ import { Department, Major } from "@/types/masterData";
 // Fetch Departments
 export const fetchDepartments = async (): Promise<Department[]> => {
   try {
-    return await getDepartmentsApi();
+    const departments = await getDepartmentsApi();
+    console.log("Fetched departments:", departments);
+    return departments;
   } catch (error) {
     console.error("Error fetching departments:", error);
     throw new Error("Failed to fetch departments. Please try again later.");

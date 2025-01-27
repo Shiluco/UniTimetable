@@ -1,8 +1,11 @@
+
 export const Fetcher = async <T>(
   endpoint: string, // エンドポイント
   options: RequestInit & { authRequired?: boolean } = { method: "GET", authRequired: true }
-): Promise<T> => {
-  const baseURL = "http://localhost:8080/api/"; // 環境変数からベースURLを取得
+): Promise<T> =>
+{
+  
+  const baseURL = process.env.NEXT_PUBLIC_API_URL; // 環境変数からベースURLを取得
   if (!baseURL) {
     throw new Error("Base URL is not defined. Check your environment variables.");
   }
@@ -24,13 +27,13 @@ export const Fetcher = async <T>(
   const response = await fetch(url, { ...options, headers });
 
   if (response.status === 401) {
-    window.location.href = "/login";
+    // window.location.href = "/login";
     throw new Error("Unauthorized: Please log in.");
   } else if (response.status === 403) {
-    window.location.href = "/login";
+    // window.location.href = "/login";
     throw new Error("Forbidden: You do not have access to this resource.");
   } else if (response.status === 404) {
-    window.location.href = "/login";
+    // window.location.href = "/login";
     throw new Error("Not Found: The requested resource could not be found.");
   }
 
