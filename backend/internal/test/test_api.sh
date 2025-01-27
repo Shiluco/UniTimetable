@@ -100,6 +100,11 @@ echo $POST_RESPONSE | jq '.'
 #   }")
 # echo $REPLY_RESPONSE | jq '.'
 
+# 単一のUser情報取得テスト
+echo -e "\n${GREEN}Testing get single user...${NC}"
+curl -s "${BASE_URL}/users?id=1" \
+  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+
 # 単一の投稿取得テスト
 echo -e "\n${GREEN}Testing get single post...${NC}"
 curl -s "${BASE_URL}/posts/${POST_ID}" \
@@ -160,17 +165,6 @@ process_response() {
 echo -e "\n${GREEN}Test Summary:${NC}"
 echo "Passed: ${TESTS_PASSED}"
 echo "Failed: ${TESTS_FAILED}"
-
-
-# ファイルアップロードのテスト
-echo -e "\n${GREEN}Testing file upload...${NC}"
-UPLOAD_RESPONSE=$(curl -s -X POST "${BASE_URL}/files/upload" \
-  -H "Authorization: Bearer ${TOKEN}" \
-  -F "file=@${HTML_FILE}")
-
-# レスポンスの表示
-echo "Response:"
-echo $UPLOAD_RESPONSE | jq '.'
 
 # テスト結果の確認
 if echo "$UPLOAD_RESPONSE" | jq -e 'has("message")' >/dev/null; then
