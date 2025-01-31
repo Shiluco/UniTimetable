@@ -44,8 +44,24 @@ REGISTER_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/register" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "テストユーザー",
-    "email": "test@example.com",
+    "email": "test1234@shizuoka.ac.jp",
+    "grade": 1,
+    "department_id": 1,
+    "major_id": 1,
     "password": "password123"
+  }')
+echo $REGISTER_RESPONSE | jq '.'
+
+echo -e "\n${GREEN}Testing user registration...${NC}"
+REGISTER_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "テストユーザー",
+    "email": "test12345@shizuoka.ac.jp",
+    "grade": 2,
+    "department_id": 2,
+    "major_id": 3,
+    "password": "password1234"
   }')
 echo $REGISTER_RESPONSE | jq '.'
 
@@ -58,7 +74,7 @@ LOGIN_RESPONSE=$(curl -s -X POST "${BASE_URL}/auth/login" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@shizuoka.ac.jp",
-    "password": "test"
+    "password": "test11111"
   }')
 echo $LOGIN_RESPONSE | jq '.'
 

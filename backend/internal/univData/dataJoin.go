@@ -6,7 +6,7 @@ import (
     "fmt"
     "io/ioutil"
     "os"
-
+    "time"
     "github.com/Shiluco/UniTimetable/backend/ent"
     "github.com/Shiluco/UniTimetable/backend/internal/auth"
 )
@@ -35,13 +35,12 @@ type UserData struct {
 }
 
 type User struct {
-    UserID int `json:"user_id"`
-    DepartmentID int `json:"department_id"`
-    MajorID int `json:"major_id"`
-    Grade int8 `json:"grade"`
-    UserName string `json:"user_name"`
-    UserEmail string `json:"user_email"`
-    UserPassword string `json:"user_password"`
+    Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
+    DepartmentID int `json:"department_id" binding:"required"`
+    MajorID int `json:"major_id" binding:"required"`
+    Grade int8 `json:"grade" binding:"required"`
 }
 
 // SaveUniversityData は JSON データをデータベースに保存する関数です。
@@ -108,18 +107,34 @@ func SaveUserData(ctx context.Context, client *ent.Client) error {
 
     var hashedPassword string
     for _, user := range userData.Users {
-        hashedPassword, err = auth.HashPassword(user.UserPassword)
+        // ユーザーがすでに存在するか確認
+        // existingUser, err := client.User.Query().
+        //     Where(user.Email(user.Email)).
+        //     Only(ctx)
+        // if err == nil {
+        //     // ユーザーが存在する場合はスキップまたはエラーメッセージを返す
+        //     return fmt.Errorf("user with email %s already exists", existingUser.Email)
+        // } else if !ent.IsNotFound(err) {
+        //     // 他のエラーが発生した場合
+        //     return fmt.Errorf("failed to check if user exists: %w", err)
+        // }
+
+        // パスワードをハッシュ化
+        hashedPassword, err = auth.HashPassword(user.Password)
         if err != nil {
             return fmt.Errorf("failed to hash password: %w", err)
         }
-        _, err := client.User.Create().
-            SetID(user.UserID).
+
+        // 新しいユーザーを作成
+        _, err = client.User.Create().
             SetDepartmentID(user.DepartmentID).
             SetMajorID(user.MajorID).
             SetGrade(user.Grade).
-            SetName(user.UserName).
-            SetEmail(user.UserEmail).
+            SetName(user.Name).
+            SetEmail(user.Email).
             SetPassword(hashedPassword).
+            SetCreatedAt(time.Now()).
+            SetUpdatedAt(time.Now()).
             Save(ctx)
         if err != nil {
             return fmt.Errorf("failed to create user: %w", err)
