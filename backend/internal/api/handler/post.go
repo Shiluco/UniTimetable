@@ -5,6 +5,7 @@ import (
     "strconv"
     "time"
     "fmt"
+    "errors"
     "github.com/gin-gonic/gin"
     "github.com/Shiluco/UniTimetable/backend/ent"
     "github.com/Shiluco/UniTimetable/backend/ent/post"
@@ -28,6 +29,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
     if id := c.Param("id"); id != "" {
         postID, err := strconv.Atoi(id)
         if err != nil {
+            c.Error(err)
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
             return
         }
@@ -43,9 +45,11 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 
         if err != nil {
             if ent.IsNotFound(err) {
+                c.Error(err)
                 c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
                 return
             }
+            c.Error(err)
             c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
             return
         }
@@ -87,6 +91,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
     // 総件数の取得
     total, err := postQuery.Count(ctx)
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
@@ -115,6 +120,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
         All(ctx)
 
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
@@ -132,6 +138,7 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 func (h *PostHandler) CreatePost(c *gin.Context) {
     currentUser := middleware.GetCurrentUser(c)
     if currentUser == nil {
+        c.Error(errors.New("User not found in context"))
         c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
         return
     }
@@ -139,30 +146,35 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 
     content := c.PostForm("content")
     if content == "" {
+        c.Error(errors.New("Missing required fields"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
         return
     }
     userIDStr := c.PostForm("userId")
     if userIDStr == "" {
+        c.Error(errors.New("Missing required fields"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
         return
     }
     parentPostIDStr := c.PostForm("parentPostId")
     
     if userIDStr == "" || content == "" {
+        c.Error(errors.New("Missing required fields"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
         return
     }
 
     userID, err := strconv.Atoi(userIDStr)
     if err != nil {
-        c.JSON(400, gin.H{"error": "Failed to get user ID"})
+        c.Error(errors.New("Failed to get user ID"))
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get user ID"})
         return
     }
     var parentPostID *int
     if parentPostIDStr != "" {
         parent, err := strconv.Atoi(parentPostIDStr)
         if err != nil {
+            c.Error(errors.New("Invalid parentPostID"))
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parentPostID"})
             return
         }
@@ -182,6 +194,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 
     post, err := create.Save(c.Request.Context())
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
@@ -189,7 +202,8 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
     file,header,err := c.Request.FormFile("htmlFile")
     if err != nil {
         if(post.ParentPostID == nil){
-            c.JSON(400, gin.H{"error": "Failed to get file"})
+            c.Error(errors.New("Failed to get file"))
+            c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to get file"})
             return
         }else{
             c.JSON(http.StatusOK, gin.H{"message": "Post created successfully", "data": gin.H{"post": post}})
@@ -198,6 +212,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
     }
     schedules, err := schedule.ProcessFile(file,header)
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
@@ -213,6 +228,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
             SetLocation(schedule.Location).
             Save(c.Request.Context())
         if err != nil {
+            c.Error(err)
             c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("時間割の保存に失敗しました: %v", err)})
             return
         }
@@ -230,6 +246,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
         SetScheduleIds(savedSchedulesIDs).
         Save(c.Request.Context())
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     } 
@@ -303,6 +320,7 @@ func (h *PostHandler) CreatePost(c *gin.Context) {
 func (h *PostHandler) DeletePost(c *gin.Context) {
     id, err := strconv.Atoi(c.Param("id"))
     if err != nil {
+        c.Error(errors.New("Invalid post ID"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
         return
     }
@@ -310,6 +328,7 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
     // 現在のユーザーを取得
     currentUser := middleware.GetCurrentUser(c)
     if currentUser == nil {
+        c.Error(errors.New("User not found in context"))
         c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
         return
     }
@@ -319,6 +338,7 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
         Where(post.ID(id)).
         Only(c.Request.Context())
     if err != nil {
+        c.Error(err)
         if ent.IsNotFound(err) {
             c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
             return
@@ -329,12 +349,14 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
 
     // 所有者でない場合は削除を許可しない
     if p.UserID != currentUser.ID {
+        c.Error(errors.New("Not authorized to delete this post"))
         c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to delete this post"})
         return
     }
 
     err = h.client.Post.DeleteOne(p).Exec(c.Request.Context())
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }

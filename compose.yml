@@ -1,17 +1,17 @@
 services:
-  # nextjs:
-  #   build:
-  #     context: ./frontend # Dockerfile があるディレクトリ
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000" # Next.js アプリ用
-  #     - "6006:6006" # Storybook 用
-  #   volumes:
-  #     - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
-  #     - /app/node_modules # node_modules をコンテナ内で管理
-  #   environment:
-  #     NODE_ENV: development
-  #   command: sh -c "yarn install && yarn dev & yarn storybook --ci"
+  nextjs:
+    build:
+      context: ./frontend # Dockerfile があるディレクトリ
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Next.js アプリ用
+      - "6006:6006" # Storybook 用
+    volumes:
+      - ./frontend:/app # ホスト側のコードをコンテナ内にマウント
+      - /app/node_modules # node_modules をコンテナ内で管理
+    environment:
+      NODE_ENV: development
+    command: sh -c "yarn install && yarn dev & yarn storybook --ci"
 
   go:
     build:

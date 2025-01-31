@@ -102,7 +102,7 @@ echo $POST_RESPONSE | jq '.'
 
 # 単一のUser情報取得テスト
 echo -e "\n${GREEN}Testing get single user...${NC}"
-curl -s "${BASE_URL}/users?id=1" \
+curl -s "${BASE_URL}/users/1" \
   -H "Authorization: Bearer ${TOKEN}" | jq '.'
 
 # 単一の投稿取得テスト
