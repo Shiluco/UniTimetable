@@ -49,7 +49,13 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
             return
         }
 
-        c.JSON(http.StatusOK, user)
+        c.JSON(http.StatusOK, gin.H{
+            "status":  "success",
+            "message": "Users fetched successfully",
+            "data": gin.H{
+                "user": user,
+            }
+        })
         return
     }
 
@@ -84,7 +90,13 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
             return
         }
 
-        c.JSON(http.StatusOK, users)
+        c.JSON(http.StatusOK, gin.H{
+            "status":  "success",
+            "message": "Users fetched successfully",
+            "data": gin.H{
+                "users": users,
+            }
+        })
         return
     }
 
@@ -121,11 +133,15 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
     }
 
     c.JSON(http.StatusOK, gin.H{
-        "users":       users,
-        "total":      total_count,
-        "page":       page,
-        "page_size":  pageSize,
-        "total_pages": (total_count + pageSize - 1) / pageSize,
+		"status":  "success",
+		"message": "Users fetched successfully",
+		"data": gin.H{
+            "users": users,
+            "total": total_count,
+            "page": page,
+            "page_size": pageSize,
+            "total_pages": (total_count + pageSize - 1) / pageSize,
+        }
     })
 }
 
