@@ -42,7 +42,7 @@ export const updateSchedule = async (params: UpdateScheduleParams): Promise<ApiR
 
 export const fetchSchedules = async (query_params?: Partial<Schedule>): Promise<ApiResponse<SchedulesResponse>> => {
   try {
-    return await getSchedulesApi(query_params);
+    return await getSchedulesApi(query_params as number);
   } catch (error) {
     return {
       status: "error",
