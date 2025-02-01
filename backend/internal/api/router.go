@@ -1,6 +1,8 @@
 package api
 
 import (
+    "errors"
+    "net/http"
     "github.com/gin-gonic/gin"
     "github.com/Shiluco/UniTimetable/backend/ent"
     "github.com/Shiluco/UniTimetable/backend/internal/api/handler"
@@ -76,6 +78,10 @@ func SetupRoutes(client *ent.Client) *gin.Engine {
                 //schedules.PUT("/:id", scheduleHandler.UpdateSchedule)
                 //schedules.DELETE("/:id", scheduleHandler.DeleteSchedule)
             }
+            r.NoRoute(func(c *gin.Context) {
+                c.Error(errors.New("Endpoint not found"))
+                c.JSON(http.StatusNotFound, gin.H{"error": "Endpoint not found"})
+            })
         }
     }
 

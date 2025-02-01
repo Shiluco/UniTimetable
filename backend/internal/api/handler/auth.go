@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
+	"errors"
 	"github.com/Shiluco/UniTimetable/backend/ent"
 	"github.com/Shiluco/UniTimetable/backend/ent/major"
 	"github.com/Shiluco/UniTimetable/backend/ent/user"
@@ -33,6 +33,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -42,29 +43,35 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		Where(user.Email(req.Email)).
 		Exist(c.Request.Context())
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if exists {
+		c.Error(errors.New("Email already exists"))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 		return
 	}
     if !isValidEmailDomain(req.Email) {
+        c.Error(errors.New("Invalid email domain"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email domain"})
         return
     }
     if !isValidGrade(req.Grade) {
+        c.Error(errors.New("Invalid grade"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid grade"})
         return
     }
 
     if !isValidMajorDepartment(c.Request.Context(), h.client, req.MajorID, req.DepartmentID) {
+        c.Error(errors.New("Invalid major or department"))
         c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid major or department"})
         return
     }
 	// パスワードのハッシュ化
 	hashedPassword, err := auth.HashPassword(req.Password)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
 	}
@@ -81,6 +88,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		Save(c.Request.Context())
 
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -104,6 +112,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -114,6 +123,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		Only(c.Request.Context())
 	if err != nil {
 		if ent.IsNotFound(err) {
+			c.Error(errors.New("Invalid email"))
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email"})
 			return
 		}
@@ -123,6 +133,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	// パスワードの検証
 	if err := auth.CheckPassword(req.Password, u.Password); err != nil {
+		c.Error(errors.New("Invalid password"))
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
@@ -130,6 +141,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	// JWTトークンの生成
 	token, refreshToken, err := auth.GenerateTokens(u.ID, u.Email)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
 		return
 	}

@@ -3,7 +3,7 @@ package handler
 import (
     "net/http"
     "strconv"
-
+    "errors"
     "github.com/gin-gonic/gin"
     "github.com/Shiluco/UniTimetable/backend/ent"
     "github.com/Shiluco/UniTimetable/backend/ent/user"
@@ -28,6 +28,7 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
     if userID != "" {
         id, err := strconv.Atoi(userID)
         if err != nil {
+            c.Error(err)
             c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
             return
         }
@@ -41,6 +42,7 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
             Only(ctx)
 
         if err != nil {
+            c.Error(err)
             if ent.IsNotFound(err) {
                 c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
                 return
@@ -49,7 +51,13 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
             return
         }
 
-        c.JSON(http.StatusOK, user)
+        c.JSON(http.StatusOK, gin.H{
+            "status":  "success",
+            "message": "Users fetched successfully",
+            "data": gin.H{
+                "user": user,
+            },
+        })
         return
     }
 
@@ -68,6 +76,7 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
         case "name":
             userQuery.Where(user.NameContains(query))
         default:
+            c.Error(errors.New("invalid search type"))
             c.JSON(http.StatusBadRequest, gin.H{"error": "invalid search type"})
             return
         }
@@ -80,11 +89,18 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
             All(ctx)
 
         if err != nil {
+            c.Error(err)
             c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
             return
         }
 
-        c.JSON(http.StatusOK, users)
+        c.JSON(http.StatusOK, gin.H{
+            "status":  "success",
+            "message": "Users fetched successfully",
+            "data": gin.H{
+                "users": users,
+            },
+        })
         return
     }
 
@@ -104,6 +120,7 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
     // 総件数の取得
     total_count, err := userQuery.Count(ctx)
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
@@ -116,16 +133,21 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
         All(ctx)
 
     if err != nil {
+        c.Error(err)
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
 
     c.JSON(http.StatusOK, gin.H{
-        "users":       users,
-        "total":      total_count,
-        "page":       page,
-        "page_size":  pageSize,
-        "total_pages": (total_count + pageSize - 1) / pageSize,
+		"status":  "success",
+		"message": "Users fetched successfully",
+		"data": gin.H{
+            "users": users,
+            "total": total_count,
+            "page": page,
+            "page_size": pageSize,
+            "total_pages": (total_count + pageSize - 1) / pageSize,
+        },
     })
 }
 
@@ -153,6 +175,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
         Save(c.Request.Context())
 
     if err != nil {
+        c.Error(err)
         if ent.IsNotFound(err) {
             c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
             return
@@ -174,6 +197,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 
     err = h.client.User.DeleteOneID(id).Exec(c.Request.Context())
     if err != nil {
+        c.Error(err)
         if ent.IsNotFound(err) {
             c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
             return

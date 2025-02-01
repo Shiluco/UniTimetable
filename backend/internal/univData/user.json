@@ -1,31 +1,28 @@
 {
     "users": [
         {
-            "user_id": 1,
             "department_id": 1,
             "major_id": 1,
             "grade": 1,
-            "user_name": "test",
-            "user_email": "test@shizuoka.ac.jp",
-            "user_password": "test"
+            "name": "test",
+            "email": "test@shizuoka.ac.jp",
+            "password": "test11111"
         },
         {
-            "user_id": 2,
             "department_id": 2,
             "major_id": 3,
             "grade": 2,
-            "user_name": "test2",
-            "user_email": "test2@shizuoka.ac.jp",
-            "user_password": "test2"
+            "name": "test2",
+            "email": "test2@shizuoka.ac.jp",
+            "password": "test22222"
         },
         {
-            "user_id": 3,
             "department_id": 3,
             "major_id": 5,
             "grade": 3,
-            "user_name": "test3",
-            "user_email": "test3@shizuoka.ac.jp",
-            "user_password": "test3"
+            "name": "test3",
+            "email": "test3@shizuoka.ac.jp",
+            "password": "test33333"
         }
     ]
 }
