@@ -81,6 +81,15 @@ echo $LOGIN_RESPONSE | jq '.'
 # トークンを更新
 TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.data.accessToken')
 
+echo -e "\n${GREEN}Testing get single user...${NC}"
+curl -s "${BASE_URL}/users/1" \
+  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+
+  # 単一の投稿取得テスト
+echo -e "\n${GREEN}Testing get single post...${NC}"
+curl -s "${BASE_URL}/posts?user_id=1" \
+  -H "Authorization: Bearer ${TOKEN}" | jq '.'
+
 # 通常の投稿作成のテスト
 # テスト用HTMLファイルのパス
 HTML_FILE="./test.html"
